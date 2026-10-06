@@ -16,11 +16,12 @@ import { runJob, resumeJob } from '../core/jobs.mjs';
 import { answer, getQuestion, listQuestions, resolveDue } from '../core/questions.mjs';
 import { cards, formatCards, listJobs, statusLine, writeStatusFiles } from '../core/dispatch.mjs';
 import { listRoles } from '../core/roles.mjs';
+import { buildKnowledge, exportForGithub, lessonFromTask, queryKnowledge, searchKnowledge, taskContext } from '../core/kb.mjs';
 
 const COMMANDS = { начать: 'init', статус: 'status', задача: 'task', сохранить: 'save', доктор: 'doctor', помощь: 'help', материал: 'material', приватность: 'privacy', настройки: 'settings', эксперимент: 'experiment',
-  исполнители: 'executors', исполнитель: 'executor', работа: 'job', вопрос: 'question', вопросы: 'question', роли: 'roles' };
+  исполнители: 'executors', исполнитель: 'executor', работа: 'job', вопрос: 'question', вопросы: 'question', роли: 'roles', знания: 'knowledge' };
 const SUB = { добавить: 'add', список: 'list', обновить: 'refresh', показать: 'show', предложить: 'propose', применить: 'apply', принять: 'accept', вернуть: 'revert', начать: 'start', ключ: 'key', завершить: 'end',
-  проверить: 'probe', запустить: 'run', продолжить: 'resume', ответить: 'answer' };
+  проверить: 'probe', запустить: 'run', продолжить: 'resume', ответить: 'answer', собрать: 'build', найти: 'search', контекст: 'context', урок: 'lesson', экспорт: 'export' };
 const MODES = { умеренный: 'moderate', строгий: 'strict', эксперимент: 'experiment' };
 const TASK = { новая: 'new', анализ: 'check', проверить: 'verify', отзыв: 'review', подтвердить: 'confirm', итог: 'converge', принять: 'accept' };
 const FLAGS = { цель: 'goal', вид: 'kind', папка: 'folder', проект: 'project', 'только-локально': 'local-only', исполнитель: 'executor', результат: 'result',
@@ -79,6 +80,10 @@ const HELP = `Borshkit — Modular AI Workspace
   borshkit работа список | продолжить <работа> [--исполнитель <имя> | --пул <пул>]
   borshkit вопросы | вопрос ответить <номер> <вариант>   критические — только в терминале
   borshkit статус --следить | --строка  диспетчерская: кому ушло, кто работает
+
+  borshkit знания собрать               карта проекта: заметки с [[связями]] для Obsidian и SQL-индекс
+  borshkit знания sql "SELECT …"        запрос только на чтение (таблицы notes, links, fts; виды stale, orphans, …)
+  borshkit знания найти <слова> | контекст <задача> | урок <задача> "что поняли" | экспорт [папка]
 
 Английские имена тоже работают: init, status, doctor, save, task new|check|verify|review|converge|confirm|accept.
 Добавь --json, чтобы получить ответ для программ.`;
@@ -233,6 +238,24 @@ async function experiment([rawSub, ...rest], flags) {
   throw new Error('Действие — начать, ключ или завершить');
 }
 
+async function knowledge([rawSub, ...rest], flags) {
+  const sub = SUB[rawSub] ?? rawSub ?? 'build';
+  const space = await open(flags);
+  if (sub === 'build') {
+    const r = await buildKnowledge(space);
+    return print(flags, r, `Карта собрана: заметок ${r.notes} (твоих ${r.human}), связей ${r.links}.${r.stale.length ? `\nУстарели уроки: ${r.stale.join(', ')}` : ''}\nОткрой в Obsidian: ${path.join(space.dir, 'knowledge', '_generated', 'index.md')}`);
+  }
+  if (sub === 'sql') { const rows = await queryKnowledge(space, rest.join(' ')); return print(flags, rows, rows.length ? rows.map(r => Object.values(r).join(' | ')).join('\n') : 'Пусто.'); }
+  if (sub === 'search') { const rows = await searchKnowledge(space, rest.join(' ')); return print(flags, rows, rows.length ? rows.map(r => `${r.title} — ${r.id}`).join('\n') : 'Ничего не найдено.'); }
+  if (sub === 'context') { const text = await taskContext(space, rest[0]); return print(flags, { context: text }, text ?? 'Контекста нет: собери знания (borshkit знания собрать) или проверь границы задачи.'); }
+  if (sub === 'lesson') { const rel = await lessonFromTask(space, rest[0], rest.slice(1).join(' ')); return print(flags, { note: rel }, `Урок записан: ${rel}. Он устареет сам, если изменится код, о котором он.`); }
+  if (sub === 'export') {
+    const out = path.resolve(rest[0] ?? path.join(space.project, 'docs', 'knowledge'));
+    const files = await exportForGithub(space, out);
+    return print(flags, files, `Скопировано заметок: ${files.length} → ${out}\nЭто папка проекта: сохрани её в истории проекта, если хочешь опубликовать.`);
+  }
+  throw new Error('Действие — собрать, sql, найти, контекст, урок или экспорт');
+}
 async function job([rawSub, ...rest], flags) {
   const sub = SUB[rawSub] ?? rawSub ?? 'list';
   const space = await open(flags);
@@ -323,6 +346,7 @@ export async function main(argv = process.argv.slice(2)) {
     const roles = await listRoles();
     return print(flags, roles.map(({ prompt, ...r }) => r), roles.map(r => `${r.id} — ${r.title} · ${r.authority === 'workspace-write' ? 'пишет в копию проекта' : 'только читает'} · ответ: ${r.output}${r.crossProvider ? ' · нужна другая семья моделей, чем у автора' : ''}`).join('\n'));
   }
+  if (command === 'knowledge') return knowledge(positional.slice(1), flags);
   if (command === 'job') return job(positional.slice(1), flags);
   if (command === 'question') return question(positional.slice(1), flags);
   if (command === 'doctor') {
