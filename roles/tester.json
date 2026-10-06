@@ -12,6 +12,11 @@
   },
   "crossProvider": false,
   "packs": [],
+  "library": [
+    "playwright",
+    "axe-core",
+    "lighthouse"
+  ],
   "timeoutMs": 1800000,
   "schemaVersion": 1
 }

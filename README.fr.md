@@ -1,0 +1,165 @@
+<p align="center">
+  <img src="assets/diagrams/banner.fr.svg" alt="Borshkit — Modular AI Workspace : tâches, preuves, recette, connaissances" width="100%">
+</p>
+
+<p align="center">
+  <a href="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml"><img src="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml/badge.svg" alt="CI : Linux et Windows"></a>
+  <img src="https://img.shields.io/badge/version-0.10.0-b3261e" alt="version 0.10.0">
+  <img src="https://img.shields.io/badge/node-%E2%89%A522-2b1d1d" alt="Node.js 22 ou plus récent">
+  <img src="https://img.shields.io/badge/dependencies-0-2e7d32" alt="zéro dépendance">
+  <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="plugin Claude Code">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-6b5757" alt="licence Apache-2.0"></a>
+</p>
+
+<p align="center">
+  <a href="README.md">Русский</a> · <a href="README.en.md">English</a> · <a href="README.de.md">Deutsch</a> · <a href="README.ko.md">한국어</a> · <a href="README.zh-TW.md">繁體中文</a> · <b>Français</b>
+</p>
+
+# Borshkit
+
+**Modular AI Workspace** — un poste de travail pour les agents d’IA, dans n’importe quel projet : une application web, un plugin, une bibliothèque, une application mobile ou un travail de recherche.
+
+Tu dis ce que tu veux obtenir. Les agents font le travail. Borshkit montre ce qui est **prouvé** par des vérifications et ce que tu dois regarder toi-même. Rien n’est accepté sur parole.
+
+> **Statut : 0.10.0.** Tout ce qui suit fonctionne et est couvert par des tests sous Linux et Windows. Les tests utilisent de faux exécutants à la place de vrais modèles. Ce qui n’a pas encore été essayé en conditions réelles est listé dans [Limites](#limites).
+>
+> **Note sur la langue :** pour l’instant, les messages de Borshkit sont en russe. Chaque commande et chaque option a aussi un nom anglais, et ce README utilise ces noms-là.
+
+## L’idée principale
+
+<p align="center"><img src="assets/diagrams/flow.fr.svg" alt="Le trajet d’une tâche : objectif → l’agent travaille dans une copie du projet → vérifications → feuille de recette → accepté ; ce qui ne peut pas être vérifié automatiquement te revient" width="100%"></p>
+
+Un modèle dit « terminé ». Ce n’est pas encore une recette :
+- chaque preuve est liée à l’état exact des fichiers ;
+- ce qui peut être vérifié automatiquement l’est automatiquement ;
+- ce qui ne peut pas l’être devient une courte consigne pour toi ;
+- ce qui n’a pas été vérifié porte exactement ce nom : **non vérifié**.
+
+## Installation
+
+Il te faut Node.js 22+ et Git. Il n’y a aucune dépendance externe.
+
+**Comme plugin Claude Code :**
+
+```
+/plugin marketplace add ParkPavel/borshkit
+/plugin install borshkit@borshkit
+```
+
+**Comme commande dans le terminal :**
+
+```sh
+git clone https://github.com/ParkPavel/borshkit.git
+cd borshkit && npm link        # ajoute les commandes borshkit et borsch
+```
+
+Le paquet n’est pas encore publié sur npm.
+
+## Ta première tâche
+
+```sh
+cd my-project
+borshkit init                                     # dossier borshkit/ à la racine, caché de l’historique du projet
+borshkit executor add claude                      # Claude Code avec ton abonnement ; tu confirmes dans le terminal
+borshkit task new theme --goal "Dark theme in settings"
+borshkit job run theme --role architect --executor claude     # propose des objectifs et des critères
+borshkit job run theme --role implementer --executor claude   # écrit le code dans une copie séparée
+borshkit task verify theme                        # tests, build, linter
+borshkit job run theme --role reviewer --executor codex       # relecture par une autre famille de modèles
+borshkit task converge theme                      # feuille de recette : ce qui est prouvé, ce qui t’attend
+borshkit task confirm theme C3 yes "saw the dark theme after a restart"
+borshkit merge theme && borshkit push             # dans la version principale et sur GitHub — seulement après ton « oui »
+```
+
+Toutes les commandes : [référence des commandes](docs/reference/commands.md) (noms russes et anglais côte à côte). Guide pas à pas (en russe) : [démarrage rapide](docs/guide/quickstart.md).
+
+## Comment ça marche
+
+<p align="center"><img src="assets/diagrams/evidence.fr.svg" alt="Une preuve peut expirer : une vérification passe pour l’état a1b2c3, un fichier change, la preuve est périmée, une nouvelle vérification passe pour f9e8d7" width="100%"></p>
+
+**Une preuve peut expirer.** Borshkit retient l’état exact sur lequel une vérification est passée : le commit et l’empreinte de chaque fichier, y compris les modifications pas encore commitées. Change un seul octet, et la vérification doit être relancée. [En savoir plus](docs/concepts/evidence.md)
+
+<p align="center"><img src="assets/diagrams/pool.fr.svg" alt="Pool d’exécutants : Claude Code a atteint sa limite, le travail est passé à Codex et s’est terminé ; le tableau de bord montre chaque passage de relais" width="100%"></p>
+
+**Une limite n’est pas un arrêt.** Un pool est une file d’exécutants : Claude Code, Codex, des API gratuites et locales. Quand l’un d’eux atteint sa limite, le travail passe au suivant que le mode de confidentialité autorise et qui sait faire ce travail. Les questions critiques n’attendent que toi. [En savoir plus](docs/concepts/executors.md)
+
+<p align="center"><img src="assets/diagrams/kb.fr.svg" alt="Connaissances : les fichiers du projet deviennent des notes reliées entre elles, que tu peux interroger en SQL" width="100%"></p>
+
+**Les connaissances sont des notes, pas une boîte noire.** Le projet devient des notes avec des `[[links]]` pour Obsidian et, par-dessus, un index SQL. Chaque travail reçoit sa propre part du contexte. Cette documentation fonctionne de la même façon : Borshkit a construit lui-même son [graphe de documentation](docs/graph/README.md).
+
+## Ce qu’il sait faire
+
+| Domaine | Ce que tu obtiens |
+|---|---|
+| **Recette par objectifs** | critères `auto` / `model` / `manual`, une feuille de recette, des objectifs de confiance envers les modèles, confirmés par la mesure |
+| **Espace de travail** | le dossier `borshkit/` est un coffre Obsidian avec son propre historique ; la règle `.gitignore` est ajoutée et vérifiée automatiquement |
+| **Exécutants** | Claude Code, Codex (avec GPT Image), toute API compatible OpenAI, tes propres programmes ; des pools avec bascule |
+| **17 rôles** | architecte, développeur, relecteurs, testeur, chercheur, designers, illustrateur de README… |
+| **Pilote automatique** | les questions de routine reçoivent leur réponse par défaut au bout d’une minute ; les questions critiques arrêtent tout, avec un rapport et une passation du contexte |
+| **Tableau de bord** | qui a reçu le travail, qui travaille, ce qui t’attend : dans le terminal, dans `STATUS.md` et dans la ligne d’état de Claude Code |
+| **Recherche** | les sources sont conservées en copie ; la vérification `citations` contrôle chaque citation mot pour mot |
+| **Confidentialité** | trois modes ; les clés et les données personnelles ne quittent pas la machine ; les réglages ne changent que par des propositions |
+| **Git pour débutants** | « qu’est-ce qui a changé », « qui a modifié ça », « remets comme avant » — avec des mots simples, sans commande destructrice |
+| **Remerciements** | vérifications `attribution` et `readme-assets`, la liste complète des contributeurs de chaque source |
+
+## Frontend, design et iOS
+
+Borshkit a des rôles pour les interfaces, et chacun ne reçoit que ses propres skills (compétences) :
+
+| Rôle | Ce qu’il fait | Skills et sources primaires |
+|---|---|---|
+| `ui-engineer` | construit l’interface : chaque état, les animations, le clavier | Emil Kowalski, ECC; Vercel Web Interface Guidelines, shadcn/ui, Radix, React Aria, WCAG |
+| `ios-designer` | passe en revue les interfaces iPhone et iPad | `apple-design`, Liquid Glass, SwiftUI; Apple HIG, SF Symbols |
+| `motion-reviewer` | passe les animations en revue avec rigueur | `review-animations`, `animation-vocabulary`, `motion-foundations` |
+| `a11y-reviewer` | contrôle l’accessibilité selon WCAG 2.2 AA | ECC `accessibility`, `frontend-a11y`; WAI-ARIA APG, axe-core |
+| `designer` | casse l’interface avec les pires données possibles | `break-ui` |
+
+La [bibliothèque](library/README.md) contient 3 packs de skills (25 skills) et 63 liens vérifiés : composants, animation, systèmes de design, accessibilité, icônes, polices, outils de qualité. Dans le terminal : `borshkit skills` et `borshkit library`.
+
+## La recette
+
+Borshkit, c’est un bortsch : il est cuisiné avec les meilleurs ingrédients, que d’autres ont fait pousser et partagés ouvertement.
+
+> Certains ingrédients ont été cuits deux fois. Spec Kit a d’abord mijoté dans Claudex, puis a mijoté une seconde fois sous forme de vérification de spécification, avant de finir sa cuisson dans Borshkit. Tout est arrivé à table en parfait état : licences conservées, auteurs cités.
+
+| Ingrédient | Ce qui a été pris |
+|---|---|
+| [Claudex](https://github.com/ParkPavel/claudex) | le noyau : contrat de tâche, preuves, convergence, adaptateurs CLI |
+| [Ponytail](https://github.com/DietrichGebert/ponytail) ([soutenir](https://github.com/sponsors/DietrichGebert)) | le « senior paresseux » — faire le minimum, rester simple |
+| [emilkowalski/skills](https://github.com/emilkowalski/skills) | 14 skills d’ingénierie du design et d’animation |
+| [ECC](https://github.com/affaan-m/ECC) ([soutenir](https://github.com/sponsors/affaan-m)) | 9 skills frontend, l’idée des modules |
+| [Spec Kit](https://github.com/github/spec-kit) | le chemin « intention → spécification → tâches → convergence » (via Claudex, deux fois) |
+| [Superpowers](https://github.com/obra/superpowers) ([soutenir](https://github.com/sponsors/obra)) | une copie séparée pour l’agent, le test avant le correctif (via Claudex) |
+| [Graphify](https://github.com/Graphify-Labs/graphify) ([soutenir](https://github.com/sponsors/safishamsi)) | la provenance des liens dans une carte du code (idée, via Claudex) |
+| [prompt-agent](https://github.com/kvyb/prompt-agent) | l’évaluation des travaux passés (idée, via Claudex) |
+| [HIGAgentSkills](https://github.com/justinwetch/HIGAgentSkills) | l’aiguillage selon Apple HIG (lien seulement) |
+| [Agent Reach](https://github.com/panniantong/agent-reach) | les chemins de collecte sur le web pour le chercheur |
+| [free-llm-api-resources](https://github.com/raullenchai/free-llm-api-resources) | un repère pour choisir des API gratuites (lien seulement) |
+
+La recette complète, avec les versions et les licences, se trouve dans [docs/ingredients.md](docs/ingredients.md) (en russe). **Tous les contributeurs** de ces projets, 1262 entrées : [CONTRIBUTORS-REFERENCES.md](CONTRIBUTORS-REFERENCES.md). Merci à chacun d’entre vous !
+
+## Limites
+
+- Les adaptateurs Claude Code et Codex sont testés avec de faux programmes qui produisent le même format d’événements. Les options d’un Claude Code installé ont été vérifiées. La CI ne lance pas de vrais modèles.
+- Les images via Codex (GPT Image) ne sont pas encore testées : `borshkit executor probe codex` te le dira pour ton abonnement.
+- On n’a pas testé si le graphe d’Obsidian affiche les liens issus des propriétés des notes. C’est pourquoi les liens sont répétés sous forme de liens ordinaires dans le texte.
+- Pour l’instant, les messages de Borshkit sont uniquement en russe ; les commandes et les options existent en russe et en anglais.
+- `node:sqlite` est encore expérimental dans Node 22.
+- La détection des clés et des données personnelles par motifs ne repère pas tout.
+
+## Documentation
+
+La documentation est en russe pour l’instant :
+- [Plan de la documentation](docs/README.md) — démarrage rapide, concepts, référence.
+- [Spécification](docs/spec.md) — l’analyse d’origine et les décisions D1–D22.
+- [Journal des modifications](CHANGELOG.md) · [Contribuer](CONTRIBUTING.md) · [Sécurité](SECURITY.md) · [Pour les agents développeurs](AGENTS.md)
+
+## Développement
+
+```sh
+npm run verify   # vérifications statiques et tous les tests ; la CI les lance sous Linux et Windows
+```
+
+## Licence
+
+Apache-2.0 — voir [LICENSE](LICENSE) et [NOTICE](NOTICE). Les skills de `packs/` sont sous licence MIT, chaque pack avec la licence de son auteur.

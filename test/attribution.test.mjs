@@ -12,7 +12,7 @@ import { converge, verifyAll } from '../core/accept.mjs';
 import { space, task, write } from './helpers.mjs';
 
 test('Borshkit credits every source it uses: the attribution check passes on its own repository', async () => {
-  const r = await attributionCheck({ project: ROOT }, null, { readme: 'docs/lineage.md' });
+  const r = await attributionCheck({ project: ROOT }, null, { readme: 'docs/ingredients.md' });
   assert.equal(r.status, 'PASS', r.log);
   assert.match(r.log, /Ponytail — MIT, файлов: 2/);
 });
@@ -20,7 +20,7 @@ test('Borshkit credits every source it uses: the attribution check passes on its
 test('Borshkit\'s own README passes its images-and-links check', async () => {
   const r = await readmeAssetsCheck({ project: ROOT }, null, {});
   assert.equal(r.status, 'PASS', r.log);
-  assert.match(r.log, /banner-dark\.svg/);
+  assert.match(r.log, /banner\.ru\.svg/);
 });
 
 test('attribution fails on a missing credit, a copy without license, copying an unlicensed source and a missing support link', async t => {

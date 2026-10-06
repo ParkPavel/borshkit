@@ -1,0 +1,32 @@
+{
+  "id": "ui-engineer",
+  "title": "Фронтенд-инженер интерфейса",
+  "stage": "build",
+  "authority": "workspace-write",
+  "output": "files",
+  "requires": {
+    "structuredOutput": true,
+    "output": [
+      "code"
+    ]
+  },
+  "crossProvider": false,
+  "packs": [
+    "emil/emil-design-eng",
+    "emil/pick-ui-library",
+    "ecc/make-interfaces-feel-better",
+    "ecc/frontend-design-direction"
+  ],
+  "library": [
+    "vercel-web-interface-guidelines",
+    "shadcn-ui",
+    "radix-primitives",
+    "react-aria",
+    "motion",
+    "wcag-22",
+    "aria-apg",
+    "dtcg-format"
+  ],
+  "timeoutMs": 3600000,
+  "schemaVersion": 1
+}

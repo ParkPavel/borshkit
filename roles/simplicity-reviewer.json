@@ -12,7 +12,7 @@
   },
   "crossProvider": false,
   "packs": [
-    "ponytail-review"
+    "ponytail/ponytail-review"
   ],
   "timeoutMs": 900000,
   "schemaVersion": 1

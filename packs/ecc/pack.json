@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "ecc",
+  "title": "Фронтенд-навыки ECC",
+  "source": "https://github.com/affaan-m/ECC",
+  "commit": "ef648e01899ba3e8dc6371642deaaf64b4477775",
+  "license": "MIT",
+  "authors": ["Affaan Mustafa", "контрибьюторы ECC"],
+  "support": "https://github.com/sponsors/affaan-m",
+  "skills": {
+    "accessibility": { "files": ["skills/accessibility/SKILL.md"], "when": "доступность по WCAG 2.2 AA для веба, iOS и Android" },
+    "frontend-a11y": { "files": ["skills/frontend-a11y/SKILL.md"], "when": "доступность в React и Next.js: формы, модальные окна, фокус, клавиатура" },
+    "frontend-design-direction": { "files": ["skills/frontend-design-direction/SKILL.md"], "when": "выбрать визуальное направление для интерфейса продукта" },
+    "make-interfaces-feel-better": { "files": ["skills/make-interfaces-feel-better/SKILL.md"], "when": "отступы, шрифты, тени, области нажатия, состояния" },
+    "liquid-glass-design": { "files": ["skills/liquid-glass-design/SKILL.md"], "when": "материал Liquid Glass в iOS 26: SwiftUI, UIKit, WidgetKit" },
+    "swiftui-patterns": { "files": ["skills/swiftui-patterns/SKILL.md"], "when": "архитектура SwiftUI: состояние, навигация, производительность" },
+    "motion-foundations": { "files": ["skills/motion-foundations/SKILL.md"], "when": "основа анимаций в React: токены, пружины, reduced motion" },
+    "motion-patterns": { "files": ["skills/motion-patterns/SKILL.md"], "when": "готовые анимации в React: модальные окна, списки, переходы" },
+    "react-patterns": { "files": ["skills/react-patterns/SKILL.md"], "when": "React 18/19: хуки, серверные компоненты, Suspense, формы" }
+  },
+  "notes": "Выбранные навыки ECC без изменений, с лицензией MIT. Остальной ECC не копируется."
+}

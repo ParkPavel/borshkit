@@ -95,10 +95,24 @@ export async function buildKnowledge(space) {
         edge(id, notePath('code', target), TEST.test(rel) ? 'tests' : 'imports');
       }
     } else if (kind === 'docs') {
-      node(id, { headings: [...text.matchAll(/^#{1,3}\s+(.+)$/gm)].map(m => m[1].trim()).slice(0, 40) });
-      const mentioned = new Set([...text.matchAll(/`([^`\n]+)`/g)].map(m => m[1]).filter(p => set.has(p)));
-      for (const m of text.matchAll(/\]\(([^)#\s]+)\)/g)) { const target = path.posix.normalize(path.posix.join(path.posix.dirname(rel), m[1])); if (set.has(target)) mentioned.add(target); }
-      for (const target of mentioned) edge(id, notePath(CODE.test(target) ? 'code' : DOC.test(target) ? 'docs' : 'manifest', target), 'documents');
+      // A project document may carry Borshkit frontmatter: `bk-type` and typed
+      // relations as paths relative to the document (GitHub shows them as a
+      // table; the body keeps ordinary Markdown links, which GitHub follows
+      // and the Obsidian graph draws).
+      const { data, body } = parseFrontmatter(text);
+      node(id, { headings: [...body.matchAll(/^#{1,3}\s+(.+)$/gm)].map(m => m[1].trim()).slice(0, 40), kind: data['bk-type'] ?? null,
+        title: data['bk-type'] ? body.match(/^#\s+(.+)$/m)?.[1]?.trim() ?? rel : rel });
+      const noteOf = target => notePath(CODE.test(target) ? 'code' : DOC.test(target) ? 'docs' : 'manifest', target);
+      const local = ref => path.posix.normalize(path.posix.join(path.posix.dirname(rel), ref));
+      for (const key of RELATIONS) {
+        for (const ref of [data[key] ?? []].flat()) {
+          const target = wikilinks(ref)[0] ?? local(String(ref));
+          if (set.has(target)) edge(id, noteOf(target), key, 'DECLARED');
+        }
+      }
+      const mentioned = new Set([...body.matchAll(/`([^`\n]+)`/g)].map(m => m[1]).filter(p => set.has(p)));
+      for (const m of body.matchAll(/\]\(([^)#\s]+)(?:#[^)\s]*)?\)/g)) { const target = local(decodeURI(m[1])); if (set.has(target)) mentioned.add(target); }
+      for (const target of mentioned) edge(id, noteOf(target), DOC.test(target) ? 'references' : 'documents');
     } else {
       try { const pkg = JSON.parse(text); node(id, { title: pkg.name ? `${rel} (${pkg.name})` : rel, scripts: Object.keys(pkg.scripts ?? {}) }); } catch { /* not JSON */ }
     }
@@ -151,7 +165,7 @@ export async function buildKnowledge(space) {
   for (const [id, n] of nodes) {
     if (n.human) continue;
     const out = unique.filter(e => e.src === id);
-    const fm = { 'bk-type': n.type, 'bk-id': n.path, 'bk-provenance': n.provenance, 'bk-source': n.source, 'bk-digest': n.digest };
+    const fm = { 'bk-type': n.type, 'bk-kind': n.kind ?? undefined, 'bk-id': n.path, 'bk-provenance': n.provenance, 'bk-source': n.source, 'bk-digest': n.digest };
     for (const rel of RELATIONS) fm[rel] = out.filter(e => e.rel === rel).map(e => link(e.dst, nodes.get(e.dst)?.path ?? e.dst));
     const body = [`# ${n.title}`, ''];
     if (n.type === 'decision') {
@@ -200,17 +214,17 @@ async function writeIndex(space, nodes, edges, texts) {
   const tmp = `${dbFile(space)}.tmp`;
   await fs.rm(tmp, { force: true });
   const db = new DatabaseSync(tmp);
-  db.exec(`CREATE TABLE notes(id TEXT PRIMARY KEY, type TEXT, path TEXT, title TEXT, provenance TEXT, source TEXT, digest TEXT, status TEXT);
+  db.exec(`CREATE TABLE notes(id TEXT PRIMARY KEY, type TEXT, path TEXT, title TEXT, provenance TEXT, source TEXT, digest TEXT, status TEXT, kind TEXT);
     CREATE TABLE links(src TEXT, dst TEXT, rel TEXT, provenance TEXT);
     CREATE VIRTUAL TABLE fts USING fts5(id UNINDEXED, title, body);
     CREATE VIEW orphans AS SELECT id, title FROM notes WHERE id NOT IN (SELECT src FROM links) AND id NOT IN (SELECT dst FROM links);
     CREATE VIEW undocumented_modules AS SELECT id, path FROM notes WHERE type='module' AND id NOT IN (SELECT dst FROM links WHERE rel='documents');
     CREATE VIEW stale AS SELECT id, title FROM notes WHERE status='stale';
     CREATE VIEW broken_links AS SELECT src, dst, rel FROM links WHERE dst NOT IN (SELECT id FROM notes);`);
-  const insNote = db.prepare('INSERT INTO notes VALUES (?,?,?,?,?,?,?,?)'), insLink = db.prepare('INSERT INTO links VALUES (?,?,?,?)'), insFts = db.prepare('INSERT INTO fts VALUES (?,?,?)');
+  const insNote = db.prepare('INSERT INTO notes VALUES (?,?,?,?,?,?,?,?,?)'), insLink = db.prepare('INSERT INTO links VALUES (?,?,?,?)'), insFts = db.prepare('INSERT INTO fts VALUES (?,?,?)');
   db.exec('BEGIN');
   for (const [id, n] of [...nodes].sort(([a], [b]) => a.localeCompare(b))) {
-    insNote.run(id, n.type, n.path ?? null, n.title, n.provenance, n.source, n.digest, n.status ?? 'current');
+    insNote.run(id, n.type, n.path ?? null, n.title, n.provenance, n.source, n.digest, n.status ?? 'current', n.kind ?? n.data?.['bk-type'] ?? null);
     insFts.run(id, n.title, (texts.get(n.path) ?? '').slice(0, 200000));
   }
   for (const e of edges) insLink.run(e.src, e.dst, e.rel, e.provenance);
@@ -265,6 +279,28 @@ export async function lessonFromTask(space, taskId, text) {
   await atomicWrite(path.join(space.dir, rel), frontmatter({ 'bk-type': 'lesson', 'bk-provenance': 'DECLARED', 'bk-source': `задача ${taskId}`, 'bk-sources-digest': sha(digests.join('\n')),
     about: about.map(a => link(a, a.slice(GEN.length + 6, -3))), 'decided-in': [link(`${GEN}/tasks/${taskId}.md`, taskId)] }) + `# Урок: ${contract.goal}\n\n${text.trim()}\n`, { mode: 0o644 });
   return rel;
+}
+
+/**
+ * The index as a plain SQL script: CREATE TABLE and INSERT statements in a
+ * stable order, without digests, so it can be committed, read on GitHub,
+ * diffed, and loaded into any SQLite (`sqlite3 graph.db < graph.sql`).
+ */
+export async function knowledgeSQL(space) {
+  const q = v => v === null || v === undefined ? 'NULL' : `'${String(v).replace(/'/g, "''")}'`;
+  const notes = await queryKnowledge(space, 'SELECT id, type, kind, path, title, provenance, source, status FROM notes ORDER BY id');
+  const links = await queryKnowledge(space, 'SELECT src, rel, dst, provenance FROM links ORDER BY src, rel, dst');
+  return ['-- Borshkit knowledge graph (borshkit знания экспорт --sql). Generated; do not edit by hand.',
+    `-- notes: ${notes.length}, links: ${links.length}`,
+    'CREATE TABLE notes(id TEXT PRIMARY KEY, type TEXT, kind TEXT, path TEXT, title TEXT, provenance TEXT, source TEXT, status TEXT);',
+    'CREATE TABLE links(src TEXT, rel TEXT, dst TEXT, provenance TEXT);',
+    "CREATE VIEW docs AS SELECT id, kind, path, title FROM notes WHERE type = 'doc';",
+    "CREATE VIEW undocumented_modules AS SELECT id, path FROM notes WHERE type = 'module' AND id NOT IN (SELECT dst FROM links WHERE rel = 'documents');",
+    'CREATE VIEW broken_links AS SELECT src, rel, dst FROM links WHERE dst NOT IN (SELECT id FROM notes);',
+    'BEGIN;',
+    ...notes.map(n => `INSERT INTO notes VALUES (${[n.id, n.type, n.kind, n.path, n.title, n.provenance, n.source, n.status].map(q).join(', ')});`),
+    ...links.map(l => `INSERT INTO links VALUES (${[l.src, l.rel, l.dst, l.provenance].map(q).join(', ')});`),
+    'COMMIT;', ''].join('\n');
 }
 
 /** A copy of the person-written notes with [[wikilinks]] turned into Markdown links GitHub can follow. */

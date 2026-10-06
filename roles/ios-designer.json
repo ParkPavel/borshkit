@@ -1,0 +1,29 @@
+{
+  "id": "ios-designer",
+  "title": "Дизайнер iOS",
+  "stage": "verify",
+  "authority": "read-only",
+  "output": "review",
+  "requires": {
+    "structuredOutput": true,
+    "output": [
+      "text"
+    ]
+  },
+  "crossProvider": false,
+  "packs": [
+    "emil/apple-design",
+    "ecc/liquid-glass-design",
+    "ecc/swiftui-patterns"
+  ],
+  "library": [
+    "apple-hig",
+    "apple-hig-motion",
+    "apple-liquid-glass",
+    "swiftui-docs",
+    "sf-symbols",
+    "hig-agent-skills"
+  ],
+  "timeoutMs": 900000,
+  "schemaVersion": 1
+}

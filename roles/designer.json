@@ -11,7 +11,15 @@
     ]
   },
   "crossProvider": false,
-  "packs": [],
+  "packs": [
+    "emil/break-ui"
+  ],
+  "library": [
+    "apple-hig",
+    "material-design-3",
+    "laws-of-ux",
+    "govuk-design-system"
+  ],
   "timeoutMs": 900000,
   "schemaVersion": 1
 }

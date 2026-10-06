@@ -1,11 +1,24 @@
 {
   "name": "borshkit",
-  "version": "0.9.0",
-  "description": "Borshkit — Modular AI Workspace: задачи с целями, доказательства, привязанные к точному состоянию, автоматическая приёмка там, где её можно показать, и понятный лист для человека там, где нельзя.",
-  "author": { "name": "Pavel Park", "url": "https://github.com/ParkPavel" },
+  "version": "0.10.0",
+  "description": "Borshkit — Modular AI Workspace: агенты работают, а принимается только то, что доказано проверками. Остальное — короткий список для тебя.",
+  "author": {
+    "name": "Pavel Park",
+    "url": "https://github.com/ParkPavel"
+  },
   "homepage": "https://github.com/ParkPavel/borshkit",
   "repository": "https://github.com/ParkPavel/borshkit",
   "license": "Apache-2.0",
-  "keywords": ["acceptance", "evidence", "workspace", "obsidian", "agents"],
+  "keywords": [
+    "acceptance",
+    "evidence",
+    "workspace",
+    "obsidian",
+    "agents",
+    "frontend",
+    "design",
+    "accessibility",
+    "ios"
+  ],
   "hooks": "./hooks/hooks.json"
 }

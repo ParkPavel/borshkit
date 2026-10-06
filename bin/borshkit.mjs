@@ -15,8 +15,8 @@ import { probeExecutor, readProbes, FAILURE_WORDS } from '../core/executors.mjs'
 import { runJob, resumeJob } from '../core/jobs.mjs';
 import { answer, getQuestion, listQuestions, resolveDue } from '../core/questions.mjs';
 import { cards, formatCards, listJobs, statusLine, writeStatusFiles } from '../core/dispatch.mjs';
-import { listRoles } from '../core/roles.mjs';
-import { buildKnowledge, exportForGithub, lessonFromTask, queryKnowledge, searchKnowledge, taskContext } from '../core/kb.mjs';
+import { listPacks, listRoles, loadPack } from '../core/roles.mjs';
+import { buildKnowledge, exportForGithub, knowledgeSQL, lessonFromTask, queryKnowledge, searchKnowledge, taskContext } from '../core/kb.mjs';
 import { attributionCheck, contributorsFromGit, contributorsReport, readmeAssetsCheck, writeContributors } from '../core/attribution.mjs';
 import { runCommand } from '../core/process.mjs';
 import { explainGit, history, mergeTask, pushProject, restoreFile, saveProject, whatChanged, whoDid } from '../core/gitshell.mjs';
@@ -25,7 +25,8 @@ import { evaluate, measureTrust, proposeTrust } from '../core/eval.mjs';
 
 const COMMANDS = { начать: 'init', статус: 'status', задача: 'task', сохранить: 'save', доктор: 'doctor', помощь: 'help', материал: 'material', приватность: 'privacy', настройки: 'settings', эксперимент: 'experiment',
   исполнители: 'executors', исполнитель: 'executor', работа: 'job', вопрос: 'question', вопросы: 'question', роли: 'roles', знания: 'knowledge', атрибуция: 'attribution',
-  оценка: 'eval', hook: 'hook', история: 'history', 'что-изменилось': 'changes', 'кто-что': 'who', вернуть: 'restore', 'сохранить-проект': 'save-project', собрать: 'merge', отправить: 'push' };
+  оценка: 'eval', hook: 'hook', история: 'history', 'что-изменилось': 'changes', 'кто-что': 'who', вернуть: 'restore', 'сохранить-проект': 'save-project', собрать: 'merge', отправить: 'push',
+  навыки: 'skills', библиотека: 'library' };
 const WHICH = { проект: 'project', пространство: 'space', project: 'project', space: 'space' };
 const SUB = { добавить: 'add', список: 'list', обновить: 'refresh', показать: 'show', предложить: 'propose', применить: 'apply', принять: 'accept', вернуть: 'revert', начать: 'start', ключ: 'key', завершить: 'end',
   проверить: 'probe', запустить: 'run', продолжить: 'resume', ответить: 'answer', собрать: 'build', найти: 'search', контекст: 'context', урок: 'lesson', экспорт: 'export', контрибьюторы: 'contributors', картинки: 'assets' };
@@ -33,7 +34,7 @@ const MODES = { умеренный: 'moderate', строгий: 'strict', экс
 const TASK = { новая: 'new', анализ: 'check', проверить: 'verify', отзыв: 'review', подтвердить: 'confirm', итог: 'converge', принять: 'accept' };
 const FLAGS = { цель: 'goal', вид: 'kind', папка: 'folder', проект: 'project', 'только-локально': 'local-only', исполнитель: 'executor', результат: 'result',
   текст: 'text', название: 'title', да: 'yes', 'ключи-отозваны': 'revoked', от: 'from', причина: 'reason', через: 'via', манифест: 'manifest', readme: 'readme',
-  роль: 'role', пул: 'pool', клоны: 'clones', к: 'to', скрытые: 'hidden', порог: 'threshold', сколько: 'limit', удалённый: 'remote', линза: 'lens', файл: 'file', следить: 'watch', строка: 'line', команда: 'command', семейство: 'provider', данные: 'data', модель: 'model' };
+  роль: 'role', пул: 'pool', клоны: 'clones', к: 'to', скрытые: 'hidden', порог: 'threshold', сколько: 'limit', удалённый: 'remote', линза: 'lens', файл: 'file', следить: 'watch', строка: 'line', команда: 'command', семейство: 'provider', данные: 'data', модель: 'model', навыки: 'skills' };
 const LONE = ['json', 'local-only', 'yes', 'revoked', 'help', 'watch', 'line'];
 // Ready-made manifests for the subscription CLIs; the data policy stays "unknown"
 // until the person states it, so the strict mode will not use them by accident.
@@ -82,15 +83,17 @@ const HELP = `Borshkit — Modular AI Workspace
   borshkit исполнители                  кто может работать и что показала проверка
   borshkit исполнитель добавить claude|codex [--данные no-train|trains|local] | <имя> --файл манифест.json
   borshkit исполнитель проверить <имя>  сверить установленную программу или API с тем, что нужно
-  borshkit роли                         роли команды и что им нужно от исполнителя
-  borshkit работа запустить <задача> --роль <роль> --исполнитель <имя> | --пул <пул> [--линза lite|full|ultra] [--файл путь]
+  borshkit роли                         роли команды, их навыки и что им нужно от исполнителя
+  borshkit навыки [пакет]               пакеты навыков (Ponytail, Emil Kowalski, ECC) и что в них
+  borshkit библиотека [категория]       проверенные ссылки: компоненты, анимация, дизайн-системы, доступность …
+  borshkit работа запустить <задача> --роль <роль> --исполнитель <имя> | --пул <пул> [--линза lite|full|ultra] [--навыки emil/animate,ecc/react-patterns] [--файл путь]
   borshkit работа список | продолжить <работа> [--исполнитель <имя> | --пул <пул>]
   borshkit вопросы | вопрос ответить <номер> <вариант>   критические — только в терминале
   borshkit статус --следить | --строка  диспетчерская: кому ушло, кто работает
 
   borshkit знания собрать               карта проекта: заметки с [[связями]] для Obsidian и SQL-индекс
   borshkit знания sql "SELECT …"        запрос только на чтение (таблицы notes, links, fts; виды stale, orphans, …)
-  borshkit знания найти <слова> | контекст <задача> | урок <задача> "что поняли" | экспорт [папка]
+  borshkit знания найти <слова> | контекст <задача> | урок <задача> "что поняли" | экспорт [папка] | экспорт --sql граф.sql
 
   borshkit атрибуция проверить [--манифест third-party.json] [--readme README.md]   благодарности и лицензии
   borshkit атрибуция картинки [--readme README.md]          изображения README: есть, с alt-текстом, не тяжёлые
@@ -272,6 +275,11 @@ async function knowledge([rawSub, ...rest], flags) {
   if (sub === 'search') { const rows = await searchKnowledge(space, rest.join(' ')); return print(flags, rows, rows.length ? rows.map(r => `${r.title} — ${r.id}`).join('\n') : 'Ничего не найдено.'); }
   if (sub === 'context') { const text = await taskContext(space, rest[0]); return print(flags, { context: text }, text ?? 'Контекста нет: собери знания (borshkit знания собрать) или проверь границы задачи.'); }
   if (sub === 'lesson') { const rel = await lessonFromTask(space, rest[0], rest.slice(1).join(' ')); return print(flags, { note: rel }, `Урок записан: ${rel}. Он устареет сам, если изменится код, о котором он.`); }
+  if (sub === 'export' && typeof flags.sql === 'string') {
+    const out = path.resolve(flags.sql);
+    await fs.writeFile(out, await knowledgeSQL(space));
+    return print(flags, { file: out }, `Граф знаний записан как SQL: ${out}\nЗагрузить: sqlite3 graph.db < ${path.basename(out)}`);
+  }
   if (sub === 'export') {
     const out = path.resolve(rest[0] ?? path.join(space.project, 'docs', 'knowledge'));
     const files = await exportForGithub(space, out);
@@ -356,7 +364,8 @@ async function job([rawSub, ...rest], flags) {
   let j;
   if (sub === 'run') {
     assert(rest[0] && typeof flags.role === 'string', 'Формат: borshkit работа запустить <задача> --роль <роль> --исполнитель <имя> | --пул <пул>');
-    j = await runJob(space, { taskId: rest[0], role: flags.role, ...opts, lens: typeof flags.lens === 'string' ? flags.lens : null, imagePath: typeof flags.file === 'string' ? flags.file : null });
+    j = await runJob(space, { taskId: rest[0], role: flags.role, ...opts, lens: typeof flags.lens === 'string' ? flags.lens : null,
+      skills: typeof flags.skills === 'string' ? flags.skills.split(',').map(x => x.trim()).filter(Boolean) : [], imagePath: typeof flags.file === 'string' ? flags.file : null });
   } else if (sub === 'resume') j = await resumeJob(space, rest[0], opts);
   else throw new Error('Действие — запустить, список или продолжить');
   const words = { COMPLETED: '🟢 готово', FAILED: '🔴 ошибка', STOPPED: '⏹ остановлено', WAITING_HUMAN: '⛔ ждёт тебя' };
@@ -436,7 +445,20 @@ export async function main(argv = process.argv.slice(2)) {
   }
   if (command === 'roles') {
     const roles = await listRoles();
-    return print(flags, roles.map(({ prompt, ...r }) => r), roles.map(r => `${r.id} — ${r.title} · ${r.authority === 'workspace-write' ? 'пишет в копию проекта' : 'только читает'} · ответ: ${r.output}${r.crossProvider ? ' · нужна другая семья моделей, чем у автора' : ''}`).join('\n'));
+    return print(flags, roles.map(({ prompt, ...r }) => r), roles.map(r => `${r.id} — ${r.title} · ${r.authority === 'workspace-write' ? 'пишет в копию проекта' : 'только читает'} · ответ: ${r.output}${r.crossProvider ? ' · нужна другая семья моделей, чем у автора' : ''}${r.packs.length ? `\n    навыки: ${r.packs.join(', ')}` : ''}`).join('\n'));
+  }
+  if (command === 'skills') {
+    const packs = positional[1] ? [await loadPack(positional[1])] : await listPacks();
+    return print(flags, packs, packs.map(p => [`${p.id} — ${p.title} · ${p.license} · ${p.source} @ ${p.commit.slice(0, 7)}`,
+      ...Object.entries(p.skills).map(([id, s]) => `  ${p.id}/${id} — ${s.when}`)].join('\n')).join('\n\n') + '\n\nДобавить навык к работе: borshkit работа запустить <задача> --роль <роль> … --навыки пакет/навык');
+  }
+  if (command === 'library') {
+    const catalog = await readJSON(path.join(ROOT, 'library', 'catalog.json'));
+    const want = positional[1];
+    const entries = catalog.entries.filter(e => !want || e.category === want || e.id === want);
+    assert(entries.length, `Нет такой категории. Есть: ${[...new Set(catalog.entries.map(e => e.category))].join(', ')}`);
+    const groups = Map.groupBy(entries, e => e.category);
+    return print(flags, entries, [...groups].map(([cat, list]) => [`## ${catalog.categories?.[cat] ?? cat}`, ...list.map(e => `  ${e.title} — ${e.url}\n    ${e.what}${e.license && e.license !== 'see-site' ? ` (${e.license})` : ''}`)].join('\n')).join('\n\n') + `\n\nПроверено ${catalog.checkedAt}. Полный список с пояснениями: library/README.md`);
   }
   if (command === 'knowledge') return knowledge(positional.slice(1), flags);
   if (command === 'attribution') return attribution(positional.slice(1), flags);

@@ -12,7 +12,7 @@
   },
   "crossProvider": false,
   "packs": [
-    "ponytail"
+    "ponytail/ponytail"
   ],
   "timeoutMs": 3600000,
   "schemaVersion": 1

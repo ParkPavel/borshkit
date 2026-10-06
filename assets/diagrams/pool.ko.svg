@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="300" viewBox="0 0 860 300" role="img" aria-labelledby="t d" lang="ko">
+<title id="t">실행자 풀</title>
+<desc id="d">→ claude: 시작 · claude: 한도 도달 → codex · codex: 완료 ✓ · 전환: 1회. 한도에 걸리면 작업은 허용되고 할 수 있는 다음 실행자에게 넘어갑니다.</desc>
+<style>
+:root{--bg:#fbf7f2;--ink:#2b1d1d;--muted:#6b5757;--red:#b3261e;--deep:#8c1c13;--line:#dccbc8;--card:#fffdfa;--ok:#2e7d32;--okbg:#e6f2e6;--off:#8f8282;--offbg:#efe8e6;--steam:#c9a9a6;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#171213;--ink:#f4ecea;--muted:#bfaeac;--red:#e0574b;--deep:#a8261b;--line:#4a3a39;--card:#221a1a;--ok:#7bc47f;--okbg:#1f2e20;--off:#8d7f7e;--offbg:#2a2222;--steam:#6e5856}}
+text{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","Apple SD Gothic Neo","Malgun Gothic","PingFang TC","Microsoft JhengHei","Noto Sans CJK TC",sans-serif;fill:var(--ink)}
+.bg{fill:var(--bg)}.t{font-size:19px;font-weight:700}.b{font-size:14px;font-weight:650}.s{font-size:11.5px;fill:var(--muted)}.c{font-size:13px;fill:var(--muted)}
+.m{font-family:var(--mono);font-size:12px}.box{fill:var(--card);stroke:var(--line);stroke-width:1.5}.ln{stroke:var(--line);stroke-width:2;fill:none}
+.red{fill:var(--red)}.ok{fill:var(--ok)}.off{fill:var(--off)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}.lim{opacity:1;animation:lim 10s linear infinite}@keyframes lim{0%,25%{opacity:0}26%,100%{opacity:1}}.work{opacity:0;animation:work 10s linear infinite}@keyframes work{0%,47%{opacity:0}48%,74%{opacity:1}75%,100%{opacity:0}}.done{opacity:1;animation:done 10s linear infinite}@keyframes done{0%,74%{opacity:0}75%,100%{opacity:1}}.s0{opacity:0;animation:s0 10s linear infinite}@keyframes s0{0%,3%{opacity:0}4%,30%{opacity:1}31%,100%{opacity:0}}.s1{opacity:0;animation:s1 10s linear infinite}@keyframes s1{0%,30%{opacity:0}31%,74%{opacity:1}75%,100%{opacity:0}}.s2{opacity:1;animation:s2 10s linear infinite}@keyframes s2{0%,74%{opacity:0}75%,100%{opacity:1}}.tok{fill:var(--red);opacity:0;animation:tok 10s ease-in-out infinite}@keyframes tok{0%,4%{transform:translate(0,0);opacity:0}6%{opacity:1;transform:translate(0,0)}18%,24%{transform:translate(206px,-46px);opacity:1}26%{transform:translate(196px,-46px)}40%,72%{transform:translate(206px,8px);opacity:1}76%,100%{transform:translate(206px,8px);opacity:0}}.r1{animation:r1 10s linear infinite}@keyframes r1{0%,17%{stroke:var(--line)}18%,25%{stroke:var(--red);stroke-width:3}26%,100%{stroke:var(--line)}}.r2{animation:r2 10s linear infinite}@keyframes r2{0%,39%{stroke:var(--line)}40%,74%{stroke:var(--red);stroke-width:3}75%,100%{stroke:var(--ok);stroke-width:2.5}}.pill{rx:11}.limbg{fill:var(--red)}.okbg{fill:var(--okbg);stroke:var(--ok)}.board{fill:var(--card);stroke:var(--line)}</style>
+<rect class="bg" width="860" height="300" rx="14"/>
+<text class="t" x="40" y="38">실행자 풀</text>
+<path class="ln" d="M232 132 C330 132 330 84 430 84"/>
+<path class="ln" d="M232 132 C330 132 330 138 430 138"/>
+<path class="ln" d="M232 132 C330 132 330 192 430 192"/>
+<rect class="box" x="40" y="104" width="190" height="56" rx="10"/><text class="b" x="135" y="129" text-anchor="middle">작업</text><text class="s m" x="135" y="147" text-anchor="middle">implementer</text>
+<rect class="box r1" x="440" y="64" width="380" height="40" rx="10"/><text class="b" x="458" y="89">Claude Code</text>
+<rect class="box r2" x="440" y="118" width="380" height="40" rx="10"/><text class="b" x="458" y="143">Codex</text>
+<rect class="box" x="440" y="172" width="380" height="40" rx="10"/><text class="b" x="458" y="197">API · free</text>
+<g class="lim"><rect class="limbg" x="662" y="72" width="142" height="24" rx="12"/><text x="733" y="88" text-anchor="middle" style="font-size:12px;font-weight:650;fill:#fff">한도 도달</text></g><text class="s work" x="733" y="143" text-anchor="middle">작업 중…</text><g class="done"><rect class="okbg" x="662" y="126" width="142" height="24" rx="12"/><text x="733" y="142" text-anchor="middle" style="font-size:12px;font-weight:650;fill:var(--ok)">완료 ✓</text></g><text class="s" x="733" y="197" text-anchor="middle">대기</text>
+<circle class="tok" cx="226" cy="130" r="7"/>
+<rect class="board" x="40" y="228" width="780" height="34" rx="8"/><text class="s" x="56" y="250">상황판</text>
+<text class="m s0" x="104.5" y="250">→ claude: 시작</text><text class="m s1" x="104.5" y="250">claude: 한도 도달 → codex</text><text class="m s2" x="104.5" y="250">codex: 완료 ✓ · 전환: 1회</text>
+<text class="c" x="40" y="286">한도에 걸리면 작업은 허용되고 할 수 있는 다음 실행자에게 넘어갑니다.</text>
+</svg>
