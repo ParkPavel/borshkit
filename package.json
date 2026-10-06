@@ -1,6 +1,6 @@
 {
   "name": "borshkit",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Borshkit — Modular AI Workspace: tasks with goals, evidence bound to the exact state, automatic acceptance where it can be shown and a clear manual sheet where it cannot.",
   "type": "module",
   "private": true,

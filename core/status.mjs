@@ -3,8 +3,9 @@ import path from 'node:path';
 import { exec, exists, git, readJSON } from './io.mjs';
 import { STATUS_WORDS } from './accept.mjs';
 import { validateSettings } from './space.mjs';
-
-const PRIVACY_WORDS = { moderate: 'умеренный', strict: 'строгий', experiment: 'эксперимент' };
+import { settingsIntegrity } from './config.mjs';
+import { experimentState } from './experiment.mjs';
+import { PRIVACY_WORDS } from './privacy.mjs';
 
 /** What the person needs to see first: mode, tasks, and what waits for them. */
 export async function spaceStatus(space) {
@@ -20,11 +21,17 @@ export async function spaceStatus(space) {
   }
   let lastSave = null;
   try { lastSave = (await git(space.dir, ['log', '-1', '--format=%cI %s'])).trim() || null; } catch { /* no history yet */ }
-  return { project: space.project, folder: space.folder, privacy: space.settings.privacy, autopilot: space.settings.autopilot, tasks, lastSave };
+  const integrity = await settingsIntegrity(space);
+  const experiment = await experimentState(space);
+  return { project: space.project, folder: space.folder, privacy: space.settings.privacy, autopilot: space.settings.autopilot, trustedAgent: space.settings.trustedAgent ?? null,
+    settingsIntact: integrity.ok, experiment: experiment && { status: experiment.status, keys: experiment.keys.map(k => k.name) }, tasks, lastSave };
 }
 export function formatStatus(s) {
   const lines = [`Проект: ${s.project}`, `Пространство: ${s.folder}/ · приватность: ${PRIVACY_WORDS[s.privacy]} · автопилот: ${s.autopilot ? 'вкл' : 'выкл'}`];
+  lines.push(`Доверенный агент настройки: ${s.trustedAgent ?? 'не выбран'}`);
   lines.push(s.lastSave ? `Последняя точка возврата: ${s.lastSave}` : 'Точек возврата пока нет');
+  if (!s.settingsIntact) lines.push('⚠ Настройки изменены в обход Borshkit — записи остановлены. «borshkit настройки принять» или «borshkit настройки вернуть».');
+  if (s.experiment && s.experiment.status !== 'clean') lines.push(`⚠ Сессия эксперимента ${s.experiment.status === 'open' ? 'идёт' : 'не закрыта'}: отзови ключи (${s.experiment.keys.join(', ') || 'не записаны'}) и подтверди — «borshkit эксперимент завершить».`);
   if (!s.tasks.length) lines.push('', 'Задач пока нет. Создай: borshkit задача новая <имя> --цель "что должно получиться"');
   else {
     lines.push('', 'Задачи:');
@@ -48,6 +55,11 @@ export async function doctor(space) {
   if (space) {
     try { validateSettings(await readJSON(space.settingsFile)); add(true, 'Настройки в порядке, ключей в них нет'); }
     catch (e) { add(false, 'Настройки не прошли проверку', e.message); }
+    const integrity = await settingsIntegrity(space);
+    add(integrity.ok, integrity.ok ? 'Настройки менялись только через Borshkit' : `Настройки изменены в обход Borshkit: ${integrity.changes.map(c => c.key).join(', ')}`,
+      integrity.ok ? null : '«borshkit настройки принять» (если это ты) или «borshkit настройки вернуть»');
+    const experiment = await experimentState(space);
+    if (experiment && experiment.status !== 'clean') add(false, `Сессия эксперимента не закрыта (ключи: ${experiment.keys.map(k => k.name).join(', ') || 'не записаны'})`, 'отзови ключи и выполни «borshkit эксперимент завершить»');
     if (space.projectIsGit) {
       let ignoredOk = false;
       try { await git(space.project, ['check-ignore', '-q', '--', `${space.folder}/`]); ignoredOk = true; } catch { /* not ignored */ }

@@ -6,6 +6,8 @@ import { runCommand } from './process.mjs';
 import { snapshot } from './snapshot.mjs';
 import { assertIgnored, journal, saveSpace, settingsDigest, trusted } from './space.mjs';
 import { checkTask, covered, loadTask, validateContract } from './contract.mjs';
+import { BUILTINS } from './citations.mjs';
+import { assertSettingsIntact } from './config.mjs';
 
 // Evidence binding, verification and convergence adapted from Claudex src/tasks.mjs (Apache-2.0, same author).
 export const STATUS_WORDS = {
@@ -30,18 +32,30 @@ async function runtimeDigest() {
   }
   return hash.digest('hex');
 }
+/** Digest of the stored copies a task cites: a replaced or damaged copy makes its evidence stale. */
+async function materialsDigest(space, contract) {
+  const parts = [];
+  for (const id of [...(contract.materials ?? [])].sort()) {
+    const record = await readJSON(path.join(space.dir, 'materials', 'records', `${id}.json`)).catch(() => null);
+    const bytes = record && await fs.readFile(path.join(space.dir, 'materials', 'blobs', record.sha256.slice(0, 2), record.sha256)).catch(() => null);
+    parts.push(`${id}:${bytes ? sha(bytes) : 'missing'}`);
+  }
+  return sha(parts.join('\n'));
+}
 async function context(space, t) {
   return {
     source: await snapshot(space.project, { exclude: [space.folder] }),
+    materialsDigest: await materialsDigest(space, t.contract),
     settingsDigest: await settingsDigest(space),
     contractDigest: sha(await fs.readFile(t.file)),
     runtimeDigest: await runtimeDigest(),
   };
 }
-const sameState = (a, b) => a.source.digest === b.source.digest && a.settingsDigest === b.settingsDigest && a.contractDigest === b.contractDigest && a.runtimeDigest === b.runtimeDigest;
+const sameState = (a, b) => a.source.digest === b.source.digest && a.materialsDigest === b.materialsDigest && a.settingsDigest === b.settingsDigest && a.contractDigest === b.contractDigest && a.runtimeDigest === b.runtimeDigest;
 
 async function readyTask(space, taskId) {
   await assertIgnored(space);
+  await assertSettingsIntact(space);
   const t = await loadTask(space, taskId);
   validateContract(t.contract);
   return t;
@@ -68,7 +82,8 @@ export async function verifyCheck(space, taskId, checkId) {
   assert(check, `В задаче нет проверки «${checkId}»`);
   const before = await context(space, t), evidenceId = crypto.randomUUID();
   let status = 'PASS', log = '', error = null;
-  try {
+  if (check.builtin) ({ status, log, error = null } = await BUILTINS[check.builtin](space, t.contract, check));
+  else try {
     const result = await runCommand(check.command, check.args, { cwd: space.project, timeout: check.timeoutMs ?? 120000, maxBuffer: 8 * 1024 * 1024 });
     log = result.stdout + result.stderr;
   } catch (e) { status = 'FAIL'; error = e.message; log = `${e.stdout ?? ''}${e.stderr ?? ''}\n${e.message}\n`; }
@@ -81,7 +96,7 @@ export async function verifyCheck(space, taskId, checkId) {
     freshness: sameState(before, after) ? 'CURRENT' : 'STALE', state: before,
     artifact: norm(path.relative(space.dir, logFile)), artifactSha256: sha(await fs.readFile(logFile)), createdAt: new Date().toISOString(),
   });
-  await journal(space, `Проверка «${checkId}» задачи «${taskId}»: ${status === 'PASS' ? 'прошла' : 'не прошла'}.`);
+  await journal(space, `Проверка «${checkId}» задачи «${taskId}»: ${{ PASS: 'прошла', FAIL: 'не прошла', UNKNOWN: 'не смогла решить' }[status]}.`);
   return evidence;
 }
 export async function verifyAll(space, taskId) {
@@ -179,8 +194,8 @@ export async function converge(space, taskId) {
       const results = [];
       for (const check of t.contract.checks.filter(k => k.criteria.includes(c.id))) {
         const e = latest('check', c.id, r => r.checkId === check.id);
-        const problem = e ? await evidenceProblem(space, t, e, current) : 'проверка ещё не запускалась';
-        results.push({ checkId: check.id, status: problem ? 'UNKNOWN' : e.status, problem, artifact: e?.artifact ?? null, command: [check.command, ...check.args].join(' ') });
+        const problem = e ? await evidenceProblem(space, t, e, current) ?? (e.status === 'UNKNOWN' ? `проверка не смогла решить: ${e.error}` : null) : 'проверка ещё не запускалась';
+        results.push({ checkId: check.id, status: problem ? 'UNKNOWN' : e.status, problem, artifact: e?.artifact ?? null, command: check.builtin ? `встроенная проверка ${check.builtin} (${check.report})` : [check.command, ...check.args].join(' ') });
       }
       evidence = results;
       if (results.some(r => r.status === 'FAIL')) { status = 'FAIL'; decidedBy = 'check'; }

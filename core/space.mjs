@@ -12,7 +12,7 @@ const SPACE_AUTHOR = ['Borshkit', 'space@borshkit'];
 
 export function defaultSettings(folder) {
   return { schemaVersion: 1, product: 'borshkit', folder, privacy: 'moderate', autopilot: false, silenceSeconds: 60,
-    acceptance: { modelTrust: {} } };
+    trustedAgent: null, acceptance: { modelTrust: {} } };
 }
 export function validateSettings(s) {
   assert(s && s.schemaVersion === 1 && s.product === 'borshkit', 'Неизвестный формат настроек');
@@ -20,6 +20,7 @@ export function validateSettings(s) {
   assert(PRIVACY.includes(s.privacy), `Режим приватности должен быть одним из: ${PRIVACY.join(', ')}`);
   assert(typeof s.autopilot === 'boolean', 'autopilot — да или нет (true/false)');
   assert(Number.isInteger(s.silenceSeconds) && s.silenceSeconds >= 10 && s.silenceSeconds <= 3600, 'silenceSeconds — от 10 до 3600');
+  assert(s.trustedAgent == null || /^[a-zA-Z0-9._@/-]{1,80}$/.test(s.trustedAgent), 'trustedAgent — имя исполнителя или null');
   const trust = s.acceptance?.modelTrust;
   assert(trust && typeof trust === 'object' && !Array.isArray(trust), 'acceptance.modelTrust — объект');
   for (const [tag, goal] of Object.entries(trust)) {
@@ -91,6 +92,7 @@ export function settingsMirror(s) {
     `- **Режим приватности:** ${PRIVACY_WORDS[s.privacy]}`,
     `- **Автопилот:** ${s.autopilot ? 'включён — рутинные вопросы закрываются ответом по умолчанию' : 'выключен — каждый вопрос ждёт тебя'}`,
     `- **Через сколько секунд молчания исполнителя спрашивать тебя:** ${s.silenceSeconds}`,
+    `- **Доверенный агент настройки:** ${s.trustedAgent ?? 'не выбран — настройки меняешь только ты'}`,
     `- **Цели доверия к проверкам моделей:** ${Object.keys(s.acceptance.modelTrust).length ? Object.entries(s.acceptance.modelTrust).map(([t, g]) => `${t} (не больше ${Math.round(g.maxFalsePassRate * 100)}% ложных «готово»)`).join(', ') : 'не заданы — «готово» от модели всегда проверяешь ты'}`,
     '',
   ].join('\n');
@@ -153,14 +155,16 @@ export async function initSpace({ project = process.cwd(), folder = DEFAULT_FOLD
 }
 
 /** Find the space from any directory inside the project. */
-export async function openSpace(start = process.cwd(), { folder = DEFAULT_FOLDER } = {}) {
+export async function openSpace(start = process.cwd(), { folder = DEFAULT_FOLDER, allowBrokenSettings = false } = {}) {
   let cursor = path.resolve(start);
   while (true) {
     const p = paths(cursor, folder);
     if (await exists(p.settingsFile)) {
       const project = await fs.realpath(cursor);
-      const space = { project, folder, ...paths(project, folder), settings: validateSettings(await readJSON(p.settingsFile)), projectIsGit: await isGitRoot(project) };
-      return space;
+      let settings;
+      try { settings = validateSettings(await readJSON(p.settingsFile)); }
+      catch (e) { if (!allowBrokenSettings) throw new Error(`${e.message}. Верни прошлые настройки: borshkit настройки вернуть`); settings = null; }
+      return { project, folder, ...paths(project, folder), settings, projectIsGit: await isGitRoot(project) };
     }
     const next = path.dirname(cursor);
     assert(next !== cursor, `Пространство не найдено. Запусти «borshkit начать» в корне проекта.`);

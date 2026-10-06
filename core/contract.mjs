@@ -3,6 +3,8 @@ import path from 'node:path';
 import { assert, atomicJSON, contained, exists, git, readJSON, sha, withLock } from './io.mjs';
 import { snapshot } from './snapshot.mjs';
 import { assertIgnored, journal, saveSpace } from './space.mjs';
+import { MATERIAL_ID } from './materials.mjs';
+import { assertSettingsIntact } from './config.mjs';
 
 // Contract validation and analysis adapted from Claudex src/tasks.mjs (Apache-2.0, same author).
 export const ID = /^[a-zA-Z0-9][a-zA-Z0-9_-]{0,70}$/;
@@ -25,6 +27,8 @@ export function validateContract(c) {
   assert(c.base && ['git', 'files'].includes(c.base.kind) && /^[a-f0-9]{64}$/.test(c.base.digest), 'Нет исходного снимка задачи');
   assert(Array.isArray(c.paths) && c.paths.length && c.paths.every(relative), 'paths — относительные пути внутри проекта; «.» — весь проект');
   assert(c.acceptance && POLICIES.includes(c.acceptance.policy), `Политика приёмки — одна из: ${POLICIES.join(', ')}`);
+  assert(c.materials === undefined || (Array.isArray(c.materials) && c.materials.every(m => MATERIAL_ID.test(m)) && new Set(c.materials).size === c.materials.length),
+    'materials — список идентификаторов материалов вида m-0123456789ab без повторов');
   for (const key of ['goals', 'criteria', 'checks']) {
     assert(Array.isArray(c[key]), `${key} — список`);
     for (const entry of c[key]) { assert(entry && typeof entry === 'object', `Неверная запись в ${key}`); id(entry.id, `в ${key}`); }
@@ -47,7 +51,11 @@ export function validateContract(c) {
     assert(strings(goal.criteria) && goal.criteria.length && goal.criteria.every(k => criteria.has(k)), `Цель ${goal.id} должна ссылаться на существующие критерии`);
   }
   for (const check of c.checks) {
-    assert(nonempty(check.command) && Array.isArray(check.args) && check.args.every(a => typeof a === 'string'), `Проверке ${check.id} нужны command и args`);
+    if (check.builtin !== undefined) {
+      assert(check.builtin === 'citations', `Неизвестная встроенная проверка «${check.builtin}» в ${check.id}`);
+      assert(relative(check.report) && check.report !== '.', `Проверке ${check.id} нужен report — путь к отчёту внутри проекта`);
+      assert(check.minCitations === undefined || (Number.isInteger(check.minCitations) && check.minCitations >= 0), `minCitations в ${check.id} — целое число от 0`);
+    } else assert(nonempty(check.command) && Array.isArray(check.args) && check.args.every(a => typeof a === 'string'), `Проверке ${check.id} нужны command и args`);
     assert(check.timeoutMs === undefined || (Number.isInteger(check.timeoutMs) && check.timeoutMs > 0 && check.timeoutMs <= 900000), `Таймаут проверки ${check.id} — 1..900000 мс`);
     assert(strings(check.criteria) && check.criteria.length && check.criteria.every(k => criteria.get(k)?.class === 'auto'), `Проверка ${check.id} должна вести к критериям класса auto`);
   }
@@ -80,6 +88,8 @@ export function analyzeContract(c, { trusted = () => false } = {}) {
     if (item.class === 'auto' && !c.checks.some(k => k.criteria.includes(item.id))) warn('coverage', 'HIGH', `Критерий ${item.id} должен проверяться автоматически, но проверки для него нет — итог будет «не проверено».`);
     if (item.class === 'manual' && !item.manual?.steps?.length) warn('manual', 'MEDIUM', `У ручного критерия ${item.id} нет шагов проверки — человеку будет неясно, что делать.`);
   }
+  if (c.kind === 'research' && !c.checks.some(k => k.builtin === 'citations')) warn('research', 'HIGH', 'Исследование без проверки citations: ссылки на источники и цитаты никто не сверит автоматически.');
+  if (c.checks.some(k => k.builtin === 'citations') && !c.materials?.length) warn('research', 'HIGH', 'Проверка citations есть, а материалов в задаче нет — добавь их: borshkit материал добавить …');
   const manual = c.criteria.filter(e => e.class === 'manual' || (e.class === 'model' && !trusted(e.tag)));
   if (manual.length) warn('blind-zone', 'INFO', `Ручная приёмка понадобится для ${manual.length} из ${c.criteria.length} критериев: ${manual.map(e => e.id).join(', ')}.`);
   if (c.acceptance.policy === 'auto' && manual.length) warn('policy', 'INFO', 'Политика «auto», но часть критериев проверить автоматически нельзя — они останутся за тобой.');
@@ -94,6 +104,7 @@ export async function newTask(space, { taskId, goal, kind = 'feature' }) {
   assert(nonempty(goal), 'Опиши цель задачи: --цель "что должно получиться"');
   assert(KINDS.includes(kind), `Вид задачи — один из: ${KINDS.join(', ')}`);
   await assertIgnored(space);
+  await assertSettingsIntact(space);
   const dir = await taskDir(space, taskId), file = path.join(dir, 'contract.json'), basisFile = path.join(dir, 'basis.json');
   const base = await snapshot(space.project, { exclude: [space.folder] });
   const before = await uncommitted(space);

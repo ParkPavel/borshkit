@@ -5,6 +5,7 @@ import path from 'node:path';
 import { git, readJSON, atomicJSON } from '../core/io.mjs';
 import { analyzeContract, checkTask, validateContract } from '../core/contract.mjs';
 import { confirmItem, converge, recordReview, signOff, verifyAll } from '../core/accept.mjs';
+import { applyProposal, proposeSettings } from '../core/config.mjs';
 import { node, space, task, write } from './helpers.mjs';
 
 const PASSING = node('process.exit(0)'), FAILING = node('console.error("сломано"); process.exit(1)');
@@ -125,10 +126,9 @@ test('a model FAIL sends back, its PASS waits for a person unless the trust goal
   let r = await converge(s, 'review');
   assert.equal(r.status, 'waiting');
   assert.match(r.items[0].reason, /цель доверия/);
-  const settings = await readJSON(s.settingsFile);
-  settings.acceptance.modelTrust.docs = { maxFalsePassRate: 0.1, measured: { runs: 30, falsePass: 1, source: 'eval/docs' } };
-  await atomicJSON(s.settingsFile, settings);
-  s.settings = settings;
+  const proposal = await proposeSettings(s, { acceptance: { modelTrust: { docs: { maxFalsePassRate: 0.1, measured: { runs: 30, falsePass: 1, source: 'eval/docs' } } } } });
+  await assert.rejects(applyProposal(s, proposal.id), /ослабляет защиту/);
+  await applyProposal(s, proposal.id, { confirmedByPerson: true });
   await recordReview(s, 'review', { executor: 'codex', result: result('PASS') });
   r = await converge(s, 'review');
   assert.equal(r.status, 'accepted');

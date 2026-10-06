@@ -6,10 +6,19 @@ import { DEFAULT_FOLDER, initSpace, openSpace, saveSpace, trusted } from '../cor
 import { checkTask, newTask } from '../core/contract.mjs';
 import { STATUS_WORDS, confirmItem, converge, recordReview, signOff, verifyAll, verifyCheck } from '../core/accept.mjs';
 import { doctor, formatStatus, spaceStatus } from '../core/status.mjs';
+import { addMaterial, listMaterials, refreshMaterial } from '../core/materials.mjs';
+import { acceptManualEdit, applyProposal, proposeSettings, revertSettings } from '../core/config.mjs';
+import { endExperiment, recordKey, startExperiment } from '../core/experiment.mjs';
+import { PRIVACY_WORDS, STRICTNESS } from '../core/privacy.mjs';
+import readline from 'node:readline/promises';
 
-const COMMANDS = { начать: 'init', статус: 'status', задача: 'task', сохранить: 'save', доктор: 'doctor', помощь: 'help' };
+const COMMANDS = { начать: 'init', статус: 'status', задача: 'task', сохранить: 'save', доктор: 'doctor', помощь: 'help', материал: 'material', приватность: 'privacy', настройки: 'settings', эксперимент: 'experiment' };
+const SUB = { добавить: 'add', список: 'list', обновить: 'refresh', показать: 'show', предложить: 'propose', применить: 'apply', принять: 'accept', вернуть: 'revert', начать: 'start', ключ: 'key', завершить: 'end' };
+const MODES = { умеренный: 'moderate', строгий: 'strict', эксперимент: 'experiment' };
 const TASK = { новая: 'new', анализ: 'check', проверить: 'verify', отзыв: 'review', подтвердить: 'confirm', итог: 'converge', принять: 'accept' };
-const FLAGS = { цель: 'goal', вид: 'kind', папка: 'folder', проект: 'project', 'только-локально': 'local-only', исполнитель: 'executor', результат: 'result' };
+const FLAGS = { цель: 'goal', вид: 'kind', папка: 'folder', проект: 'project', 'только-локально': 'local-only', исполнитель: 'executor', результат: 'result',
+  текст: 'text', название: 'title', да: 'yes', 'ключи-отозваны': 'revoked', от: 'from', причина: 'reason' };
+const LONE = ['json', 'local-only', 'yes', 'revoked', 'help'];
 const YES = ['да', 'yes', 'ok', 'y'], NO = ['нет', 'no', 'n'];
 
 export function parse(argv) {
@@ -19,7 +28,7 @@ export function parse(argv) {
     if (!arg.startsWith('--')) { positional.push(arg); continue; }
     let [key, value] = arg.slice(2).split(/=(.*)/s, 2);
     key = FLAGS[key] ?? key;
-    if (value === undefined) value = argv[i + 1] !== undefined && !argv[i + 1].startsWith('--') && !['json', 'local-only'].includes(key) ? argv[++i] : true;
+    if (value === undefined) value = argv[i + 1] !== undefined && !argv[i + 1].startsWith('--') && !LONE.includes(key) ? argv[++i] : true;
     flags[key] = value;
   }
   return { positional, flags };
@@ -41,10 +50,29 @@ const HELP = `Borshkit — Modular AI Workspace
   borshkit задача подтвердить <имя> <критерий> да|нет "что видел"
   borshkit задача принять <имя> ["заметка"]   общая приёмка (политика manual)
 
+  borshkit материал добавить <файл> | --url адрес [--да] | --текст "…"  [--название "…"]
+  borshkit материал список | обновить <id>
+  borshkit приватность [умеренный|строгий|эксперимент]   ослабление — только в терминале
+  borshkit настройки показать | предложить <файл.json> --от <агент> --причина "…" | применить <p001>
+  borshkit настройки принять | вернуть          ручная правка настроек: принять или откатить
+  borshkit эксперимент начать | ключ <ИМЯ_ПЕРЕМЕННОЙ> | завершить [--ключи-отозваны]
+
 Английские имена тоже работают: init, status, doctor, save, task new|check|verify|review|converge|confirm|accept.
 Добавь --json, чтобы получить ответ для программ.`;
 
 function print(flags, value, text) { console.log(flags.json ? JSON.stringify(value, null, 2) : text); }
+/**
+ * A person's confirmation: a typed phrase in a real terminal. An agent running
+ * the command through a tool has no terminal, so it cannot confirm for you.
+ * This is a speed bump, not a security boundary.
+ */
+async function confirmPerson(question, phrase) {
+  if (!process.stdin.isTTY || !process.stdout.isTTY) return false;
+  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+  try { return (await rl.question(`${question}\nЧтобы подтвердить, напиши: ${phrase}\n> `)).trim().toLowerCase() === phrase; }
+  finally { rl.close(); }
+}
+const PERSON_ONLY = 'Это может подтвердить только человек в терминале. Запусти команду сам.';
 const open = flags => openSpace(process.cwd(), { folder: flags.folder ?? DEFAULT_FOLDER });
 
 async function task(positional, flags) {
@@ -102,6 +130,86 @@ async function task(positional, flags) {
   throw new Error(`Неизвестное действие с задачей: ${rawSub}`);
 }
 
+async function material([rawSub, ...rest], flags) {
+  const sub = SUB[rawSub] ?? rawSub ?? 'list';
+  const space = await open(flags);
+  if (sub === 'list') {
+    const list = await listMaterials(space);
+    return print(flags, list, list.length ? list.map(m => `${m.id}${m.superseded ? ' (есть новая версия)' : ''} · ${m.title ?? m.origin.value} · ${m.mediaType} · ${m.capturedAt.slice(0, 10)}`).join('\n') : 'Материалов пока нет.');
+  }
+  if (sub === 'add') {
+    const r = await addMaterial(space, { file: rest[0] ?? undefined, url: typeof flags.url === 'string' ? flags.url : undefined, text: typeof flags.text === 'string' ? flags.text : undefined,
+      title: typeof flags.title === 'string' ? flags.title : null, confirm: flags.yes === true });
+    return print(flags, r, `${r.added ? 'Сохранён' : 'Уже был'} материал ${r.record.id} (${r.record.mediaType}, ${r.record.size} байт). Добавь его в поле materials задачи и цитируй так: (источник: ${r.record.id}, «точная цитата»)`);
+  }
+  if (sub === 'refresh') {
+    assert(rest[0], 'Укажи идентификатор материала');
+    const r = await refreshMaterial(space, rest[0], { confirm: flags.yes === true });
+    return print(flags, r, r.changed ? `Источник изменился: новая версия ${r.record.id}. Задачи по-прежнему ссылаются на старую — обнови поле materials, если нужна новая.` : 'Источник не изменился.');
+  }
+  throw new Error(`Неизвестное действие с материалом: ${rawSub}`);
+}
+async function privacy(rawMode, flags) {
+  const space = await open(flags);
+  if (!rawMode) return print(flags, { privacy: space.settings.privacy }, `Режим приватности: ${PRIVACY_WORDS[space.settings.privacy]}`);
+  const mode = MODES[rawMode] ?? rawMode;
+  assert(mode in STRICTNESS, 'Режим — умеренный, строгий или эксперимент');
+  if (mode === space.settings.privacy) return print(flags, { privacy: mode }, `Режим приватности уже ${PRIVACY_WORDS[mode]}.`);
+  const proposal = await proposeSettings(space, { privacy: mode }, { reason: 'смена режима приватности' });
+  const weaker = proposal.weakens.length > 0;
+  const confirmed = weaker && await confirmPerson(`Ослабить защиту: ${proposal.weakens.join('; ')}?`, 'да, ослабить');
+  assert(!weaker || confirmed, PERSON_ONLY);
+  await applyProposal(space, proposal.id, { confirmedByPerson: confirmed });
+  return print(flags, { privacy: mode }, `Режим приватности: ${PRIVACY_WORDS[mode]}${mode === 'experiment' ? '\nДальше: borshkit эксперимент начать' : ''}`);
+}
+async function settings([rawSub, ...rest], flags) {
+  const sub = SUB[rawSub] ?? rawSub ?? 'show';
+  if (sub === 'revert') {
+    const space = await openSpace(process.cwd(), { folder: flags.folder ?? DEFAULT_FOLDER, allowBrokenSettings: true });
+    await revertSettings(space);
+    return print(flags, { reverted: true }, 'Настройки возвращены к последней сохранённой версии.');
+  }
+  const space = await open(flags);
+  if (sub === 'show') return print(flags, space.settings, await fs.readFile(path.join(space.dir, 'settings', 'settings.md'), 'utf8'));
+  if (sub === 'propose') {
+    assert(rest[0], 'Укажи файл с изменениями: borshkit настройки предложить изменения.json --от <агент>');
+    const p = await proposeSettings(space, await readJSON(path.resolve(rest[0])), { from: typeof flags.from === 'string' ? flags.from : 'человек', reason: typeof flags.reason === 'string' ? flags.reason : '' });
+    return print(flags, p, [`Предложение ${p.id}: ${p.changes.map(c => `${c.key}: ${JSON.stringify(c.from)} → ${JSON.stringify(c.to)}`).join('; ')}`,
+      p.weakens.length ? `Ослабляет защиту — применить сможет только человек в терминале:\n  ${p.weakens.join('\n  ')}` : 'Защиту не ослабляет — можно применять.',
+      `Применить: borshkit настройки применить ${p.id}`].join('\n'));
+  }
+  if (sub === 'apply') {
+    const proposal = await readJSON(path.join(space.dir, 'settings', 'proposals', `${rest[0]}.json`)).catch(() => null);
+    assert(proposal, `Предложения ${rest[0]} нет`);
+    const weak = proposal.weakens?.length > 0;
+    const confirmed = weak && await confirmPerson(`Предложение ${proposal.id} от ${proposal.from} ослабляет защиту:\n  ${proposal.weakens.join('\n  ')}`, 'да, ослабить');
+    assert(!weak || confirmed, PERSON_ONLY);
+    const r = await applyProposal(space, proposal.id, { confirmedByPerson: confirmed });
+    return print(flags, r, `Настройки применены (${r.id}).`);
+  }
+  if (sub === 'accept') {
+    const confirmed = await confirmPerson('Принять ручную правку настроек как свою?', 'да');
+    assert(confirmed, PERSON_ONLY);
+    const r = await acceptManualEdit(space, { confirmedByPerson: true });
+    return print(flags, r, r.changed ? 'Правка настроек принята и сохранена.' : 'Ручных правок нет.');
+  }
+  throw new Error(`Неизвестное действие с настройками: ${rawSub}`);
+}
+async function experiment([rawSub, ...rest], flags) {
+  const sub = SUB[rawSub] ?? rawSub;
+  const space = await open(flags);
+  if (sub === 'start') { const r = await startExperiment(space); return print(flags, r, `${r.banner}\nКлючей в окружении: ${r.session.keys.map(k => k.name).join(', ') || 'нет'}.`); }
+  if (sub === 'key') { const r = await recordKey(space, rest[0]); return print(flags, r, `Записано имя ключа ${rest[0]}. Не забудь отозвать его после сессии.`); }
+  if (sub === 'end') {
+    const revoked = flags.revoked === true;
+    const confirmed = await confirmPerson(revoked ? 'Ты отозвал все ключи этой сессии?' : 'Закончить сессию, не отзывая ключи? Она останется «грязной».', 'да');
+    assert(confirmed, PERSON_ONLY);
+    const r = await endExperiment(space, { revoked, confirmedByPerson: true });
+    return print(flags, r, r.status === 'clean' ? 'Сессия эксперимента закрыта.' : 'Сессия остаётся «грязной», пока ты не отзовёшь ключи: borshkit эксперимент завершить --ключи-отозваны');
+  }
+  throw new Error('Действие — начать, ключ или завершить');
+}
+
 export async function main(argv = process.argv.slice(2)) {
   const { positional, flags } = parse(argv);
   const command = COMMANDS[positional[0]] ?? positional[0] ?? 'help';
@@ -119,7 +227,7 @@ export async function main(argv = process.argv.slice(2)) {
   }
   if (command === 'status') { const s = await spaceStatus(await open(flags)); return print(flags, s, formatStatus(s)); }
   if (command === 'doctor') {
-    const space = await open(flags).catch(() => null);
+    const space = await openSpace(process.cwd(), { folder: flags.folder ?? DEFAULT_FOLDER, allowBrokenSettings: true }).catch(() => null);
     const checks = await doctor(space);
     if (!space) checks.push({ ok: false, text: 'Пространство не найдено', fix: 'запусти «borshkit начать» в корне проекта' });
     print(flags, checks, checks.map(c => `${c.ok ? '✅' : '❌'} ${c.text}${c.fix ? ` — ${c.fix}` : ''}`).join('\n'));
@@ -133,6 +241,10 @@ export async function main(argv = process.argv.slice(2)) {
     const commit = await saveSpace(space, message);
     return print(flags, { commit }, commit ? `Точка возврата сохранена: ${commit.slice(0, 8)} — ${message}` : 'Нечего сохранять: изменений нет.');
   }
+  if (command === 'material') return material(positional.slice(1), flags);
+  if (command === 'privacy') return privacy(positional[1], flags);
+  if (command === 'settings') return settings(positional.slice(1), flags);
+  if (command === 'experiment') return experiment(positional.slice(1), flags);
   if (command === 'task') return task(positional.slice(1), flags);
   throw new Error(`Неизвестная команда «${positional[0]}». Подсказка: borshkit помощь`);
 }
