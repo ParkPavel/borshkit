@@ -1,0 +1,13 @@
+Borshkit — Modular AI Workspace
+Copyright 2026 Pavel Park
+
+Borshkit continues Claudex (https://github.com/ParkPavel/claudex, Apache-2.0, by the same
+author). The modules core/io.mjs, core/process.mjs, core/snapshot.mjs, core/secrets.mjs,
+core/contract.mjs and core/accept.mjs adapt Claudex code at commit
+ed73017abaab8c4ba77e36910fb996402e8c9646; each file names what it adapts.
+
+No third-party code is included. Projects whose ideas Borshkit studied or plans to connect,
+with their authors and licenses, are listed in docs/lineage.md.
+
+Claude, Codex, Obsidian, GitHub and other product names belong to their owners; Borshkit is
+independent and implies no endorsement.
