@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml"><img src="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml/badge.svg" alt="CI: Linux und Windows"></a>
-  <img src="https://img.shields.io/badge/version-0.10.1-b3261e" alt="Version 0.10.1">
+  <img src="https://img.shields.io/badge/version-0.11.0-b3261e" alt="Version 0.11.0">
   <img src="https://img.shields.io/badge/node-%E2%89%A522-2b1d1d" alt="Node.js 22 oder neuer">
   <img src="https://img.shields.io/badge/dependencies-0-2e7d32" alt="keine Abhängigkeiten">
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="Claude-Code-Plugin">
@@ -20,9 +20,9 @@
 
 **Modular AI Workspace** – ein Arbeitsplatz für KI-Agenten in jedem Projekt: einer Web-App, einem Plugin, einer Bibliothek, einer Mobile-App oder einer Forschungsarbeit.
 
-Du sagst, was herauskommen soll. Die Agenten arbeiten. Borshkit zeigt, was Prüfungen **belegt** haben und was du dir selbst ansehen musst. Nichts wird auf Treu und Glauben abgenommen.
+Du sagst, was herauskommen soll. Die Agenten arbeiten. Borshkit zeigt, was Prüfungen **belegt** haben und was du dir selbst ansehen musst. Dem Wort eines Modells glaubt Borshkit nur, wo du das für diese Art von Kriterium erlaubt hast und eine Messung es stützt.
 
-> **Status: 0.10.1.** Alles, was hier beschrieben ist, funktioniert und ist unter Linux und Windows durch Tests abgedeckt. In den Tests laufen statt echter Modelle Fake-Ausführer. Was noch nicht live ausprobiert wurde, steht unter [Grenzen](#grenzen).
+> **Status: 0.11.0.** Alles, was hier beschrieben ist, funktioniert und ist unter Linux und Windows durch Tests abgedeckt. In den Tests laufen statt echter Modelle Fake-Ausführer. Was noch nicht live ausprobiert wurde, steht unter [Grenzen](#grenzen).
 >
 > **Hinweis zur Sprache:** Die Meldungen von Borshkit sind vorerst auf Russisch. Jeder Befehl und jedes Flag hat auch einen englischen Namen, und dieses README verwendet sie.
 
@@ -101,7 +101,7 @@ Alle Befehle: [Befehlsreferenz](docs/reference/commands.md) (russische und engli
 | **Autopilot** | Routinefragen bekommen nach einer Minute ihre Standardantwort; bei kritischen hält er an, mit Bericht und Übergabe des Kontexts |
 | **Leitstand** | wer den Auftrag bekommen hat, wer arbeitet, was auf dich wartet: im Terminal, in `STATUS.md` und in der Statuszeile von Claude Code |
 | **Recherche** | Quellen werden als Kopien gespeichert; die Prüfung `citations` gleicht jedes Zitat Wort für Wort ab |
-| **Datenschutz** | drei Modi; Schlüssel und personenbezogene Daten verlassen den Rechner nicht; Einstellungen ändern sich nur über Vorschläge |
+| **Datenschutz** | drei Modi; das Aufgabenpaket für den Agenten wird vor dem Senden auf Schlüssel und personenbezogene Daten geprüft; Einstellungen ändern sich nur über Vorschläge |
 | **Git für Einsteiger** | „was hat sich geändert“, „wer hat das geändert“, „stell es wieder her“ – in einfachen Worten, ohne zerstörerische Befehle |
 | **Danksagungen** | die Prüfungen `attribution` und `readme-assets`, die vollständige Liste der Mitwirkenden jeder Quelle |
 
@@ -143,6 +143,9 @@ Das vollständige Rezept mit Versionen und Lizenzen steht in [docs/ingredients.m
 
 ## Grenzen
 
+- Borshkit prüft das Aufgabenpaket, das es selbst an einen Agenten schickt. Was Claude Code oder Codex danach aus den Dateien der Projektkopie lesen, sieht es nicht: Ignorierte Dateien (`.env`) sind nicht in der Kopie, alle anderen kann der Agent lesen.
+- Prüfungen der Aufgaben (Tests, Build) laufen mit deiner Umgebung, weil Tests manchmal Schlüssel brauchen. Der Umgebungsfilter gilt nur für Ausführer.
+- Die Wissenskarte versteht Verknüpfungen in JS/TS-Code und Markdown. Swift, Python, Go und andere Sprachen werden noch nicht erfasst; die Abnahme hängt davon nicht ab.
 - Die Adapter für Claude Code und Codex sind gegen Fake-Programme mit demselben Ereignisformat getestet. Die Flags eines installierten Claude Code wurden geprüft. Die CI startet keine echten Modelle.
 - Bilder über Codex (GPT Image) sind noch nicht getestet: `borshkit executor probe codex` zeigt dir das mit deinem Abo.
 - Ob der Obsidian-Graph Links aus den Eigenschaften von Notizen anzeigt, ist nicht getestet. Deshalb stehen die Links zusätzlich als normale Links im Text.

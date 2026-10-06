@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { ROOT, assert, atomicJSON, atomicWrite, exists, git, isGitRoot, readJSON, sha } from './io.mjs';
+import { ROOT, acquireLock, assert, atomicJSON, atomicWrite, exists, git, isGitRoot, readJSON, sha } from './io.mjs';
 import { secretsInValue } from './secrets.mjs';
 import { validateExecutor, validatePool } from './executors.mjs';
 
@@ -95,10 +95,15 @@ async function spaceGit(dir, args) { return git(dir, ['-c', `user.name=${SPACE_A
  * made the change (a person or an executor), so "who did this" stays answerable.
  */
 export async function saveSpace(space, message, { author = 'Человек', email = 'you@borshkit' } = {}) {
-  await git(space.dir, ['add', '-A']);
-  if (!(await git(space.dir, ['status', '--porcelain'])).trim()) return null;
-  await spaceGit(space.dir, ['commit', '-q', `--author=${author} <${email}>`, '-m', message]);
-  return (await git(space.dir, ['rev-parse', 'HEAD'])).trim();
+  // Commands run side by side (a job, the status watcher, a person); their
+  // restore points are taken one at a time so Git's index is never contended.
+  const release = await acquireLock(path.join(space.dir, '.state', 'save.lock'), { waitMs: 30000, busy: 'История пространства занята другой командой' });
+  try {
+    await git(space.dir, ['add', '-A']);
+    if (!(await git(space.dir, ['status', '--porcelain'])).trim()) return null;
+    await spaceGit(space.dir, ['commit', '-q', `--author=${author} <${email}>`, '-m', message]);
+    return (await git(space.dir, ['rev-parse', 'HEAD'])).trim();
+  } finally { await release(); }
 }
 export async function journal(space, line, now = new Date()) {
   const file = path.join(space.dir, 'journal.md');

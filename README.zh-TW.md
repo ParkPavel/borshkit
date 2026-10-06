@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml"><img src="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml/badge.svg" alt="CI：Linux 與 Windows"></a>
-  <img src="https://img.shields.io/badge/version-0.10.1-b3261e" alt="版本 0.10.1">
+  <img src="https://img.shields.io/badge/version-0.11.0-b3261e" alt="版本 0.11.0">
   <img src="https://img.shields.io/badge/node-%E2%89%A522-2b1d1d" alt="Node.js 22 或更新版本">
   <img src="https://img.shields.io/badge/dependencies-0-2e7d32" alt="零相依套件">
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="Claude Code 外掛">
@@ -20,9 +20,9 @@
 
 **Modular AI Workspace**——讓 AI 代理在任何專案裡工作的地方：網頁應用程式、外掛、函式庫、行動 App，或是一項研究。
 
-你說明想要的結果，代理負責動手。Borshkit 會告訴你哪些已經由檢查**證明**，哪些需要你自己看一下。沒有任何東西只憑一句話就算數。
+你說明想要的結果，代理負責動手。Borshkit 會告訴你哪些已經由檢查**證明**，哪些需要你自己看一下。只有在你允許該類準則採信模型、而且有實際量測支持時，Borshkit 才會採信模型的話。
 
-> **狀態：0.10.1。** 以下所有功能都能運作，並在 Linux 和 Windows 上有測試涵蓋。測試用假的執行者代替真正的模型。還沒實際試過的部分列在[限制](#限制)。
+> **狀態：0.11.0。** 以下所有功能都能運作，並在 Linux 和 Windows 上有測試涵蓋。測試用假的執行者代替真正的模型。還沒實際試過的部分列在[限制](#限制)。
 >
 > **語言說明：** Borshkit 的訊息目前是俄文。每個指令和旗標也都有英文名稱，本 README 使用的就是英文名稱。
 
@@ -101,7 +101,7 @@ borshkit merge theme && borshkit push             # 合併進主版本並推送�
 | **自動駕駛** | 例行問題在一分鐘後套用預設答案；關鍵問題會停下來，附上報告並交接脈絡 |
 | **調度台** | 工作交給了誰、誰正在做、什麼在等你：顯示在終端機、`STATUS.md` 和 Claude Code 狀態列 |
 | **研究** | 來源以副本保存；`citations` 檢查會逐字核對每一段引文 |
-| **隱私** | 三種模式；金鑰和個人資料不會離開這台電腦；設定只能透過提案變更 |
+| **隱私** | 三種模式；交給代理的任務包在送出前會檢查金鑰和個人資料；設定只能透過提案變更 |
 | **給新手的 Git** | 「改了什麼」、「這是誰改的」、「改回原樣」——用白話說明，也不用任何破壞性指令 |
 | **致謝** | `attribution` 和 `readme-assets` 檢查，以及每個來源的完整貢獻者名單 |
 
@@ -143,6 +143,9 @@ Borshkit 就是一鍋羅宋湯：用別人親手種出、公開分享的最好�
 
 ## 限制
 
+- Borshkit 會檢查它自己送給代理的任務包。之後 Claude Code 或 Codex 從專案副本的檔案裡讀了什麼，它看不到：被忽略的檔案（`.env`）不在副本裡，但其他檔案代理都能讀。
+- 任務的檢查（測試、建置）會用你的環境變數執行，因為測試有時需要金鑰。環境過濾只套用在執行者身上。
+- 知識地圖只理解 JS/TS 程式碼和 Markdown 之間的連結。Swift、Python、Go 等其他語言目前還不會收進地圖；驗收結果不受影響。
 - Claude Code 和 Codex 的轉接器，是用事件格式相同的假程式測試的。已安裝的 Claude Code 的旗標已經核對過。CI 不會執行真正的模型。
 - 透過 Codex（GPT Image）產生圖片還沒有測試：`borshkit executor probe codex` 會用你的訂閱實際確認。
 - Obsidian 圖譜會不會顯示筆記屬性裡的連結，還沒有測試。所以連結也會以一般連結的形式在內文中再寫一次。

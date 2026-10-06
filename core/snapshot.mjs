@@ -56,7 +56,7 @@ async function gitSnapshot(repo) {
   const files = [...new Set(listed)].sort();
   return { kind: 'git', head, digest: await hashFiles(repo, files, head ?? 'unborn'), fileCount: files.length };
 }
-async function filesSnapshot(root, exclude) {
+async function listFiles(root, exclude) {
   const skip = new Set(['.git', ...exclude]);
   const files = [];
   async function walk(dir, prefix) {
@@ -68,5 +68,15 @@ async function filesSnapshot(root, exclude) {
     }
   }
   await walk(root, '');
+  return files;
+}
+async function filesSnapshot(root, exclude) {
+  const files = await listFiles(root, exclude);
   return { kind: 'files', head: null, digest: await hashFiles(root, files, 'files'), fileCount: files.length };
+}
+/** Per-file digests of a folder without Git, so a task can tell which files changed. */
+export async function fileDigests(root, { exclude = [] } = {}) {
+  const out = {};
+  for (const rel of await listFiles(root, exclude)) out[rel] = await hashFiles(root, [rel], '');
+  return out;
 }

@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { assert, atomicJSON, atomicWrite, contained, exists, git, readJSON } from './io.mjs';
+import { acquireLock, assert, atomicJSON, atomicWrite, contained, exists, git, readJSON } from './io.mjs';
 import { journal, saveSpace } from './space.mjs';
 import { capable, FAILURE_WORDS, privacyAllows, readProbes } from './executors.mjs';
 import { startExecutor } from './adapters.mjs';
@@ -10,6 +10,7 @@ import { outboundFindings } from './privacy.mjs';
 import { authorProviders, taskState, currentChecks, readyTask, recordReview } from './accept.mjs';
 import { loadMaterial, materialText } from './materials.mjs';
 import { proposeSettings } from './config.mjs';
+import { ID, covered } from './contract.mjs';
 import { answer, ask, criticalStop, getQuestion, resolveDue } from './questions.mjs';
 import { writeStatusFiles } from './dispatch.mjs';
 
@@ -55,6 +56,18 @@ async function commitWork(space, repo, executorId, message) {
   await git(repo, ['-c', `user.name=${executorId}`, '-c', `user.email=${executorId}@borshkit`, '-c', 'commit.gpgsign=false', 'commit', '-q', '-m', message]);
   return (await git(repo, ['rev-parse', 'HEAD'])).trim();
 }
+/**
+ * Whether a path an executor asks Borshkit to write is inside the task: a
+ * relative path covered by the contract's `paths`, never into Git's metadata
+ * or the space folder.
+ */
+export function allowedWrite(space, contract, file) {
+  if (typeof file !== 'string' || !file || path.isAbsolute(file) || path.win32.isAbsolute(file)) return false;
+  const rel = path.posix.normalize(file.replaceAll('\\', '/'));
+  const parts = rel.split('/');
+  if (rel.startsWith('../') || rel === '..' || parts.some(p => p.toLowerCase() === '.git') || parts[0] === space.folder) return false;
+  return covered(rel, contract.paths);
+}
 async function addAuthor(space, taskId, entry) {
   const file = path.join(space.tasks, taskId, 'authors.json');
   await atomicJSON(file, [...await readJSON(file).catch(() => []), entry]);
@@ -72,7 +85,15 @@ const isImage = (bytes, file) => file.endsWith('.svg') ? /<svg[\s>]/i.test(bytes
  * Run one job to its end. `executor` names one executor; `pool` names an
  * ordered list from the settings. Options for tests: `silenceMs`, `tickMs`.
  */
-export async function runJob(space, { taskId, role: roleId, executor = null, pool = null, lens = null, skills = [], imagePath = null, resumeOf = null,
+export async function runJob(space, options = {}) {
+  const role = await loadRole(options.role);
+  if (role.authority !== 'workspace-write') return runJobUnlocked(space, options);
+  // Two writers in one task's copy would mix their changes and commits.
+  assert(ID.test(options.taskId ?? ''), `Недопустимое имя задачи «${options.taskId}»`);
+  const release = await acquireLock(path.join(space.state, 'locks', `writer-${options.taskId}.lock`), { busy: `В копии задачи «${options.taskId}» уже работает другая пишущая работа — дождись её или останови` });
+  try { return await runJobUnlocked(space, options); } finally { await release(); }
+}
+async function runJobUnlocked(space, { taskId, role: roleId, executor = null, pool = null, lens = null, skills = [], imagePath = null, resumeOf = null, inPlace = false,
   fetchImpl = globalThis.fetch, silenceMs = space.settings.silenceSeconds * 1000, tickMs = 500, env = process.env } = {}) {
   const role = await loadRole(roleId);
   for (const ref of skills) await loadSkill(ref);
@@ -82,6 +103,9 @@ export async function runJob(space, { taskId, role: roleId, executor = null, poo
   assert(!executor || executors[executor], `Исполнитель «${executor}» не объявлен. Список: borshkit исполнители`);
   assert(!pool || pools[pool], `Пула «${pool}» нет`);
   if (role.output === 'image') assert(typeof imagePath === 'string' && imagePath, 'Укажи файл изображения: --файл assets/banner.png');
+  assert(role.authority !== 'workspace-write' || space.projectIsGit || inPlace,
+    'Проект без Git: отдельной копии для агента нет, он будет менять файлы прямо в папке проекта. Если согласен, запусти с --в-папке (подтверждаешь в терминале); правки вне границ задачи покажет сверка.');
+  if (role.output === 'image') assert(allowedWrite(space, t.contract, imagePath), `Файл изображения ${imagePath} — вне границ задачи (paths) или в служебной папке`);
   const candidates = executor ? [executor] : pools[pool].members;
   const maxSwitches = executor ? 0 : pools[pool].maxSwitches ?? 3, waitSeconds = executor ? 0 : pools[pool].waitSeconds ?? 0;
   const probes = await readProbes(space);
@@ -231,6 +255,15 @@ export async function runJob(space, { taskId, role: roleId, executor = null, poo
       const target = await contained(work.path, path.resolve(work.path, imagePath));
       await fs.mkdir(path.dirname(target), { recursive: true });
       await fs.writeFile(target, Buffer.from(r.imageBase64, 'base64'));
+    }
+    // Files an API executor returns are written by Borshkit, so the task's
+    // scope is enforced before anything touches the disk: all or nothing.
+    const outside = (r.writes ?? []).map(w => w.path).filter(p => !allowedWrite(space, t.contract, p));
+    if (outside.length) {
+      Object.assign(job, { status: 'FAILED', activity: `исполнитель хотел записать вне границ задачи: ${outside.slice(0, 5).join(', ')} — ничего не записано` });
+      await save(true);
+      await journal(space, `Работа ${job.id}: ${job.activity}.`);
+      return job;
     }
     for (const w of r.writes ?? []) {
       const target = await contained(work.path, path.resolve(work.path, w.path));

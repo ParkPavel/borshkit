@@ -161,3 +161,64 @@ test('F11: evaluation does not compare a verdict with files that changed after i
   assert.equal(r.summary.falsePass, 0);
   assert.deepEqual(r.summary.incomparable, ['ev']);
 });
+
+// ── Writes stay inside the task (F8), one writer per task copy, saves in order (F13) ──
+import { allowedWrite } from '../core/jobs.mjs';
+import { initSpace, saveSpace } from '../core/space.mjs';
+import { acquireLock } from '../core/io.mjs';
+
+test('F8: files an API executor returns are written only inside the task\'s paths, never into .git or the space', async t => {
+  const s = await space(t);
+  const contract = { paths: ['src', 'docs/guide.md'] };
+  for (const ok of ['src/a.js', 'src/deep/b.ts', 'docs/guide.md']) assert.equal(allowedWrite(s, contract, ok), true, ok);
+  for (const bad of ['README.md', 'docs/other.md', '../x', '/etc/passwd', 'C:\\x', 'src/../.git/hooks/pre-commit', '.git/config', 'src/.git/x', 'borshkit/settings/workspace.json'])
+    assert.equal(allowedWrite(s, { paths: ['.'] }, bad) && allowedWrite(s, contract, bad), false, bad);
+});
+
+test('F8: without Git a writer needs the person\'s consent, and changes outside the scope are found by file digests', async t => {
+  const dir = await tempDir(t);
+  await write(dir, { 'src/app.js': 'export const a = 1;\n', 'notes.txt': 'личное\n' });
+  const s = (await initSpace({ project: dir })).space;
+  await settle(s, { executors: { dev: fake('write') } });
+  await task(s, 'nogit', { paths: ['src'], goals: [{ id: 'G1', text: 'g', criteria: ['C1'] }], criteria: [{ id: 'C1', text: 'есть', class: 'manual' }], checks: [] });
+  await assert.rejects(runJob(s, { taskId: 'nogit', role: 'implementer', executor: 'dev', ...fast }), /Проект без Git/);
+  const job = await runJob(s, { taskId: 'nogit', role: 'implementer', executor: 'dev', inPlace: true, ...fast });
+  assert.equal(job.status, 'COMPLETED');
+  const r = await converge(s, 'nogit');
+  assert.equal(r.status, 'needs-fix');
+  assert.deepEqual(r.scopeViolations, ['feature.txt'], 'фейковый исполнитель пишет feature.txt в корень, а границы — src');
+});
+
+test('F13: a second writer in the same task copy is refused; concurrent restore points are taken in order', async t => {
+  const s = await space(t);
+  const held = await acquireLock(path.join(s.state, 'locks', 'writer-busy.lock'), { owner: { jobId: 'j-other' } });
+  await settle(s, { executors: { dev: fake('write') } });
+  await task(s, 'busy', { ...modelTask, paths: ['.'] });
+  await assert.rejects(runJob(s, { taskId: 'busy', role: 'implementer', executor: 'dev', ...fast }), /уже работает другая пишущая работа[^]*\(работа j-other\)/);
+  await held();
+  assert.equal((await runJob(s, { taskId: 'busy', role: 'implementer', executor: 'dev', ...fast })).status, 'COMPLETED');
+  // A lock left by a process that is gone is taken over.
+  await fs.writeFile(path.join(s.state, 'locks', 'writer-busy.lock'), JSON.stringify({ pid: 2 ** 22 + 12345 }));
+  assert.equal((await runJob(s, { taskId: 'busy', role: 'implementer', executor: 'dev', ...fast })).status, 'COMPLETED');
+  // Many saves at once: none fails, each change lands in some restore point.
+  const results = await Promise.all(Array.from({ length: 6 }, async (_, i) => {
+    await write(s.dir, { [`knowledge/n${i}.md`]: `${i}\n` });
+    return saveSpace(s, `заметка ${i}`);
+  }));
+  assert.ok(results.some(Boolean));
+  assert.equal((await git(s.dir, ['status', '--porcelain'])).trim(), '');
+});
+
+// ── A lesson about the whole project goes stale when the project changes (F10) ──
+import { buildKnowledge, lessonFromTask } from '../core/kb.mjs';
+
+test('F10: a lesson from a task over the whole project is bound to the whole project', async t => {
+  const s = await space(t);
+  await task(s, 'all', { paths: ['.'], goals: [{ id: 'G1', text: 'g', criteria: ['C1'] }], criteria: [{ id: 'C1', text: 'тесты', class: 'auto' }], checks: [{ id: 'ok', ...node('process.exit(0)'), criteria: ['C1'] }] });
+  await verifyAll(s, 'all');
+  assert.equal((await converge(s, 'all')).status, 'accepted');
+  await lessonFromTask(s, 'all', 'Ответ хранится в одном месте');
+  assert.deepEqual((await buildKnowledge(s)).stale, []);
+  await write(s.project, { 'README.md': 'другое\n' });
+  assert.deepEqual((await buildKnowledge(s)).stale, ['knowledge/lessons/all.md']);
+});

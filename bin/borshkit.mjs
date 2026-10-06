@@ -34,8 +34,8 @@ const MODES = { умеренный: 'moderate', строгий: 'strict', экс
 const TASK = { новая: 'new', анализ: 'check', проверить: 'verify', отзыв: 'review', подтвердить: 'confirm', итог: 'converge', принять: 'accept', обновить: 'update' };
 const FLAGS = { цель: 'goal', вид: 'kind', папка: 'folder', проект: 'project', 'только-локально': 'local-only', исполнитель: 'executor', результат: 'result',
   текст: 'text', название: 'title', да: 'yes', 'ключи-отозваны': 'revoked', от: 'from', причина: 'reason', через: 'via', манифест: 'manifest', readme: 'readme',
-  роль: 'role', пул: 'pool', клоны: 'clones', к: 'to', скрытые: 'hidden', порог: 'threshold', сколько: 'limit', удалённый: 'remote', линза: 'lens', файл: 'file', следить: 'watch', строка: 'line', команда: 'command', семейство: 'provider', данные: 'data', модель: 'model', навыки: 'skills' };
-const LONE = ['json', 'local-only', 'yes', 'revoked', 'help', 'watch', 'line'];
+  роль: 'role', пул: 'pool', клоны: 'clones', к: 'to', скрытые: 'hidden', порог: 'threshold', сколько: 'limit', удалённый: 'remote', линза: 'lens', файл: 'file', следить: 'watch', строка: 'line', команда: 'command', семейство: 'provider', данные: 'data', модель: 'model', навыки: 'skills', 'в-папке': 'in-place' };
+const LONE = ['json', 'local-only', 'yes', 'revoked', 'help', 'watch', 'line', 'in-place'];
 // Ready-made manifests for the subscription CLIs; the data policy stays "unknown"
 // until the person states it, so the strict mode will not use them by accident.
 const PRESETS = {
@@ -87,7 +87,7 @@ const HELP = `Borshkit — Modular AI Workspace
   borshkit роли                         роли команды, их навыки и что им нужно от исполнителя
   borshkit навыки [пакет]               пакеты навыков (Ponytail, Emil Kowalski, ECC) и что в них
   borshkit библиотека [категория]       проверенные ссылки: компоненты, анимация, дизайн-системы, доступность …
-  borshkit работа запустить <задача> --роль <роль> --исполнитель <имя> | --пул <пул> [--линза lite|full|ultra] [--навыки emil/animate,ecc/react-patterns] [--файл путь]
+  borshkit работа запустить <задача> --роль <роль> --исполнитель <имя> | --пул <пул> [--линза lite|full|ultra] [--навыки emil/animate,ecc/react-patterns] [--файл путь] [--в-папке]
   borshkit работа список | продолжить <работа> [--исполнитель <имя> | --пул <пул>]
   borshkit вопросы | вопрос ответить <номер> <вариант>   критические — только в терминале
   borshkit статус --следить | --строка  диспетчерская: кому ушло, кто работает
@@ -369,7 +369,9 @@ async function job([rawSub, ...rest], flags) {
   let j;
   if (sub === 'run') {
     assert(rest[0] && typeof flags.role === 'string', 'Формат: borshkit работа запустить <задача> --роль <роль> --исполнитель <имя> | --пул <пул>');
-    j = await runJob(space, { taskId: rest[0], role: flags.role, ...opts, lens: typeof flags.lens === 'string' ? flags.lens : null,
+    const inPlace = flags['in-place'] === true && await confirmPerson('Проект без Git: агент будет менять файлы прямо в папке проекта, без отдельной копии и без отката через Git. Продолжить?', 'да, в папке');
+    assert(flags['in-place'] !== true || inPlace, PERSON_ONLY);
+    j = await runJob(space, { taskId: rest[0], role: flags.role, ...opts, inPlace, lens: typeof flags.lens === 'string' ? flags.lens : null,
       skills: typeof flags.skills === 'string' ? flags.skills.split(',').map(x => x.trim()).filter(Boolean) : [], imagePath: typeof flags.file === 'string' ? flags.file : null });
   } else if (sub === 'resume') j = await resumeJob(space, rest[0], opts);
   else throw new Error('Действие — запустить, список или продолжить');

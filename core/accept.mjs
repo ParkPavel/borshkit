@@ -3,7 +3,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { ROOT, assert, atomicJSON, atomicWrite, contained, exists, git, norm, readJSON, sha, withLock } from './io.mjs';
 import { runCommand } from './process.mjs';
-import { snapshot } from './snapshot.mjs';
+import { fileDigests, snapshot } from './snapshot.mjs';
 import { assertIgnored, journal, saveSpace, settingsDigest, trusted } from './space.mjs';
 import { checkTask, covered, loadTask, validateContract } from './contract.mjs';
 import { BUILTINS } from './builtins.mjs';
@@ -204,7 +204,15 @@ async function evidenceProblem(space, t, e, current) {
   return null;
 }
 async function scopeViolations(space, t) {
-  if (!space.projectIsGit || t.contract.paths.includes('.') || !t.contract.base.head) return [];
+  if (t.contract.paths.includes('.')) return [];
+  if (!space.projectIsGit) {
+    // A folder without Git: compare every file with its digest when the task began.
+    if (!t.basis.files) return [];
+    const now = await fileDigests(space.project, { exclude: [space.folder] });
+    const touched = [...new Set([...Object.keys(now), ...Object.keys(t.basis.files)])].filter(f => now[f] !== t.basis.files[f]);
+    return touched.filter(f => !covered(f, t.contract.paths)).sort();
+  }
+  if (!t.contract.base.head) return [];
   const changed = (await git(t.repo, ['diff', '--no-renames', '--name-only', '-z', t.contract.base.head])).split('\0').filter(Boolean);
   const untracked = (await git(t.repo, ['ls-files', '--others', '--exclude-standard', '-z'])).split('\0').filter(Boolean);
   const before = t.repo === space.project ? t.basis.uncommitted ?? {} : {};

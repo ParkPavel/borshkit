@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml"><img src="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml/badge.svg" alt="CI: Linux and Windows"></a>
-  <img src="https://img.shields.io/badge/version-0.10.1-b3261e" alt="version 0.10.1">
+  <img src="https://img.shields.io/badge/version-0.11.0-b3261e" alt="version 0.11.0">
   <img src="https://img.shields.io/badge/node-%E2%89%A522-2b1d1d" alt="Node.js 22 or newer">
   <img src="https://img.shields.io/badge/dependencies-0-2e7d32" alt="zero dependencies">
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="Claude Code plugin">
@@ -20,9 +20,9 @@
 
 **Modular AI Workspace** — a workplace for AI agents in any project: a web app, a plugin, a library, a mobile app or a piece of research.
 
-You say what should come out. Agents do the work. Borshkit shows what has been **proven** by checks and what you need to look at yourself. Nothing is accepted on trust.
+You say what should come out. Agents do the work. Borshkit shows what has been **proven** by checks and what you need to look at yourself. Borshkit takes a model’s word only where you allowed it for that kind of criterion and a measurement backs it.
 
-> **Status: 0.10.1.** Everything below works and is covered by tests on Linux and Windows. The tests use fake executors instead of real models. What has not been tried live yet is listed in [Limits](#limits).
+> **Status: 0.11.0.** Everything below works and is covered by tests on Linux and Windows. The tests use fake executors instead of real models. What has not been tried live yet is listed in [Limits](#limits).
 >
 > **Language note:** Borshkit's messages are in Russian for now. Every command and flag also has an English name, and this README uses those.
 
@@ -101,7 +101,7 @@ All commands: [command reference](docs/reference/commands.md) (Russian and Engli
 | **Autopilot** | routine questions get their default answer after a minute; critical ones stop with a report and a context hand-over |
 | **Dispatcher** | who got the job, who is working, what waits for you: in the terminal, in `STATUS.md` and in the Claude Code status line |
 | **Research** | sources are stored as copies; the `citations` check verifies every quote word for word |
-| **Privacy** | three modes; keys and personal data do not leave the machine; settings change only through proposals |
+| **Privacy** | three modes; the agent’s task packet is checked for keys and personal data before it leaves; settings change only through proposals |
 | **Git for beginners** | “what changed”, “who changed this”, “put it back” — in plain words, with no destructive commands |
 | **Credits** | `attribution` and `readme-assets` checks, the full list of contributors of every source |
 
@@ -143,6 +143,9 @@ The full recipe with versions and licenses is in [docs/ingredients.md](docs/ingr
 
 ## Limits
 
+- Borshkit checks the task packet it sends to an agent. It does not see what Claude Code or Codex read from the files of the project copy afterwards: ignored files (`.env`) are not in the copy, but the agent can read every other file.
+- Task checks (tests, build) run with your environment, because tests sometimes need keys. The environment filter applies only to executors.
+- The knowledge map understands links in JS/TS code and Markdown. Swift, Python, Go and other languages are not mapped yet; acceptance does not depend on it.
 - The Claude Code and Codex adapters are tested against fake programs with the same event format. The flags of an installed Claude Code have been checked. CI does not run real models.
 - Images through Codex (GPT Image) are not tested yet: `borshkit executor probe codex` shows it on your subscription.
 - Whether the Obsidian graph shows links from note properties is not tested. That is why links are repeated as ordinary links in the text.

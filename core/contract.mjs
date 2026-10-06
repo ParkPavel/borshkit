@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { assert, atomicJSON, contained, exists, git, readJSON, sha, withLock } from './io.mjs';
-import { snapshot } from './snapshot.mjs';
+import { fileDigests, snapshot } from './snapshot.mjs';
 import { assertIgnored, journal, saveSpace } from './space.mjs';
 import { MATERIAL_ID } from './materials.mjs';
 import { assertSettingsIntact } from './config.mjs';
@@ -115,7 +115,9 @@ export async function newTask(space, { taskId, goal, kind = 'feature' }) {
   const contract = { schemaVersion: 2, taskId, kind, goal, nonGoals: [], decisions: [], base, paths: ['.'], goals: [], criteria: [], checks: [], acceptance: { policy: 'mixed' } };
   await withLock(space.state, async () => {
     assert(!(await exists(file)) && !(await exists(basisFile)), 'Такая задача уже есть; создание никогда не перезаписывает контракт');
-    await atomicJSON(basisFile, { schemaVersion: 1, taskId, base, uncommitted: before, createdAt: new Date().toISOString() });
+    // Without Git there is no history to diff against, so keep each file's digest to find changes outside the task's scope later.
+    const files = space.projectIsGit ? undefined : await fileDigests(space.project, { exclude: [space.folder] });
+    await atomicJSON(basisFile, { schemaVersion: 1, taskId, base, uncommitted: before, files, createdAt: new Date().toISOString() });
     await atomicJSON(file, contract);
   });
   await journal(space, `Создана задача «${taskId}»: ${goal}`);
