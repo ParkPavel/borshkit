@@ -10,6 +10,8 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
 if (mode === 'quota') { say({ type: 'error', message: "You've hit your usage limit. Try again later." }); process.exit(1); }
 if (mode === 'silent') { await wait(60000); process.exit(0); }
 if (mode === 'tool-silent') { say({ type: 'tool', running: true }); await wait(60000); process.exit(0); }
+if (mode === 'write-then-quota') { fs.writeFileSync('half.txt', 'начато\n'); say({ type: 'error', message: "You've hit your usage limit. Try again later." }); process.exit(1); }
+if (mode === 'review-while-edited') { fs.appendFileSync('src/app.js', '// changed while the reviewer was reading\n'); }
 if (mode === 'invalid') { say({ type: 'result', result: { nope: true } }); process.exit(0); }
 if (mode === 'echo-prompt') { fs.writeFileSync('prompt.txt', prompt); say({ type: 'result', result: { summary: 'ok', files: ['prompt.txt'], writes: [], unknowns: [] } }); process.exit(0); }
 if (mode === 'write') {

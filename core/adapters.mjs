@@ -86,7 +86,10 @@ async function startCli({ executor: e, prompt, schema, cwd, writable, onEvent, t
   const run = await spawnLines({ command: e.command, args, cwd, env: childEnv(process.env, e.envAllow ?? []), input: prompt, onLine, timeoutMs });
   const done = run.done.then(({ code, stderr, stoppedBy }) => {
     if (stoppedBy) return { ok: false, failure: stoppedBy, error: stoppedBy === 'TIMEOUT' ? 'превышено время' : 'остановлен', usage };
-    if (result && !error) return { ok: true, result, usage };
+    // A structured answer counts only from a process that also says it succeeded.
+    // If the two disagree, the job fails and the answer is kept for a person.
+    if (result && !error && code === 0) return { ok: true, result, usage };
+    if (result && !error) return { ok: false, failure: failureOf(stderr.trim() || 'ошибка'), error: `программа выдала ответ, но завершилась с кодом ${code}${stderr.trim() ? `: ${stderr.trim().slice(0, 500)}` : ''}`, unconfirmedResult: result, usage };
     const message = error ?? (stderr.trim() || `процесс завершился с кодом ${code}`);
     return { ok: false, failure: error === 'ответ не по схеме' ? 'INVALID' : failureOf(message), error: message.slice(0, 2000), usage };
   });

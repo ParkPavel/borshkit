@@ -68,7 +68,7 @@ const HELP = `Borshkit — Modular AI Workspace
   borshkit задача новая <имя> --цель "что должно получиться" [--вид feature|bug|maintenance|research]
   borshkit задача анализ <имя>          понятно ли описаны цели и критерии
   borshkit задача проверить <имя> [проверка …]   запустить автоматические проверки
-  borshkit задача отзыв <имя> --результат файл.json --исполнитель codex
+  borshkit задача отзыв <имя> --результат файл.json --исполнитель codex [--семейство openai]   импорт: PASS остаётся за тобой
   borshkit задача итог <имя>            сверить и написать лист приёмки
   borshkit задача подтвердить <имя> <критерий> да|нет "что видел"
   borshkit задача принять <имя> ["заметка"]   общая приёмка (политика manual)
@@ -155,8 +155,8 @@ async function task(positional, flags) {
   }
   if (sub === 'review') {
     assert(typeof flags.result === 'string', 'Укажи файл результата: --результат review.json');
-    const r = await recordReview(space, taskId, { executor: flags.executor, result: await readJSON(path.resolve(flags.result)) });
-    return print(flags, r, `Записано ответов ревью: ${r.saved.length}${r.ignored.length ? `; пропущены (не критерии класса model): ${r.ignored.join(', ')}` : ''}`);
+    const r = await recordReview(space, taskId, { executor: flags.executor, provider: typeof flags.provider === 'string' ? flags.provider : null, result: await readJSON(path.resolve(flags.result)) });
+    return print(flags, r, `Записано ответов ревью: ${r.saved.length}${r.ignored.length ? `; пропущены (не критерии класса model): ${r.ignored.join(', ')}` : ''}\nЭто импорт из файла: «не выполнено» вернёт задачу на исправление, а «выполнено» останется пунктом для тебя — Borshkit не видел, на каком состоянии делалось ревью. Ревью, которое считается само: borshkit работа запустить ${taskId} --роль reviewer --исполнитель <имя>`);
   }
   if (sub === 'confirm') {
     const [criterionId, answer, ...note] = rest;

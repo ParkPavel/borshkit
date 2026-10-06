@@ -118,11 +118,15 @@ export async function pushProject(space, { remote = 'origin', confirmedByPerson 
   await git(space.project, ['remote', 'get-url', remote]).catch(() => { throw new Error(`Удалённого репозитория «${remote}» нет`); });
   let upstream = null;
   try { upstream = (await git(space.project, ['rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}'])).trim(); } catch { /* first push */ }
-  if (upstream) {
-    const ff = await git(space.project, ['merge-base', '--is-ancestor', upstream, 'HEAD']).then(() => true, () => false);
+  // Everything this remote has not seen yet is what leaves: commits reachable
+  // from HEAD but from none of the remote-tracking refs of *this* remote. The
+  // upstream may belong to another remote, so it never decides the range.
+  const tracking = `refs/remotes/${remote}/${branch}`;
+  if (await git(space.project, ['rev-parse', '--verify', '-q', tracking]).then(() => true, () => false)) {
+    const ff = await git(space.project, ['merge-base', '--is-ancestor', tracking, 'HEAD']).then(() => true, () => false);
     assert(ff, 'На сервере есть изменения, которых нет у тебя. Borshkit не перезаписывает чужое: сначала забери их (git pull), потом отправляй.');
   }
-  const range = upstream ? [`${upstream}..HEAD`] : ['HEAD'];
+  const range = ['HEAD', '--not', `--remotes=${remote}`];
   const patch = await git(space.project, ['log', '-p', '--format=', ...range]);
   const leaks = findSecrets(patch);
   assert(!leaks.length, `В отправляемых изменениях похоже на ключ (${[...new Set(leaks.map(l => l.kind))].join(', ')}). Ничего не отправлено.`);

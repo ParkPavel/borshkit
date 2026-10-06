@@ -7,7 +7,7 @@ import { capable, FAILURE_WORDS, privacyAllows, readProbes } from './executors.m
 import { startExecutor } from './adapters.mjs';
 import { buildPrompt, loadRole, loadSkill, SCHEMAS, validateOutput } from './roles.mjs';
 import { outboundFindings } from './privacy.mjs';
-import { authorProviders, currentChecks, readyTask, recordReview } from './accept.mjs';
+import { authorProviders, taskState, currentChecks, readyTask, recordReview } from './accept.mjs';
 import { loadMaterial, materialText } from './materials.mjs';
 import { proposeSettings } from './config.mjs';
 import { answer, ask, criticalStop, getQuestion, resolveDue } from './questions.mjs';
@@ -54,6 +54,10 @@ async function commitWork(space, repo, executorId, message) {
   if (!(await git(repo, ['status', '--porcelain'])).trim()) return null;
   await git(repo, ['-c', `user.name=${executorId}`, '-c', `user.email=${executorId}@borshkit`, '-c', 'commit.gpgsign=false', 'commit', '-q', '-m', message]);
   return (await git(repo, ['rev-parse', 'HEAD'])).trim();
+}
+async function addAuthor(space, taskId, entry) {
+  const file = path.join(space.tasks, taskId, 'authors.json');
+  await atomicJSON(file, [...await readJSON(file).catch(() => []), entry]);
 }
 async function changedFiles(repo, base) {
   try { return (await git(repo, ['diff', '--name-only', base, 'HEAD'])).split('\n').filter(Boolean); } catch { return []; }
@@ -122,6 +126,8 @@ export async function runJob(space, { taskId, role: roleId, executor = null, poo
     const leaks = outboundFindings(prompt, space.settings.privacy).filter(f => f.action === 'block');
     if (leaks.length) { await skip('PRIVACY', `в пакете для отправки найдено: ${[...new Set(leaks.map(l => l.kind))].join(', ')}`); outcome = { ok: false, failure: 'PRIVACY' }; break; }
 
+    // What the reviewer is about to see; its answer is bound to this, not to the state at the end.
+    const seen = role.output === 'review' ? await taskState(space, taskId) : null;
     job.attempts.push(attempt);
     Object.assign(job, { status: 'RUNNING', executor: id, startedAt: job.startedAt ?? attempt.startedAt, lastEventAt: new Date().toISOString(), activity: 'начал работу' });
     await save(true);
@@ -159,8 +165,21 @@ export async function runJob(space, { taskId, role: roleId, executor = null, poo
       try { validateOutput(role, result.result, t.contract); } catch (err) { result = { ok: false, failure: 'INVALID', error: err.message }; }
     }
     Object.assign(attempt, { outcome: result.ok ? 'ok' : 'failed', failure: result.ok ? null : result.failure, reason: result.ok ? null : result.error, usage: result.usage ?? null, endedAt: new Date().toISOString() });
+    if (result.unconfirmedResult) {
+      const kept = path.join(space.tasks, taskId, 'unconfirmed', `${job.id}-${id}.json`);
+      await atomicJSON(kept, result.unconfirmedResult);
+      attempt.unconfirmedResult = path.relative(space.dir, kept).replaceAll('\\', '/');
+    }
     await save(true);
-    if (result.ok) { outcome = { ...result, executorId: id, executor: e, work }; break; }
+    if (result.ok) { outcome = { ...result, executorId: id, executor: e, work, seen }; break; }
+    // A writer that failed may have changed files already. Keep its work as its
+    // own commit and count its model family among the authors, so the next
+    // executor's commit and a later "independent" review cannot hide it.
+    if (writable) {
+      const partial = work.isolated !== false ? await commitWork(space, work.path, id, `Незавершённая работа ${id} (${FAILURE_WORDS[result.failure] ?? 'сбой'}): ${t.contract.goal}`.slice(0, 200)) : null;
+      await addAuthor(space, taskId, { jobId: job.id, executor: id, provider: e.provider, role: roleId, commit: partial, partial: true, at: new Date().toISOString() });
+      attempt.partialCommit = partial;
+    }
     if (result.failure === 'QUOTA' && result.retryAfter && result.retryAfter <= waitSeconds && !attempt.retried) {
       job.status = 'WAITING_LIMIT'; job.activity = `ждёт лимит ${result.retryAfter} с`; await save(true);
       await sleep(result.retryAfter * 1000);
@@ -196,8 +215,9 @@ export async function runJob(space, { taskId, role: roleId, executor = null, poo
   const { executorId, executor: e, work } = outcome, r = outcome.result;
   job.result = { kind: role.output };
   if (role.output === 'review') {
-    const saved = await recordReview(space, taskId, { executor: executorId, provider: e.provider, result: r });
+    const saved = await recordReview(space, taskId, { executor: executorId, provider: e.provider, result: r, seenState: outcome.seen, origin: 'job', jobId: job.id });
     job.result.saved = saved.saved.length;
+    job.result.freshness = saved.freshness;
   } else if (role.output === 'findings') {
     await atomicJSON(path.join(space.tasks, taskId, 'findings', `${job.id}.json`), { executor: executorId, ...r });
     job.result.findings = r.findings.length;
@@ -226,10 +246,7 @@ export async function runJob(space, { taskId, role: roleId, executor = null, poo
       await atomicJSON(path.join(space.tasks, taskId, 'images', `${path.basename(imagePath)}.json`), { path: imagePath, executor: executorId, provider: e.provider, model: e.model ?? null, prompt: t.contract.goal, createdAt: new Date().toISOString() });
     }
     const commit = work.isolated !== false ? await commitWork(space, work.path, executorId, `${role.title}: ${t.contract.goal}`.slice(0, 200)) : null;
-    const authorsFile = path.join(space.tasks, taskId, 'authors.json');
-    const authors = await readJSON(authorsFile).catch(() => []);
-    authors.push({ jobId: job.id, executor: executorId, provider: e.provider, role: roleId, commit, at: new Date().toISOString() });
-    await atomicJSON(authorsFile, authors);
+    await addAuthor(space, taskId, { jobId: job.id, executor: executorId, provider: e.provider, role: roleId, commit, at: new Date().toISOString() });
     job.result.commit = commit;
     job.result.files = work.isolated !== false && commit ? await changedFiles(work.path, `${commit}~1`) : r.files;
   }

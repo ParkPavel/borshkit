@@ -35,17 +35,34 @@ export function validateSettings(s) {
       const m = goal.measured;
       assert(Number.isInteger(m.runs) && m.runs > 0 && Number.isInteger(m.falsePass) && m.falsePass >= 0 && m.falsePass <= m.runs && typeof m.source === 'string' && m.source,
         `Измерение для «${tag}» требует runs, falsePass и source`);
+      assert(m.provider === undefined || /^[a-z0-9._-]{1,40}$/.test(m.provider), `Измерение для «${tag}»: provider — семейство моделей латиницей`);
     }
   }
   const secrets = secretsInValue(s);
   assert(!secrets.length, `В настройках похоже на ключ (${secrets.join(', ')}). Ключи хранятся в переменных окружения, в настройках — только их имена.`);
   return s;
 }
-/** Whether a model PASS for this tag closes a criterion on its own (decision D10). */
-export function trusted(settings, tag) {
+/**
+ * The upper end of the 95% Wilson interval for an observed error rate: with
+ * 0 errors in 20 runs the true rate may still be about 16%, so a 5% goal
+ * needs far more runs than the observed 0% suggests.
+ */
+export function upperErrorBound(errors, runs, z = 1.96) {
+  if (!runs) return 1;
+  const p = errors / runs, z2 = z * z;
+  return Math.min(1, (p + z2 / (2 * runs) + z * Math.sqrt(p * (1 - p) / runs + z2 / (4 * runs * runs))) / (1 + z2 / runs));
+}
+/**
+ * Whether a model PASS for this tag closes a criterion on its own (decision
+ * D10): only for the model family that was measured, and only when even the
+ * pessimistic end of the measured error rate meets the person's goal.
+ * Without `provider` it answers whether any family is trusted (for analysis).
+ */
+export function trusted(settings, tag, provider) {
   const goal = tag && settings.acceptance.modelTrust[tag];
   if (!goal?.measured) return false;
-  return goal.measured.falsePass / goal.measured.runs <= goal.maxFalsePassRate;
+  if (provider !== undefined && goal.measured.provider !== provider) return false;
+  return upperErrorBound(goal.measured.falsePass, goal.measured.runs) <= goal.maxFalsePassRate;
 }
 
 function paths(project, folder) {

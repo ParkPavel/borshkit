@@ -23,11 +23,31 @@ async function hashFiles(root, files, seed) {
     try {
       const stat = await fs.lstat(full);
       if (stat.isSymbolicLink()) hash.update(`link:${await fs.readlink(full)}`);
-      else if (stat.isFile()) hash.update(await fs.readFile(full));
+      else if (stat.isFile()) {
+        // The executable bit changes behaviour (and Git records it); Windows has none to read.
+        if (process.platform !== 'win32') hash.update(stat.mode & 0o111 ? 'x:' : '-:');
+        hash.update(await fs.readFile(full));
+      } else if (stat.isDirectory()) hash.update(await submoduleState(full));
       else hash.update('non-file');
     } catch (e) { if (e.code === 'ENOENT') hash.update('deleted'); else throw e; }
   }
   return hash.digest('hex');
+}
+/**
+ * A directory in a Git listing is a submodule: its checked-out commit and
+ * any uncommitted change inside it are part of the state.
+ */
+async function submoduleState(dir) {
+  try {
+    const head = (await git(dir, ['rev-parse', 'HEAD'])).trim();
+    const status = await git(dir, ['status', '--porcelain', '--untracked-files=all']);
+    let dirty = '';
+    if (status.trim()) {
+      const files = (await git(dir, ['ls-files', '-z', '--modified', '--others', '--exclude-standard'])).split('\0').filter(Boolean).sort();
+      dirty = await hashFiles(dir, files, status);
+    }
+    return `submodule:${head}:${dirty}`;
+  } catch { return 'non-file'; }
 }
 async function gitSnapshot(repo) {
   let head = null;
