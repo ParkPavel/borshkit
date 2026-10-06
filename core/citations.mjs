@@ -37,7 +37,7 @@ export async function citationsCheck(space, contract, check, repo = space.projec
     else if (squash(body).includes(squash(c.quote))) lines.push(`✓ ${c.id}: цитата найдена — «${c.quote}»`);
     else failures.push(`${c.id}: цитаты «${c.quote}» в источнике нет.`);
   }
-  const known = new Set((await listMaterials(space)).filter(r => declared.has(r.id) && r.origin.kind === 'url').flatMap(r => [r.origin.value, r.http?.finalUrl].filter(Boolean)));
+  const known = new Set((await listMaterials(space)).filter(r => declared.has(r.id)).flatMap(r => [r.origin.kind === 'url' ? r.origin.value : null, r.http?.finalUrl, r.url].filter(Boolean)));
   for (const url of new Set(text.match(URL_IN_TEXT) ?? [])) {
     if (!known.has(url)) failures.push(`Адрес ${url} упомянут, но не сохранён как материал задачи — источник получен в обход Borshkit.`);
   }
@@ -45,4 +45,3 @@ export async function citationsCheck(space, contract, check, repo = space.projec
   const log = [...lines, ...failures.map(f => `✗ ${f}`), ...unknowns.map(u => `? ${u}`), ''].join('\n');
   return { status, log, error: failures[0] ?? unknowns[0] ?? null };
 }
-export const BUILTINS = { citations: citationsCheck };

@@ -3,6 +3,8 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { git, isGitRoot } from './io.mjs';
 
+// Git snapshot adapted from Claudex src/io.mjs snapshot() (Apache-2.0, same author).
+
 /**
  * The exact state evidence is bound to. In a Git project: HEAD plus the bytes of
  * every tracked and non-ignored untracked file, so an uncommitted edit changes

@@ -6,7 +6,7 @@ import { runCommand } from './process.mjs';
 import { snapshot } from './snapshot.mjs';
 import { assertIgnored, journal, saveSpace, settingsDigest, trusted } from './space.mjs';
 import { checkTask, covered, loadTask, validateContract } from './contract.mjs';
-import { BUILTINS } from './citations.mjs';
+import { BUILTINS } from './builtins.mjs';
 import { assertSettingsIntact } from './config.mjs';
 
 // Evidence binding, verification and convergence adapted from Claudex src/tasks.mjs (Apache-2.0, same author).
@@ -222,7 +222,7 @@ export async function converge(space, taskId) {
       for (const check of t.contract.checks.filter(k => k.criteria.includes(c.id))) {
         const e = latest('check', c.id, r => r.checkId === check.id);
         const problem = e ? await evidenceProblem(space, t, e, current) ?? (e.status === 'UNKNOWN' ? `проверка не смогла решить: ${e.error}` : null) : 'проверка ещё не запускалась';
-        results.push({ checkId: check.id, status: problem ? 'UNKNOWN' : e.status, problem, artifact: e?.artifact ?? null, command: check.builtin ? `встроенная проверка ${check.builtin} (${check.report})` : [check.command, ...check.args].join(' ') });
+        results.push({ checkId: check.id, status: problem ? 'UNKNOWN' : e.status, problem, artifact: e?.artifact ?? null, command: check.builtin ? `встроенная проверка ${check.builtin}${check.report ?? check.readme ? ` (${check.report ?? check.readme})` : ""}` : [check.command, ...check.args].join(' ') });
       }
       evidence = results;
       if (results.some(r => r.status === 'FAIL')) { status = 'FAIL'; decidedBy = 'check'; }

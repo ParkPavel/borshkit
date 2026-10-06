@@ -52,9 +52,13 @@ export function validateContract(c) {
   }
   for (const check of c.checks) {
     if (check.builtin !== undefined) {
-      assert(check.builtin === 'citations', `Неизвестная встроенная проверка «${check.builtin}» в ${check.id}`);
-      assert(relative(check.report) && check.report !== '.', `Проверке ${check.id} нужен report — путь к отчёту внутри проекта`);
-      assert(check.minCitations === undefined || (Number.isInteger(check.minCitations) && check.minCitations >= 0), `minCitations в ${check.id} — целое число от 0`);
+      assert(['citations', 'attribution', 'readme-assets'].includes(check.builtin), `Неизвестная встроенная проверка «${check.builtin}» в ${check.id}`);
+      if (check.builtin === 'citations') {
+        assert(relative(check.report) && check.report !== '.', `Проверке ${check.id} нужен report — путь к отчёту внутри проекта`);
+        assert(check.minCitations === undefined || (Number.isInteger(check.minCitations) && check.minCitations >= 0), `minCitations в ${check.id} — целое число от 0`);
+      }
+      for (const key of ['manifest', 'readme']) assert(check[key] === undefined || (relative(check[key]) && check[key] !== '.'), `${key} в ${check.id} — путь внутри проекта`);
+      assert(check.maxBytes === undefined || (Number.isInteger(check.maxBytes) && check.maxBytes > 0), `maxBytes в ${check.id} — положительное целое`);
     } else assert(nonempty(check.command) && Array.isArray(check.args) && check.args.every(a => typeof a === 'string'), `Проверке ${check.id} нужны command и args`);
     assert(check.timeoutMs === undefined || (Number.isInteger(check.timeoutMs) && check.timeoutMs > 0 && check.timeoutMs <= 900000), `Таймаут проверки ${check.id} — 1..900000 мс`);
     assert(strings(check.criteria) && check.criteria.length && check.criteria.every(k => criteria.get(k)?.class === 'auto'), `Проверка ${check.id} должна вести к критериям класса auto`);

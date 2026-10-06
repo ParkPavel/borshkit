@@ -3,6 +3,7 @@ import path from 'node:path';
 import { assert, atomicJSON, atomicWrite, exists, readJSON, sha } from './io.mjs';
 import { assertIgnored, journal, saveSpace } from './space.mjs';
 import { assertSettingsIntact } from './config.mjs';
+import { runCommand } from './process.mjs';
 
 // Inputs that live outside Git — files, web pages, text a person pasted — are
 // stored by content. A record names where the bytes came from and when; the
@@ -31,8 +32,8 @@ async function store(space, bytes, origin, extra) {
  * Add a file, a web page or pasted text. In the strict privacy mode a request
  * to the network leaves the machine, so it needs `confirm` from a person.
  */
-export async function addMaterial(space, { file, url, text, title = null, confirm = false, supersedes = null, fetchImpl = globalThis.fetch }) {
-  assert([file, url, text].filter(v => v != null).length === 1, 'Укажи ровно один источник: файл, --url или --текст');
+export async function addMaterial(space, { file, url, text, command = null, via = null, title = null, confirm = false, supersedes = null, fetchImpl = globalThis.fetch }) {
+  assert([file, command ? null : url, text, command].filter(v => v != null).length === 1, 'Укажи ровно один источник: файл, --url, --текст или --команда');
   await assertIgnored(space);
   await assertSettingsIntact(space);
   let result;
@@ -45,7 +46,24 @@ export async function addMaterial(space, { file, url, text, title = null, confir
   } else if (text != null) {
     assert(typeof text === 'string' && text.trim(), 'Пустой текст');
     result = await store(space, Buffer.from(text, 'utf8'), { kind: 'user', value: title ?? 'текст от пользователя' }, { mediaType: 'text/plain', title, supersedes });
+  } else if (command) {
+    // A tool from Agent Reach's routes (yt-dlp, a platform CLI, …): Borshkit runs
+    // it on the host, keeps its output as the copy, and the agent sees only that.
+    assert(Array.isArray(command) && command.length && command.every(a => typeof a === 'string'), 'Команда — программа и её аргументы');
+    assert(space.settings.privacy !== 'strict' || confirm, 'Строгий режим приватности: внешний инструмент обращается в сеть. Подтверди явно флагом --да.');
+    const { stdout } = await runCommand(command[0], command.slice(1), { timeout: 300000, maxBuffer: MAX_BYTES });
+    assert(stdout.trim(), 'Инструмент ничего не вывел — материал не сохранён');
+    result = await store(space, Buffer.from(stdout, 'utf8'), { kind: 'tool', value: command.join(' ') }, { mediaType: 'text/plain', title, supersedes, url: url ?? null });
+  } else if (via === 'jina') {
+    // Agent Reach's web channel: the page goes through the Jina Reader proxy and comes back as text.
+    const parsed = new URL(url);
+    assert(['http:', 'https:'].includes(parsed.protocol), 'Поддерживаются только адреса http и https');
+    assert(space.settings.privacy !== 'strict', 'Строгий режим приватности: посредники вроде Jina Reader выключены — получи страницу напрямую');
+    const response = await fetchImpl(`https://r.jina.ai/${parsed.href}`, { headers: { accept: 'text/plain' } });
+    assert(response.ok, `Jina Reader ответил ${response.status} — материал не сохранён`);
+    result = await store(space, Buffer.from(await response.arrayBuffer()), { kind: 'url', value: parsed.href }, { mediaType: 'text/plain', title, supersedes, via: 'jina' });
   } else {
+    assert(via === null, `Неизвестный способ получения «${via}»: поддерживается jina`);
     const parsed = new URL(url);
     assert(['http:', 'https:'].includes(parsed.protocol), 'Поддерживаются только адреса http и https');
     assert(space.settings.privacy !== 'strict' || confirm, 'Строгий режим приватности: запрос в интернет уходит наружу. Подтверди явно флагом --да.');

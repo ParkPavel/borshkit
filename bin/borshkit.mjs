@@ -17,15 +17,17 @@ import { answer, getQuestion, listQuestions, resolveDue } from '../core/question
 import { cards, formatCards, listJobs, statusLine, writeStatusFiles } from '../core/dispatch.mjs';
 import { listRoles } from '../core/roles.mjs';
 import { buildKnowledge, exportForGithub, lessonFromTask, queryKnowledge, searchKnowledge, taskContext } from '../core/kb.mjs';
+import { attributionCheck, contributorsReport, readmeAssetsCheck, writeContributors } from '../core/attribution.mjs';
+import { runCommand } from '../core/process.mjs';
 
 const COMMANDS = { начать: 'init', статус: 'status', задача: 'task', сохранить: 'save', доктор: 'doctor', помощь: 'help', материал: 'material', приватность: 'privacy', настройки: 'settings', эксперимент: 'experiment',
-  исполнители: 'executors', исполнитель: 'executor', работа: 'job', вопрос: 'question', вопросы: 'question', роли: 'roles', знания: 'knowledge' };
+  исполнители: 'executors', исполнитель: 'executor', работа: 'job', вопрос: 'question', вопросы: 'question', роли: 'roles', знания: 'knowledge', атрибуция: 'attribution' };
 const SUB = { добавить: 'add', список: 'list', обновить: 'refresh', показать: 'show', предложить: 'propose', применить: 'apply', принять: 'accept', вернуть: 'revert', начать: 'start', ключ: 'key', завершить: 'end',
-  проверить: 'probe', запустить: 'run', продолжить: 'resume', ответить: 'answer', собрать: 'build', найти: 'search', контекст: 'context', урок: 'lesson', экспорт: 'export' };
+  проверить: 'probe', запустить: 'run', продолжить: 'resume', ответить: 'answer', собрать: 'build', найти: 'search', контекст: 'context', урок: 'lesson', экспорт: 'export', контрибьюторы: 'contributors', картинки: 'assets' };
 const MODES = { умеренный: 'moderate', строгий: 'strict', эксперимент: 'experiment' };
 const TASK = { новая: 'new', анализ: 'check', проверить: 'verify', отзыв: 'review', подтвердить: 'confirm', итог: 'converge', принять: 'accept' };
 const FLAGS = { цель: 'goal', вид: 'kind', папка: 'folder', проект: 'project', 'только-локально': 'local-only', исполнитель: 'executor', результат: 'result',
-  текст: 'text', название: 'title', да: 'yes', 'ключи-отозваны': 'revoked', от: 'from', причина: 'reason',
+  текст: 'text', название: 'title', да: 'yes', 'ключи-отозваны': 'revoked', от: 'from', причина: 'reason', через: 'via', манифест: 'manifest', readme: 'readme',
   роль: 'role', пул: 'pool', линза: 'lens', файл: 'file', следить: 'watch', строка: 'line', команда: 'command', семейство: 'provider', данные: 'data', модель: 'model' };
 const LONE = ['json', 'local-only', 'yes', 'revoked', 'help', 'watch', 'line'];
 // Ready-made manifests for the subscription CLIs; the data policy stays "unknown"
@@ -65,7 +67,7 @@ const HELP = `Borshkit — Modular AI Workspace
   borshkit задача подтвердить <имя> <критерий> да|нет "что видел"
   borshkit задача принять <имя> ["заметка"]   общая приёмка (политика manual)
 
-  borshkit материал добавить <файл> | --url адрес [--да] | --текст "…"  [--название "…"]
+  borshkit материал добавить <файл> | --url адрес [--через jina] [--да] | --текст "…" | --команда "yt-dlp …" [--url адрес]  [--название "…"]
   borshkit материал список | обновить <id>
   borshkit приватность [умеренный|строгий|эксперимент]   ослабление — только в терминале
   borshkit настройки показать | предложить <файл.json> --от <агент> --причина "…" | применить <p001>
@@ -84,6 +86,10 @@ const HELP = `Borshkit — Modular AI Workspace
   borshkit знания собрать               карта проекта: заметки с [[связями]] для Obsidian и SQL-индекс
   borshkit знания sql "SELECT …"        запрос только на чтение (таблицы notes, links, fts; виды stale, orphans, …)
   borshkit знания найти <слова> | контекст <задача> | урок <задача> "что поняли" | экспорт [папка]
+
+  borshkit атрибуция проверить [--манифест third-party.json] [--readme README.md]   благодарности и лицензии
+  borshkit атрибуция картинки [--readme README.md]          изображения README: есть, с alt-текстом, не тяжёлые
+  borshkit атрибуция контрибьюторы [владелец/репо …] [--файл CONTRIBUTORS-REFERENCES.md] [--да]
 
 Английские имена тоже работают: init, status, doctor, save, task new|check|verify|review|converge|confirm|accept.
 Добавь --json, чтобы получить ответ для программ.`;
@@ -166,8 +172,9 @@ async function material([rawSub, ...rest], flags) {
     return print(flags, list, list.length ? list.map(m => `${m.id}${m.superseded ? ' (есть новая версия)' : ''} · ${m.title ?? m.origin.value} · ${m.mediaType} · ${m.capturedAt.slice(0, 10)}`).join('\n') : 'Материалов пока нет.');
   }
   if (sub === 'add') {
+    const command = typeof flags.command === 'string' ? flags.command.match(/"[^"]*"|'[^']*'|\S+/g).map(a => a.replace(/^["']|["']$/g, '')) : null;
     const r = await addMaterial(space, { file: rest[0] ?? undefined, url: typeof flags.url === 'string' ? flags.url : undefined, text: typeof flags.text === 'string' ? flags.text : undefined,
-      title: typeof flags.title === 'string' ? flags.title : null, confirm: flags.yes === true });
+      command, via: typeof flags.via === 'string' ? flags.via : null, title: typeof flags.title === 'string' ? flags.title : null, confirm: flags.yes === true });
     return print(flags, r, `${r.added ? 'Сохранён' : 'Уже был'} материал ${r.record.id} (${r.record.mediaType}, ${r.record.size} байт). Добавь его в поле materials задачи и цитируй так: (источник: ${r.record.id}, «точная цитата»)`);
   }
   if (sub === 'refresh') {
@@ -255,6 +262,29 @@ async function knowledge([rawSub, ...rest], flags) {
     return print(flags, files, `Скопировано заметок: ${files.length} → ${out}\nЭто папка проекта: сохрани её в истории проекта, если хочешь опубликовать.`);
   }
   throw new Error('Действие — собрать, sql, найти, контекст, урок или экспорт');
+}
+async function attribution([rawSub, ...rest], flags) {
+  const sub = SUB[rawSub] ?? rawSub ?? 'probe';
+  // These checks are useful in any repository, with or without a space.
+  const space = await open(flags).catch(() => ({ project: process.cwd(), settings: { privacy: 'moderate' } }));
+  const check = { manifest: typeof flags.manifest === 'string' ? flags.manifest : undefined, readme: typeof flags.readme === 'string' ? flags.readme : undefined };
+  if (sub === 'probe' || sub === 'assets') {
+    const r = await (sub === 'probe' ? attributionCheck : readmeAssetsCheck)(space, null, check);
+    print(flags, r, r.log.trim() || 'Проверять нечего.');
+    if (r.status !== 'PASS') process.exitCode = 1;
+    return;
+  }
+  if (sub === 'contributors') {
+    let repos = rest;
+    if (!repos.length) {
+      const manifest = await readJSON(path.resolve(space.project, check.manifest ?? 'third-party.json')).catch(() => []);
+      repos = manifest.map(e => /github\.com\/([\w.-]+\/[\w.-]+?)(?:\.git)?\/?$/.exec(e.url ?? '')?.[1]).filter(Boolean);
+    }
+    const result = await contributorsReport(space, repos, { confirm: flags.yes === true });
+    const file = await writeContributors(space, result, typeof flags.file === 'string' ? flags.file : 'CONTRIBUTORS-REFERENCES.md');
+    return print(flags, result, `Контрибьюторов: ${result.reduce((n, r) => n + r.people.length, 0)} в ${result.length} проектах → ${file}`);
+  }
+  throw new Error('Действие — проверить, картинки или контрибьюторы');
 }
 async function job([rawSub, ...rest], flags) {
   const sub = SUB[rawSub] ?? rawSub ?? 'list';
@@ -347,12 +377,18 @@ export async function main(argv = process.argv.slice(2)) {
     return print(flags, roles.map(({ prompt, ...r }) => r), roles.map(r => `${r.id} — ${r.title} · ${r.authority === 'workspace-write' ? 'пишет в копию проекта' : 'только читает'} · ответ: ${r.output}${r.crossProvider ? ' · нужна другая семья моделей, чем у автора' : ''}`).join('\n'));
   }
   if (command === 'knowledge') return knowledge(positional.slice(1), flags);
+  if (command === 'attribution') return attribution(positional.slice(1), flags);
   if (command === 'job') return job(positional.slice(1), flags);
   if (command === 'question') return question(positional.slice(1), flags);
   if (command === 'doctor') {
     const space = await openSpace(process.cwd(), { folder: flags.folder ?? DEFAULT_FOLDER, allowBrokenSettings: true }).catch(() => null);
     const checks = await doctor(space);
     if (!space) checks.push({ ok: false, text: 'Пространство не найдено', fix: 'запусти «borshkit начать» в корне проекта' });
+    try {
+      const report = JSON.parse((await runCommand('agent-reach', ['doctor', '--json'], { timeout: 60000 })).stdout);
+      const channels = Object.values(report.channels ?? report);
+      checks.push({ ok: true, text: `Agent Reach: каналов работает ${channels.filter(c => c?.status === 'ok').length} из ${channels.length}` });
+    } catch { checks.push({ ok: true, text: 'Agent Reach не установлен — исследования только по добавленным материалам', fix: null }); }
     print(flags, checks, checks.map(c => `${c.ok ? '✅' : '❌'} ${c.text}${c.fix ? ` — ${c.fix}` : ''}`).join('\n'));
     if (checks.some(c => !c.ok)) process.exitCode = 1;
     return;
