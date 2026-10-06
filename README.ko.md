@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml"><img src="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml/badge.svg" alt="CI: Linux와 Windows"></a>
-  <img src="https://img.shields.io/badge/version-0.10.0-b3261e" alt="버전 0.10.0">
+  <img src="https://img.shields.io/badge/version-0.10.1-b3261e" alt="버전 0.10.1">
   <img src="https://img.shields.io/badge/node-%E2%89%A522-2b1d1d" alt="Node.js 22 이상">
   <img src="https://img.shields.io/badge/dependencies-0-2e7d32" alt="의존성 0개">
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="Claude Code 플러그인">
@@ -22,7 +22,7 @@
 
 무엇이 나와야 하는지 말하면 일은 에이전트가 합니다. Borshkit은 검사로 **증명된** 것과 직접 확인해야 할 것을 나눠 보여 줍니다. 말만 믿고 인수하는 것은 없습니다.
 
-> **상태: 0.10.0.** 아래 내용은 모두 동작하며, Linux와 Windows에서 테스트로 검증했습니다. 테스트에서는 실제 모델 대신 가짜 실행자를 씁니다. 아직 실제 환경에서 써 보지 않은 것은 [한계](#한계)에 정리해 두었습니다.
+> **상태: 0.10.1.** 아래 내용은 모두 동작하며, Linux와 Windows에서 테스트로 검증했습니다. 테스트에서는 실제 모델 대신 가짜 실행자를 씁니다. 아직 실제 환경에서 써 보지 않은 것은 [한계](#한계)에 정리해 두었습니다.
 >
 > **언어 안내:** Borshkit의 메시지는 지금은 러시아어로만 나옵니다. 모든 명령과 플래그에는 영어 이름도 있으며, 이 README는 영어 이름을 씁니다.
 
@@ -46,6 +46,8 @@ Node.js 22+와 Git이 필요합니다. 외부 의존성은 없습니다.
 /plugin marketplace add ParkPavel/borshkit
 /plugin install borshkit@borshkit
 ```
+
+플러그인은 에이전트에게 Borshkit 스킬과 보호 훅을 주고, Claude Code 터미널에 `borshkit`·`borsch` 명령을 추가합니다. 자신의 터미널에서도 쓰려면 아래처럼 명령도 설치하세요.
 
 **터미널 명령으로 설치:**
 

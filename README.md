@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml"><img src="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml/badge.svg" alt="CI: Linux и Windows"></a>
-  <img src="https://img.shields.io/badge/version-0.10.0-b3261e" alt="версия 0.10.0">
+  <img src="https://img.shields.io/badge/version-0.10.1-b3261e" alt="версия 0.10.1">
   <img src="https://img.shields.io/badge/node-%E2%89%A522-2b1d1d" alt="Node.js 22 и новее">
   <img src="https://img.shields.io/badge/dependencies-0-2e7d32" alt="ноль зависимостей">
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="плагин Claude Code">
@@ -22,7 +22,7 @@
 
 Ты говоришь, что должно получиться. Агенты работают. Borshkit показывает, что **доказано** проверками, а что нужно посмотреть тебе самому. Ничего не принимается на слово.
 
-> **Статус: 0.10.0.** Всё описанное ниже работает и покрыто тестами на Linux и Windows. В тестах вместо настоящих моделей — поддельные исполнители. Что ещё не проверено вживую, честно перечислено в разделе [«Границы»](#границы).
+> **Статус: 0.10.1.** Всё описанное ниже работает и покрыто тестами на Linux и Windows. В тестах вместо настоящих моделей — поддельные исполнители. Что ещё не проверено вживую, честно перечислено в разделе [«Границы»](#границы).
 
 ## Главная идея
 
@@ -44,6 +44,8 @@
 /plugin marketplace add ParkPavel/borshkit
 /plugin install borshkit@borshkit
 ```
+
+Плагин добавляет агенту навык Borshkit, защитные хуки и команды `borshkit` и `borsch` в терминал Claude Code. Чтобы пользоваться ими и в своём терминале, поставь ещё команду — как ниже.
 
 **Команда в терминале:**
 

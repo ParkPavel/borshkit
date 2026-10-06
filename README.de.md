@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml"><img src="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml/badge.svg" alt="CI: Linux und Windows"></a>
-  <img src="https://img.shields.io/badge/version-0.10.0-b3261e" alt="Version 0.10.0">
+  <img src="https://img.shields.io/badge/version-0.10.1-b3261e" alt="Version 0.10.1">
   <img src="https://img.shields.io/badge/node-%E2%89%A522-2b1d1d" alt="Node.js 22 oder neuer">
   <img src="https://img.shields.io/badge/dependencies-0-2e7d32" alt="keine Abhängigkeiten">
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="Claude-Code-Plugin">
@@ -22,7 +22,7 @@
 
 Du sagst, was herauskommen soll. Die Agenten arbeiten. Borshkit zeigt, was Prüfungen **belegt** haben und was du dir selbst ansehen musst. Nichts wird auf Treu und Glauben abgenommen.
 
-> **Status: 0.10.0.** Alles, was hier beschrieben ist, funktioniert und ist unter Linux und Windows durch Tests abgedeckt. In den Tests laufen statt echter Modelle Fake-Ausführer. Was noch nicht live ausprobiert wurde, steht unter [Grenzen](#grenzen).
+> **Status: 0.10.1.** Alles, was hier beschrieben ist, funktioniert und ist unter Linux und Windows durch Tests abgedeckt. In den Tests laufen statt echter Modelle Fake-Ausführer. Was noch nicht live ausprobiert wurde, steht unter [Grenzen](#grenzen).
 >
 > **Hinweis zur Sprache:** Die Meldungen von Borshkit sind vorerst auf Russisch. Jeder Befehl und jedes Flag hat auch einen englischen Namen, und dieses README verwendet sie.
 
@@ -46,6 +46,8 @@ Du brauchst Node.js 22+ und Git. Externe Abhängigkeiten gibt es nicht.
 /plugin marketplace add ParkPavel/borshkit
 /plugin install borshkit@borshkit
 ```
+
+Das Plugin gibt dem Agenten den Borshkit-Skill, schützende Hooks und die Befehle `borshkit` und `borsch` im Terminal von Claude Code. Willst du sie auch in deinem eigenen Terminal nutzen, installiere zusätzlich den Befehl wie unten beschrieben.
 
 **Als Befehl im Terminal:**
 

@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml"><img src="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml/badge.svg" alt="CI：Linux 與 Windows"></a>
-  <img src="https://img.shields.io/badge/version-0.10.0-b3261e" alt="版本 0.10.0">
+  <img src="https://img.shields.io/badge/version-0.10.1-b3261e" alt="版本 0.10.1">
   <img src="https://img.shields.io/badge/node-%E2%89%A522-2b1d1d" alt="Node.js 22 或更新版本">
   <img src="https://img.shields.io/badge/dependencies-0-2e7d32" alt="零相依套件">
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="Claude Code 外掛">
@@ -22,7 +22,7 @@
 
 你說明想要的結果，代理負責動手。Borshkit 會告訴你哪些已經由檢查**證明**，哪些需要你自己看一下。沒有任何東西只憑一句話就算數。
 
-> **狀態：0.10.0。** 以下所有功能都能運作，並在 Linux 和 Windows 上有測試涵蓋。測試用假的執行者代替真正的模型。還沒實際試過的部分列在[限制](#限制)。
+> **狀態：0.10.1。** 以下所有功能都能運作，並在 Linux 和 Windows 上有測試涵蓋。測試用假的執行者代替真正的模型。還沒實際試過的部分列在[限制](#限制)。
 >
 > **語言說明：** Borshkit 的訊息目前是俄文。每個指令和旗標也都有英文名稱，本 README 使用的就是英文名稱。
 
@@ -46,6 +46,8 @@
 /plugin marketplace add ParkPavel/borshkit
 /plugin install borshkit@borshkit
 ```
+
+外掛會為代理加上 Borshkit 技能、防護用的 hooks，並在 Claude Code 的終端機裡提供 `borshkit` 和 `borsch` 指令。若也想在自己的終端機使用，請另外依下方方式安裝指令。
 
 **作為終端機指令：**
 

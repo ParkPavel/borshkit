@@ -15,7 +15,7 @@ related: ["../reference/commands.md", "../concepts/acceptance.md", "../concepts/
 /plugin install borshkit@borshkit
 ```
 
-Или как команду в терминале:
+Плагин сам добавляет команды `borshkit` и `borsch` в терминал Claude Code. Чтобы пользоваться ими и в своём терминале, поставь команду:
 
 ```sh
 git clone https://github.com/ParkPavel/borshkit.git

@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml"><img src="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml/badge.svg" alt="CI: Linux and Windows"></a>
-  <img src="https://img.shields.io/badge/version-0.10.0-b3261e" alt="version 0.10.0">
+  <img src="https://img.shields.io/badge/version-0.10.1-b3261e" alt="version 0.10.1">
   <img src="https://img.shields.io/badge/node-%E2%89%A522-2b1d1d" alt="Node.js 22 or newer">
   <img src="https://img.shields.io/badge/dependencies-0-2e7d32" alt="zero dependencies">
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="Claude Code plugin">
@@ -22,7 +22,7 @@
 
 You say what should come out. Agents do the work. Borshkit shows what has been **proven** by checks and what you need to look at yourself. Nothing is accepted on trust.
 
-> **Status: 0.10.0.** Everything below works and is covered by tests on Linux and Windows. The tests use fake executors instead of real models. What has not been tried live yet is listed in [Limits](#limits).
+> **Status: 0.10.1.** Everything below works and is covered by tests on Linux and Windows. The tests use fake executors instead of real models. What has not been tried live yet is listed in [Limits](#limits).
 >
 > **Language note:** Borshkit's messages are in Russian for now. Every command and flag also has an English name, and this README uses those.
 
@@ -46,6 +46,8 @@ You need Node.js 22+ and Git. There are no external dependencies.
 /plugin marketplace add ParkPavel/borshkit
 /plugin install borshkit@borshkit
 ```
+
+The plugin gives the agent the Borshkit skill, protective hooks, and the `borshkit` and `borsch` commands inside Claude Code's terminal. To use them in your own terminal too, also install the command as shown below.
 
 **As a terminal command:**
 
