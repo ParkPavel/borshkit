@@ -24,6 +24,13 @@ test('the plugin manifest, marketplace entry and hooks point at real files', asy
   assert.match(await fs.readFile(path.join(ROOT, 'skills', 'borshkit', 'SKILL.md'), 'utf8'), /^---\nname: borshkit\n/);
 });
 
+test('the plugin puts borshkit and borsch on the PATH of Claude Code\'s Bash tool', async () => {
+  const modes = await run('git', ['-C', ROOT, 'ls-files', '-s', 'bin/borshkit', 'bin/borsch']);
+  for (const line of modes.stdout.trim().split('\n')) assert.match(line, /^100755 /, line);
+  for (const name of ['borshkit', 'borsch']) assert.match(await fs.readFile(path.join(ROOT, 'bin', name), 'utf8'), /^#!\/bin\/sh\n[\s\S]*exec node "\$\(dirname "\$0"\)\/borshkit\.mjs" "\$@"/);
+  if (process.platform !== 'win32') assert.match((await run(path.join(ROOT, 'bin', 'borshkit'), ['помощь'])).stdout, /^Borshkit — Modular AI Workspace/);
+});
+
 test('the pre-tool hook refuses destructive Git and pushing, and lets ordinary work through', () => {
   for (const cmd of ['git push --force origin main', 'git push -f', 'git push origin :old', 'git push origin main', 'git reset --hard HEAD~1', 'git clean -fdx', 'git branch -D feature', 'git checkout -- .', 'echo x > borshkit/settings/workspace.json'])
     assert.ok(judgeCommand(cmd), cmd);

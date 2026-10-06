@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml"><img src="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml/badge.svg" alt="CI : Linux et Windows"></a>
-  <img src="https://img.shields.io/badge/version-0.10.0-b3261e" alt="version 0.10.0">
+  <img src="https://img.shields.io/badge/version-0.10.1-b3261e" alt="version 0.10.1">
   <img src="https://img.shields.io/badge/node-%E2%89%A522-2b1d1d" alt="Node.js 22 ou plus récent">
   <img src="https://img.shields.io/badge/dependencies-0-2e7d32" alt="zéro dépendance">
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="plugin Claude Code">
@@ -22,7 +22,7 @@
 
 Tu dis ce que tu veux obtenir. Les agents font le travail. Borshkit montre ce qui est **prouvé** par des vérifications et ce que tu dois regarder toi-même. Rien n’est accepté sur parole.
 
-> **Statut : 0.10.0.** Tout ce qui suit fonctionne et est couvert par des tests sous Linux et Windows. Les tests utilisent de faux exécutants à la place de vrais modèles. Ce qui n’a pas encore été essayé en conditions réelles est listé dans [Limites](#limites).
+> **Statut : 0.10.1.** Tout ce qui suit fonctionne et est couvert par des tests sous Linux et Windows. Les tests utilisent de faux exécutants à la place de vrais modèles. Ce qui n’a pas encore été essayé en conditions réelles est listé dans [Limites](#limites).
 >
 > **Note sur la langue :** pour l’instant, les messages de Borshkit sont en russe. Chaque commande et chaque option a aussi un nom anglais, et ce README utilise ces noms-là.
 
@@ -46,6 +46,8 @@ Il te faut Node.js 22+ et Git. Il n’y a aucune dépendance externe.
 /plugin marketplace add ParkPavel/borshkit
 /plugin install borshkit@borshkit
 ```
+
+Le plugin donne à l’agent le skill Borshkit, des hooks de protection et les commandes `borshkit` et `borsch` dans le terminal de Claude Code. Pour les utiliser aussi dans ton propre terminal, installe en plus la commande comme ci-dessous.
 
 **Comme commande dans le terminal :**
 
