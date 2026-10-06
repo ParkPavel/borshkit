@@ -115,7 +115,7 @@ export async function newTask(space, { taskId, goal, kind = 'feature' }) {
   const contract = { schemaVersion: 2, taskId, kind, goal, nonGoals: [], decisions: [], base, paths: ['.'], goals: [], criteria: [], checks: [], acceptance: { policy: 'mixed' } };
   await withLock(space.state, async () => {
     assert(!(await exists(file)) && !(await exists(basisFile)), 'Такая задача уже есть; создание никогда не перезаписывает контракт');
-    await atomicJSON(basisFile, { schemaVersion: 1, taskId, base, uncommitted: before });
+    await atomicJSON(basisFile, { schemaVersion: 1, taskId, base, uncommitted: before, createdAt: new Date().toISOString() });
     await atomicJSON(file, contract);
   });
   await journal(space, `Создана задача «${taskId}»: ${goal}`);

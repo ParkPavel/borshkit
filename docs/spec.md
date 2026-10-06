@@ -708,3 +708,22 @@ borshkit/
 13. **Оболочка Git:** проверка словаря на понятность, нужен ли режим «знаю Git» по умолчанию для вас лично.
 14. **Диспетчерская и автопилот:** какие виды статуса нужны (терминал, Obsidian, браузер, строка Claude Code); пороги молчания по ролям (стандарт — 60 с); список критических вопросов — дополнить своими.
 15. **Переименование:** репозиторий на GitHub, плагин, npm-пакет; визуальный стиль Borshkit для README (роль `readme-designer`).
+
+---
+
+## 20. Состояние реализации (0.9.0, 2026-10-06)
+
+| Этап | Где в коде | Проверено тестами | Не проверено вживую |
+|---|---|---|---|
+| E1 ядро приёмки, цели, три класса | `core/contract.mjs`, `core/accept.mjs` | да | — |
+| E2 материалы вне Git, цитаты | `core/materials.mjs`, `core/citations.mjs` | да (локальный сервер, PDF → ручной пункт) | — |
+| E3 приватность, доверенный агент, папка `borshkit/` | `core/space.mjs`, `core/config.mjs`, `core/privacy.mjs`, `core/experiment.mjs` | да | подтверждение в терминале проверено только отказом без терминала |
+| E4 исполнители, пулы, переключение | `core/executors.mjs`, `core/adapters.mjs`, `core/jobs.mjs` | да, на поддельных CLI и тестовом API | живые Claude Code / Codex; Codex + GPT Image |
+| Автопилот, критическая остановка, диспетчерская | `core/questions.mjs`, `core/dispatch.mjs` | да | автообновление `STATUS.md` в Obsidian |
+| E5 база знаний | `core/kb.mjs` | да | отображение связей из свойств в графе Obsidian |
+| Роли, Ponytail, атрибуция, Agent Reach | `roles/`, `packs/ponytail/`, `core/roles.mjs`, `core/attribution.mjs` | да; `attribution` проходит на самом Borshkit | живые каналы Agent Reach |
+| Оболочка Git | `core/gitshell.mjs` | да (локальный bare-репозиторий) | — |
+| E6 плагин Claude Code, hooks, AGENTS.md | `.claude-plugin/`, `hooks/`, `skills/borshkit/`, `core/hooks.mjs` | манифесты и решения hooks — да | установка плагина через маркетплейс; кавычки команды hook в Windows |
+| E7 оценка | `core/eval.mjs` | да (ложный PASS, доверие) | сравнение B0/A/B на реальных задачах владельца |
+
+Открыто для обсуждения на GitHub (D20): резервная копия истории пространства — черновик в `docs/discussions/space-history-backup.md`.

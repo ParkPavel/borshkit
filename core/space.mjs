@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { assert, atomicJSON, atomicWrite, exists, git, isGitRoot, readJSON, sha } from './io.mjs';
+import { ROOT, assert, atomicJSON, atomicWrite, exists, git, isGitRoot, readJSON, sha } from './io.mjs';
 import { secretsInValue } from './secrets.mjs';
 import { validateExecutor, validatePool } from './executors.mjs';
 
@@ -151,6 +151,9 @@ export async function initSpace({ project = process.cwd(), folder = DEFAULT_FOLD
   const write = async (rel, text) => { const f = path.join(p.dir, rel); if (!(await exists(f))) await atomicWrite(f, text, { mode: 0o644 }); };
   await write('START-HERE.md', startHere(folder));
   await write('journal.md', '# Журнал\n\n');
+  // The same guide the Claude Code skill gives, for Codex and other agents that read AGENTS.md.
+  const guide = (await fs.readFile(path.join(ROOT, 'skills', 'borshkit', 'SKILL.md'), 'utf8')).replace(/^---[\s\S]*?---\n+/, '');
+  await write('AGENTS.md', guide);
   await write('.gitignore', '# Пересобираемое состояние и блокировки не входят в историю пространства\n.state/\n');
   await atomicWrite(path.join(p.dir, 'settings', 'settings.md'), settingsMirror(settings), { mode: 0o644 });
   const space = { project, folder, ...p, settings, projectIsGit: report.git };

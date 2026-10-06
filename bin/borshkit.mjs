@@ -20,10 +20,12 @@ import { buildKnowledge, exportForGithub, lessonFromTask, queryKnowledge, search
 import { attributionCheck, contributorsReport, readmeAssetsCheck, writeContributors } from '../core/attribution.mjs';
 import { runCommand } from '../core/process.mjs';
 import { explainGit, history, mergeTask, pushProject, restoreFile, saveProject, whatChanged, whoDid } from '../core/gitshell.mjs';
+import { runHook } from '../core/hooks.mjs';
+import { evaluate, measureTrust, proposeTrust } from '../core/eval.mjs';
 
 const COMMANDS = { начать: 'init', статус: 'status', задача: 'task', сохранить: 'save', доктор: 'doctor', помощь: 'help', материал: 'material', приватность: 'privacy', настройки: 'settings', эксперимент: 'experiment',
   исполнители: 'executors', исполнитель: 'executor', работа: 'job', вопрос: 'question', вопросы: 'question', роли: 'roles', знания: 'knowledge', атрибуция: 'attribution',
-  история: 'history', 'что-изменилось': 'changes', 'кто-что': 'who', вернуть: 'restore', 'сохранить-проект': 'save-project', собрать: 'merge', отправить: 'push' };
+  оценка: 'eval', hook: 'hook', история: 'history', 'что-изменилось': 'changes', 'кто-что': 'who', вернуть: 'restore', 'сохранить-проект': 'save-project', собрать: 'merge', отправить: 'push' };
 const WHICH = { проект: 'project', пространство: 'space', project: 'project', space: 'space' };
 const SUB = { добавить: 'add', список: 'list', обновить: 'refresh', показать: 'show', предложить: 'propose', применить: 'apply', принять: 'accept', вернуть: 'revert', начать: 'start', ключ: 'key', завершить: 'end',
   проверить: 'probe', запустить: 'run', продолжить: 'resume', ответить: 'answer', собрать: 'build', найти: 'search', контекст: 'context', урок: 'lesson', экспорт: 'export', контрибьюторы: 'contributors', картинки: 'assets' };
@@ -31,7 +33,7 @@ const MODES = { умеренный: 'moderate', строгий: 'strict', экс
 const TASK = { новая: 'new', анализ: 'check', проверить: 'verify', отзыв: 'review', подтвердить: 'confirm', итог: 'converge', принять: 'accept' };
 const FLAGS = { цель: 'goal', вид: 'kind', папка: 'folder', проект: 'project', 'только-локально': 'local-only', исполнитель: 'executor', результат: 'result',
   текст: 'text', название: 'title', да: 'yes', 'ключи-отозваны': 'revoked', от: 'from', причина: 'reason', через: 'via', манифест: 'manifest', readme: 'readme',
-  роль: 'role', пул: 'pool', к: 'to', сколько: 'limit', удалённый: 'remote', линза: 'lens', файл: 'file', следить: 'watch', строка: 'line', команда: 'command', семейство: 'provider', данные: 'data', модель: 'model' };
+  роль: 'role', пул: 'pool', к: 'to', скрытые: 'hidden', порог: 'threshold', сколько: 'limit', удалённый: 'remote', линза: 'lens', файл: 'file', следить: 'watch', строка: 'line', команда: 'command', семейство: 'provider', данные: 'data', модель: 'model' };
 const LONE = ['json', 'local-only', 'yes', 'revoked', 'help', 'watch', 'line'];
 // Ready-made manifests for the subscription CLIs; the data policy stays "unknown"
 // until the person states it, so the strict mode will not use them by accident.
@@ -101,6 +103,9 @@ const HELP = `Borshkit — Modular AI Workspace
   borshkit сохранить-проект "что изменилось"   точка в истории проекта (с проверкой на ключи)
   borshkit собрать <задача>                   принятую работу агента — в основную версию (только в терминале)
   borshkit отправить [--удалённый origin]     на GitHub, без перезаписи чужого (только в терминале)
+
+  borshkit оценка запустить --скрытые скрытые.json   ложные PASS, вмешательства, время, расход
+  borshkit оценка доверие <метка> [--порог 0.05]     насколько можно верить «готово» модели; предложение настроек
 
 Английские имена тоже работают: init, status, doctor, save, task new|check|verify|review|converge|confirm|accept.
 Добавь --json, чтобы получить ответ для программ.`;
@@ -432,6 +437,28 @@ export async function main(argv = process.argv.slice(2)) {
   }
   if (command === 'knowledge') return knowledge(positional.slice(1), flags);
   if (command === 'attribution') return attribution(positional.slice(1), flags);
+  if (command === 'hook') {
+    let raw = '';
+    for await (const chunk of process.stdin) raw += chunk;
+    const out = await runHook(positional[1], raw.trim() ? JSON.parse(raw) : {});
+    if (out) console.log(JSON.stringify(out));
+    return;
+  }
+  if (command === 'eval') {
+    const space = await open(flags), sub = positional[1];
+    if (sub === 'запустить' || sub === 'run') {
+      assert(typeof flags.hidden === 'string', 'Укажи файл скрытых проверок: --скрытые eval/hidden.json');
+      const r = await evaluate(space, await readJSON(path.resolve(flags.hidden)));
+      return print(flags, r, `Задач: ${r.summary.tasks} · принято: ${r.summary.accepted} · ложных PASS: ${r.summary.falsePass} · вмешательств: ${r.summary.interventions}\nОтчёт: ${path.join(space.dir, 'eval')}`);
+    }
+    if (sub === 'доверие' || sub === 'trust') {
+      const tag = positional[2];
+      if (flags.threshold === undefined) { const m = await measureTrust(space, tag); return print(flags, m, m.runs ? `«${tag}»: ложных «готово» ${m.falsePass} из ${m.runs} (${Math.round(m.rate * 100)}%)` : `Для «${tag}» сравнений с человеком пока нет.`); }
+      const p = await proposeTrust(space, tag, { maxFalsePassRate: Number(flags.threshold) });
+      return print(flags, p, `Предложение ${p.id}: ${p.changes.map(c => c.key).join(', ')}. Применить (только в терминале): borshkit настройки применить ${p.id}`);
+    }
+    throw new Error('Действие — запустить или доверие');
+  }
   if (['history', 'changes', 'who', 'restore', 'save-project', 'merge', 'push'].includes(command)) return gitShell(command, positional.slice(1), flags);
   if (command === 'job') return job(positional.slice(1), flags);
   if (command === 'question') return question(positional.slice(1), flags);
