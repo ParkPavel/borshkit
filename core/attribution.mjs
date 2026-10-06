@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { assert, atomicWrite, contained, exists, readJSON } from './io.mjs';
+import { assert, atomicWrite, contained, exists, git, readJSON } from './io.mjs';
 
 // Attribution and GitHub ethics (decisions D11, D14): every reference project
 // is credited with its authors, license and support links; sources without a
@@ -105,12 +105,45 @@ export async function contributorsReport(space, repos, { apiBase = 'https://api.
   }
   return result;
 }
+/**
+ * The same list from a local clone's history, for when the GitHub API is out
+ * of reach. Only public facts are kept: author names, and GitHub logins where
+ * the author used a GitHub no-reply address. E-mail addresses are never kept.
+ */
+export async function contributorsFromGit(repoDir, repo) {
+  const byKey = new Map();
+  for (const line of (await git(repoDir, ['log', '--format=%an%x1f%ae'])).split('\n').filter(Boolean)) {
+    const [name, email] = line.split('\x1f');
+    const login = /^(?:\d+\+)?([A-Za-z0-9-]+(?:\[bot\])?)@users\.noreply\.github\.com$/i.exec(email)?.[1] ?? null;
+    const key = (login ?? name).toLowerCase();
+    const entry = byKey.get(key) ?? { login, name, contributions: 0 };
+    entry.contributions++;
+    byKey.set(key, entry);
+  }
+  // A person who committed both with and without the no-reply address is one person.
+  for (const [key, e] of [...byKey]) {
+    if (e.login) continue;
+    const twin = [...byKey.values()].find(o => o.login && o.name.toLowerCase() === e.name.toLowerCase());
+    if (twin) { twin.contributions += e.contributions; byKey.delete(key); }
+  }
+  const all = [...byKey.values()].sort((a, b) => b.contributions - a.contributions || a.name.localeCompare(b.name));
+  const isBot = p => /\[bot\]$|^(github-actions|dependabot|renovate)\b/i.test(p.login ?? p.name);
+  return {
+    repo, source: 'git',
+    people: all.filter(p => !isBot(p)).map(p => ({ login: p.login, name: p.name, url: p.login ? `https://github.com/${p.login}` : null, avatar: p.login ? `https://github.com/${p.login}.png` : null, contributions: p.contributions })),
+    bots: all.filter(isBot).map(p => p.login ?? p.name),
+  };
+}
 export function contributorsMarkdown(result, { at = new Date().toISOString().slice(0, 10) } = {}) {
-  const out = ['# Контрибьюторы проектов, на которых построен Borshkit', '', `Список собран из API GitHub ${at}. Спасибо каждому — без вашей работы этого проекта бы не было.`, ''];
+  const fromGit = result.some(r => r.source === 'git');
+  const out = ['# Контрибьюторы проектов, на которых построен Borshkit', '',
+    fromGit ? `Список собран ${at} из истории коммитов на зафиксированных версиях (см. third-party.json): имена авторов и логины GitHub, где авторы их публиковали. Адреса почты не публикуются. Спасибо каждому — без вашей работы этого проекта бы не было.`
+      : `Список собран из API GitHub ${at}. Спасибо каждому — без вашей работы этого проекта бы не было.`, ''];
   for (const r of result) {
     out.push(`## [${r.repo}](https://github.com/${r.repo})`, '', `Людей: ${r.people.length}${r.bots.length ? ` · боты: ${r.bots.join(', ')}` : ''}`, '');
-    out.push(r.people.map(p => `<a href="${p.url}" title="@${p.login}"><img src="${p.avatar}${p.avatar.includes('?') ? '&' : '?'}s=40" width="40" height="40" alt="@${p.login}"></a>`).join(' '), '');
-    out.push(r.people.map(p => `[@${p.login}](${p.url})`).join(' · '), '');
+    const withAvatar = r.people.filter(p => p.avatar);
+    if (withAvatar.length) out.push(withAvatar.map(p => `<a href="${p.url}" title="@${p.login}"><img src="${p.avatar}${p.avatar.includes('?') ? '&s=40' : '?size=40'}" width="40" height="40" alt="@${p.login}"></a>`).join(' '), '');
+    out.push(r.people.map(p => p.login ? `[@${p.login}](${p.url})` : p.name).join(' · '), '');
   }
   return out.join('\n');
 }

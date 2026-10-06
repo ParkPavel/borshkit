@@ -17,7 +17,7 @@ import { answer, getQuestion, listQuestions, resolveDue } from '../core/question
 import { cards, formatCards, listJobs, statusLine, writeStatusFiles } from '../core/dispatch.mjs';
 import { listRoles } from '../core/roles.mjs';
 import { buildKnowledge, exportForGithub, lessonFromTask, queryKnowledge, searchKnowledge, taskContext } from '../core/kb.mjs';
-import { attributionCheck, contributorsReport, readmeAssetsCheck, writeContributors } from '../core/attribution.mjs';
+import { attributionCheck, contributorsFromGit, contributorsReport, readmeAssetsCheck, writeContributors } from '../core/attribution.mjs';
 import { runCommand } from '../core/process.mjs';
 import { explainGit, history, mergeTask, pushProject, restoreFile, saveProject, whatChanged, whoDid } from '../core/gitshell.mjs';
 import { runHook } from '../core/hooks.mjs';
@@ -33,7 +33,7 @@ const MODES = { умеренный: 'moderate', строгий: 'strict', экс
 const TASK = { новая: 'new', анализ: 'check', проверить: 'verify', отзыв: 'review', подтвердить: 'confirm', итог: 'converge', принять: 'accept' };
 const FLAGS = { цель: 'goal', вид: 'kind', папка: 'folder', проект: 'project', 'только-локально': 'local-only', исполнитель: 'executor', результат: 'result',
   текст: 'text', название: 'title', да: 'yes', 'ключи-отозваны': 'revoked', от: 'from', причина: 'reason', через: 'via', манифест: 'manifest', readme: 'readme',
-  роль: 'role', пул: 'pool', к: 'to', скрытые: 'hidden', порог: 'threshold', сколько: 'limit', удалённый: 'remote', линза: 'lens', файл: 'file', следить: 'watch', строка: 'line', команда: 'command', семейство: 'provider', данные: 'data', модель: 'model' };
+  роль: 'role', пул: 'pool', клоны: 'clones', к: 'to', скрытые: 'hidden', порог: 'threshold', сколько: 'limit', удалённый: 'remote', линза: 'lens', файл: 'file', следить: 'watch', строка: 'line', команда: 'command', семейство: 'provider', данные: 'data', модель: 'model' };
 const LONE = ['json', 'local-only', 'yes', 'revoked', 'help', 'watch', 'line'];
 // Ready-made manifests for the subscription CLIs; the data policy stays "unknown"
 // until the person states it, so the strict mode will not use them by accident.
@@ -94,7 +94,7 @@ const HELP = `Borshkit — Modular AI Workspace
 
   borshkit атрибуция проверить [--манифест third-party.json] [--readme README.md]   благодарности и лицензии
   borshkit атрибуция картинки [--readme README.md]          изображения README: есть, с alt-текстом, не тяжёлые
-  borshkit атрибуция контрибьюторы [владелец/репо …] [--файл CONTRIBUTORS-REFERENCES.md] [--да]
+  borshkit атрибуция контрибьюторы [владелец/репо …] [--файл CONTRIBUTORS-REFERENCES.md] [--да] | --клоны путь1,путь2 (без API)
 
   Git простыми словами (проект — по умолчанию; добавь «пространство» для истории пространства):
   borshkit история [пространство] [--сколько 10] | история объяснить
@@ -296,7 +296,10 @@ async function attribution([rawSub, ...rest], flags) {
       const manifest = await readJSON(path.resolve(space.project, check.manifest ?? 'third-party.json')).catch(() => []);
       repos = manifest.map(e => /github\.com\/([\w.-]+\/[\w.-]+?)(?:\.git)?\/?$/.exec(e.url ?? '')?.[1]).filter(Boolean);
     }
-    const result = await contributorsReport(space, repos, { confirm: flags.yes === true });
+    // --клоны путь1,путь2 — без доступа к API: из истории локальных клонов.
+    const result = typeof flags.clones === 'string'
+      ? await Promise.all(flags.clones.split(',').map(async dir => contributorsFromGit(path.resolve(dir), (/github\.com[/:]([\w.-]+\/[\w.-]+?)(?:\.git)?$/.exec((await runCommand('git', ['-C', path.resolve(dir), 'remote', 'get-url', 'origin'])).stdout.trim())?.[1]) ?? path.basename(dir))))
+      : await contributorsReport(space, repos, { confirm: flags.yes === true });
     const file = await writeContributors(space, result, typeof flags.file === 'string' ? flags.file : 'CONTRIBUTORS-REFERENCES.md');
     return print(flags, result, `Контрибьюторов: ${result.reduce((n, r) => n + r.people.length, 0)} в ${result.length} проектах → ${file}`);
   }

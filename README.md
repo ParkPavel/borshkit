@@ -1,3 +1,8 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/banner-dark.svg">
+  <img src="assets/banner-light.svg" alt="Borshkit — Modular AI Workspace: задачи, доказательства, приёмка, знания" width="100%">
+</picture>
+
 # Borshkit (Борщкит)
 
 **Modular AI Workspace** — рабочее пространство для AI-агентов над любым проектом: плагином, веб-приложением, библиотекой или исследованием. Ты описываешь цель, агенты работают, а Borshkit показывает, что **доказано** проверками, а что нужно посмотреть тебе самому.
@@ -154,7 +159,8 @@ npm run verify   # статические проверки + 66 тестов (no
 
 - [Спецификация](docs/spec.md) — анализ источников, решения D1–D22, архитектура, этапы, план оценки.
 - [Происхождение и благодарности](docs/lineage.md) и [third-party.json](third-party.json): [Claudex](https://github.com/ParkPavel/claudex), [ECC](https://github.com/affaan-m/ECC), [Ponytail](https://github.com/DietrichGebert/ponytail) ([поддержать](https://github.com/sponsors/DietrichGebert)), [Agent Reach](https://github.com/panniantong/agent-reach), [free-llm-api-resources](https://github.com/raullenchai/free-llm-api-resources).
-- Полный список контрибьюторов этих проектов создаёт `borshkit атрибуция контрибьюторы`.
+- [Все контрибьюторы этих проектов](CONTRIBUTORS-REFERENCES.md) — 573 человека. Спасибо каждому!
+- [Изменения](CHANGELOG.md) · [Как помочь](CONTRIBUTING.md) · [Безопасность](SECURITY.md)
 
 ## Лицензия
 

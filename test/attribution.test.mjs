@@ -4,7 +4,9 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import http from 'node:http';
 import { ROOT } from '../core/io.mjs';
-import { attributionCheck, contributorsMarkdown, contributorsReport, readmeAssetsCheck } from '../core/attribution.mjs';
+import { attributionCheck, contributorsFromGit, contributorsMarkdown, contributorsReport, readmeAssetsCheck } from '../core/attribution.mjs';
+import { git } from '../core/io.mjs';
+import { tempDir } from './helpers.mjs';
 import { addMaterial } from '../core/materials.mjs';
 import { converge, verifyAll } from '../core/accept.mjs';
 import { space, task, write } from './helpers.mjs';
@@ -13,6 +15,12 @@ test('Borshkit credits every source it uses: the attribution check passes on its
   const r = await attributionCheck({ project: ROOT }, null, { readme: 'docs/lineage.md' });
   assert.equal(r.status, 'PASS', r.log);
   assert.match(r.log, /Ponytail — MIT, файлов: 2/);
+});
+
+test('Borshkit\'s own README passes its images-and-links check', async () => {
+  const r = await readmeAssetsCheck({ project: ROOT }, null, {});
+  assert.equal(r.status, 'PASS', r.log);
+  assert.match(r.log, /banner-dark\.svg/);
 });
 
 test('attribution fails on a missing credit, a copy without license, copying an unlicensed source and a missing support link', async t => {
@@ -99,4 +107,21 @@ test('sources from a tool command and through the Jina proxy are stored with the
   assert.equal((await verifyAll(s, 'cite'))[0].status, 'PASS');
   s.settings.privacy = 'strict';
   await assert.rejects(addMaterial(s, { url: 'https://site.example/other', via: 'jina', fetchImpl }), /посредники/);
+});
+
+test('without the API, contributors come from a clone\'s history: names and no-reply logins, never e-mail addresses', async t => {
+  const dir = await tempDir(t);
+  await git(dir, ['init', '-q']);
+  const commitAs = async (name, email, n) => { for (let i = 0; i < n; i++) await git(dir, ['-c', `user.name=${name}`, '-c', `user.email=${email}`, 'commit', '-q', '--allow-empty', '-m', `${name} ${i}`]); };
+  await commitAs('Анна', '123+anna-dev@users.noreply.github.com', 3);
+  await commitAs('Анна', 'anna@private.example', 1);
+  await commitAs('Боб', 'bob@private.example', 2);
+  await commitAs('github-actions[bot]', '41898282+github-actions[bot]@users.noreply.github.com', 5);
+  const r = await contributorsFromGit(dir, 'owner/repo');
+  assert.deepEqual(r.people.map(p => [p.login, p.name, p.contributions]), [['anna-dev', 'Анна', 4], [null, 'Боб', 2]]);
+  assert.deepEqual(r.bots, ['github-actions[bot]']);
+  const md = contributorsMarkdown([r], { at: '2026-10-06' });
+  assert.match(md, /\[@anna-dev\]\(https:\/\/github\.com\/anna-dev\) · Боб/);
+  assert.match(md, /src="https:\/\/github\.com\/anna-dev\.png\?size=40"/);
+  assert.doesNotMatch(md, /private\.example|noreply/);
 });

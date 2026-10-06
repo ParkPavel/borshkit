@@ -36,6 +36,11 @@
     "AGENTS.md",
     "README.md",
     "LICENSE",
-    "NOTICE"
+    "NOTICE",
+    "assets",
+    "CHANGELOG.md",
+    "CONTRIBUTORS-REFERENCES.md",
+    "SECURITY.md",
+    "CONTRIBUTING.md"
   ]
 }
