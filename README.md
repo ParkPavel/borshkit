@@ -13,7 +13,7 @@
 Нужны Node.js 22+ и Git. Зависимостей нет.
 
 ```sh
-git clone https://github.com/ParkPavel/TaskWeave.git borshkit
+git clone https://github.com/ParkPavel/borshkit.git
 cd путь/к/твоему/проекту
 node путь/к/borshkit/bin/borshkit.mjs начать
 ```

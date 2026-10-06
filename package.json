@@ -11,7 +11,7 @@
     "check": "node scripts/check.mjs",
     "verify": "npm run check && npm test"
   },
-  "repository": { "type": "git", "url": "https://github.com/ParkPavel/TaskWeave.git" },
+  "repository": { "type": "git", "url": "https://github.com/ParkPavel/borshkit.git" },
   "license": "Apache-2.0",
   "author": "Pavel Park",
   "files": ["bin", "core", "docs", "examples", "README.md", "LICENSE", "NOTICE"]
