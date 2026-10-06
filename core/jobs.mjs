@@ -5,7 +5,7 @@ import { assert, atomicJSON, atomicWrite, contained, exists, git, readJSON } fro
 import { journal, saveSpace } from './space.mjs';
 import { capable, FAILURE_WORDS, privacyAllows, readProbes } from './executors.mjs';
 import { startExecutor } from './adapters.mjs';
-import { buildPrompt, loadRole, SCHEMAS, validateOutput } from './roles.mjs';
+import { buildPrompt, loadRole, loadSkill, SCHEMAS, validateOutput } from './roles.mjs';
 import { outboundFindings } from './privacy.mjs';
 import { authorProviders, currentChecks, readyTask, recordReview } from './accept.mjs';
 import { loadMaterial, materialText } from './materials.mjs';
@@ -68,9 +68,10 @@ const isImage = (bytes, file) => file.endsWith('.svg') ? /<svg[\s>]/i.test(bytes
  * Run one job to its end. `executor` names one executor; `pool` names an
  * ordered list from the settings. Options for tests: `silenceMs`, `tickMs`.
  */
-export async function runJob(space, { taskId, role: roleId, executor = null, pool = null, lens = null, imagePath = null, resumeOf = null,
+export async function runJob(space, { taskId, role: roleId, executor = null, pool = null, lens = null, skills = [], imagePath = null, resumeOf = null,
   fetchImpl = globalThis.fetch, silenceMs = space.settings.silenceSeconds * 1000, tickMs = 500, env = process.env } = {}) {
   const role = await loadRole(roleId);
+  for (const ref of skills) await loadSkill(ref);
   const t = await readyTask(space, taskId, { draft: role.output === 'contract' });
   const executors = space.settings.executors ?? {}, pools = space.settings.pools ?? {};
   assert(executor || pool, 'Укажи исполнителя (--исполнитель) или пул (--пул)');
@@ -81,7 +82,7 @@ export async function runJob(space, { taskId, role: roleId, executor = null, poo
   const maxSwitches = executor ? 0 : pools[pool].maxSwitches ?? 3, waitSeconds = executor ? 0 : pools[pool].waitSeconds ?? 0;
   const probes = await readProbes(space);
   const now = new Date();
-  const job = { id: `j-${now.getTime().toString(36)}-${crypto.randomBytes(3).toString('hex')}`, taskId, role: roleId, status: 'QUEUED', pool, lens, resumeOf, imagePath,
+  const job = { id: `j-${now.getTime().toString(36)}-${crypto.randomBytes(3).toString('hex')}`, taskId, role: roleId, status: 'QUEUED', pool, lens, skills, resumeOf, imagePath,
     createdAt: now.toISOString(), attempts: [], executor: null, lastEventAt: null, toolRunning: false, activity: 'ждёт исполнителя' };
   let lastWrite = 0;
   const save = async (force = false) => {
@@ -116,7 +117,7 @@ export async function runJob(space, { taskId, role: roleId, executor = null, poo
     const writable = role.authority === 'workspace-write';
     const work = writable ? await ensureWorktree(space, taskId) : { path: t.repo };
     job.worktree = writable ? work.path : null;
-    const prompt = await buildPrompt({ role, contract: t.contract, lens, checks: await currentChecks(space, t), context: await knowledgeContext(space, taskId),
+    const prompt = await buildPrompt({ role, contract: t.contract, lens, skills, checks: await currentChecks(space, t), context: await knowledgeContext(space, taskId),
       materials, handoff, imagePath: role.output === 'image' && e.kind !== 'openai-compat' ? imagePath : null });
     const leaks = outboundFindings(prompt, space.settings.privacy).filter(f => f.action === 'block');
     if (leaks.length) { await skip('PRIVACY', `в пакете для отправки найдено: ${[...new Set(leaks.map(l => l.kind))].join(', ')}`); outcome = { ok: false, failure: 'PRIVACY' }; break; }
@@ -248,5 +249,5 @@ export async function resumeJob(space, jobId, { executor = null, pool = null, ..
     assert(q.status === 'answered' && q.answer !== 'stop', `Сначала ответь на вопрос ${q.id} (только в терминале)`);
   }
   const choice = executor || pool ? { executor, pool } : { executor: old.pool ? null : old.executor, pool: old.pool };
-  return runJob(space, { ...options, taskId: old.taskId, role: old.role, ...choice, lens: old.lens, imagePath: old.imagePath ?? null, resumeOf: jobId });
+  return runJob(space, { ...options, taskId: old.taskId, role: old.role, ...choice, lens: old.lens, skills: old.skills ?? [], imagePath: old.imagePath ?? null, resumeOf: jobId });
 }

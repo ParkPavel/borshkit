@@ -16,7 +16,8 @@
       "core/accept.mjs",
       "core/executors.mjs",
       "core/adapters.mjs"
-    ]
+    ],
+    "takes": "контракт задачи, снимок состояния, доказательства, сверка, адаптеры CLI"
   },
   {
     "name": "ECC",
@@ -27,7 +28,19 @@
       "контрибьюторы ECC"
     ],
     "commit": "ef648e01899ba3e8dc6371642deaaf64b4477775",
-    "support": "https://github.com/sponsors/affaan-m"
+    "support": "https://github.com/sponsors/affaan-m",
+    "files": [
+      "packs/ecc/skills/accessibility/SKILL.md",
+      "packs/ecc/skills/frontend-a11y/SKILL.md",
+      "packs/ecc/skills/frontend-design-direction/SKILL.md",
+      "packs/ecc/skills/liquid-glass-design/SKILL.md",
+      "packs/ecc/skills/make-interfaces-feel-better/SKILL.md",
+      "packs/ecc/skills/motion-foundations/SKILL.md",
+      "packs/ecc/skills/motion-patterns/SKILL.md",
+      "packs/ecc/skills/react-patterns/SKILL.md",
+      "packs/ecc/skills/swiftui-patterns/SKILL.md"
+    ],
+    "takes": "9 фронтенд-навыков (packs/ecc), идея устанавливаемых модулей"
   },
   {
     "name": "Ponytail",
@@ -42,7 +55,8 @@
     "files": [
       "packs/ponytail/SKILL.md",
       "packs/ponytail/REVIEW.md"
-    ]
+    ],
+    "takes": "«ленивый сеньор» для implementer и simplicity-reviewer"
   },
   {
     "name": "Agent Reach",
@@ -52,7 +66,8 @@
       "Panniantong",
       "контрибьюторы Agent Reach"
     ],
-    "commit": "a19a171fa980a0785849596492e0af4db800c82f"
+    "commit": "a19a171fa980a0785849596492e0af4db800c82f",
+    "takes": "сбор из интернета для researcher (внешний инструмент)"
   },
   {
     "name": "free-llm-api-resources",
@@ -61,6 +76,102 @@
     "authors": [
       "Jun Siang Cheah"
     ],
-    "commit": "fb4762946660aba2563c3e64331ba7ceceb0ceda"
+    "commit": "fb4762946660aba2563c3e64331ba7ceceb0ceda",
+    "takes": "подсказка при выборе бесплатных API (только ссылка)"
+  },
+  {
+    "name": "emilkowalski/skills",
+    "url": "https://github.com/emilkowalski/skills",
+    "license": "MIT",
+    "authors": [
+      "Emil Kowalski"
+    ],
+    "commit": "e8a175de22ae1e49370fc144c1f3bb9aeedf988d",
+    "files": [
+      "packs/emil/skills/animate-expo/RECIPES.md",
+      "packs/emil/skills/animate-expo/SKILL.md",
+      "packs/emil/skills/animate/RECIPES.md",
+      "packs/emil/skills/animate/SKILL.md",
+      "packs/emil/skills/animation-vocabulary/SKILL.md",
+      "packs/emil/skills/apple-design/SKILL.md",
+      "packs/emil/skills/ask-sonner/API.md",
+      "packs/emil/skills/ask-sonner/SKILL.md",
+      "packs/emil/skills/break-ui/CATALOG.md",
+      "packs/emil/skills/break-ui/SKILL.md",
+      "packs/emil/skills/emil-design-eng/SKILL.md",
+      "packs/emil/skills/find-animation-opportunities/SKILL.md",
+      "packs/emil/skills/improve-animations/AUDIT.md",
+      "packs/emil/skills/improve-animations/PLAN-TEMPLATE.md",
+      "packs/emil/skills/improve-animations/SKILL.md",
+      "packs/emil/skills/mobile-native/SKILL.md",
+      "packs/emil/skills/pick-ui-library/SKILL.md",
+      "packs/emil/skills/prototype/PICKER.md",
+      "packs/emil/skills/prototype/SKILL.md",
+      "packs/emil/skills/review-animations/SKILL.md",
+      "packs/emil/skills/review-animations/STANDARDS.md",
+      "packs/emil/skills/write-swift/SKILL.md"
+    ],
+    "via": "Claudex и напрямую",
+    "takes": "14 навыков дизайн-инженерии и анимации (packs/emil)"
+  },
+  {
+    "name": "Spec Kit",
+    "url": "https://github.com/github/spec-kit",
+    "license": "MIT",
+    "authors": [
+      "GitHub, Inc.",
+      "контрибьюторы Spec Kit"
+    ],
+    "commit": "9fb13c1571bbe632138dec54d5c6f3818b9f1ad7",
+    "via": "Claudex",
+    "takes": "путь «намерение → спецификация → план → задачи → сверка» и проверка спецификации до работы"
+  },
+  {
+    "name": "Superpowers",
+    "url": "https://github.com/obra/superpowers",
+    "license": "MIT",
+    "authors": [
+      "Jesse Vincent",
+      "контрибьюторы Superpowers"
+    ],
+    "commit": "8ca22dba9a94f28898bbce59f2537ff4d87c747d",
+    "support": "https://github.com/sponsors/obra",
+    "via": "Claudex",
+    "takes": "отдельная копия (worktree) для пишущего агента, тест до исправления, ревью до завершения"
+  },
+  {
+    "name": "Graphify",
+    "url": "https://github.com/Graphify-Labs/graphify",
+    "license": "Apache-2.0",
+    "authors": [
+      "Safi Shamsi",
+      "контрибьюторы Graphify"
+    ],
+    "commit": "5c7b84792f453582676548185aaec3824d51dfe2",
+    "support": "https://github.com/sponsors/safishamsi",
+    "via": "Claudex",
+    "takes": "идея карты кода с происхождением связей (извлечено / заявлено); код не входит"
+  },
+  {
+    "name": "prompt-agent",
+    "url": "https://github.com/kvyb/prompt-agent",
+    "license": "none",
+    "authors": [
+      "kvyb"
+    ],
+    "commit": "f603198978c5a5358f411ae2c686b57968e9e18b",
+    "via": "Claudex",
+    "takes": "идея оценивать прошлые работы по эффективности и точкам сбоя"
+  },
+  {
+    "name": "HIGAgentSkills",
+    "url": "https://github.com/justinwetch/HIGAgentSkills",
+    "license": "none",
+    "authors": [
+      "Justin Wetch"
+    ],
+    "commit": "77f32a4085ad93a9f354819a23a4caefbb1e802a",
+    "via": "Claudex",
+    "takes": "идея маршрутизации по Apple HIG; только ссылка"
   }
 ]

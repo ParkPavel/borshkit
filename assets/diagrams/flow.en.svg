@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="884" height="270" viewBox="0 0 884 270" role="img" aria-labelledby="t d" lang="en">
+<title id="t">How a task travels</title>
+<desc id="d">Goal — you describe it → Work — agent in a copy → Checks — tests, build → Acceptance sheet — what is proven → Accepted — merge, push. “Done” from a model is not acceptance yet. Whatever isn’t proven comes to you as a list.</desc>
+<style>
+:root{--bg:#fbf7f2;--ink:#2b1d1d;--muted:#6b5757;--red:#b3261e;--deep:#8c1c13;--line:#dccbc8;--card:#fffdfa;--ok:#2e7d32;--okbg:#e6f2e6;--off:#8f8282;--offbg:#efe8e6;--steam:#c9a9a6;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#171213;--ink:#f4ecea;--muted:#bfaeac;--red:#e0574b;--deep:#a8261b;--line:#4a3a39;--card:#221a1a;--ok:#7bc47f;--okbg:#1f2e20;--off:#8d7f7e;--offbg:#2a2222;--steam:#6e5856}}
+text{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","Apple SD Gothic Neo","Malgun Gothic","PingFang TC","Microsoft JhengHei","Noto Sans CJK TC",sans-serif;fill:var(--ink)}
+.bg{fill:var(--bg)}.t{font-size:19px;font-weight:700}.b{font-size:14px;font-weight:650}.s{font-size:11.5px;fill:var(--muted)}.c{font-size:13px;fill:var(--muted)}
+.m{font-family:var(--mono);font-size:12px}.box{fill:var(--card);stroke:var(--line);stroke-width:1.5}.ln{stroke:var(--line);stroke-width:2;fill:none}
+.red{fill:var(--red)}.ok{fill:var(--ok)}.off{fill:var(--off)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}.tok{fill:var(--red);opacity:0;animation:tok 12s ease-in-out infinite}.tok2{fill:var(--red);opacity:0;animation:tok2 12s ease-in-out infinite}
+.done{opacity:1;animation:done 12s linear infinite}.youbox{stroke-dasharray:5 4}@keyframes tok{0%{transform:translate(0px,0);opacity:1}8%{transform:translate(0px,0);opacity:1}14%{transform:translate(174px,0);opacity:1}28%{transform:translate(174px,0);opacity:1}34%{transform:translate(348px,0);opacity:1}48%{transform:translate(348px,0);opacity:1}54%{transform:translate(522px,0);opacity:1}76%{transform:translate(522px,0);opacity:1}82%{transform:translate(696px,0);opacity:1}97%{transform:translate(696px,0);opacity:0}100%{transform:translate(696px,0);opacity:0}}@keyframes tok2{0%,57%{transform:translate(0,0);opacity:0}58%{opacity:1;transform:translate(0,0)}64%,70%{transform:translate(0,110px);opacity:1}76%{transform:translate(0,0);opacity:1}77%,100%{opacity:0}}@keyframes done{0%,84%{opacity:0}86%,97%{opacity:1}100%{opacity:0}}.hl0{animation:hl0 12s linear infinite}@keyframes hl0{0%,0%{stroke:var(--line);stroke-width:1.5}0%,8%{stroke:var(--red);stroke-width:3}9%,100%{stroke:var(--line);stroke-width:1.5}}.hl1{animation:hl1 12s linear infinite}@keyframes hl1{0%,13%{stroke:var(--line);stroke-width:1.5}14%,28%{stroke:var(--red);stroke-width:3}29%,100%{stroke:var(--line);stroke-width:1.5}}.hl2{animation:hl2 12s linear infinite}@keyframes hl2{0%,33%{stroke:var(--line);stroke-width:1.5}34%,48%{stroke:var(--red);stroke-width:3}49%,100%{stroke:var(--line);stroke-width:1.5}}.hl3{animation:hl3 12s linear infinite}@keyframes hl3{0%,53%{stroke:var(--line);stroke-width:1.5}54%,76%{stroke:var(--red);stroke-width:3}77%,100%{stroke:var(--line);stroke-width:1.5}}.hl4{animation:hl4 12s linear infinite}@keyframes hl4{0%,81%{stroke:var(--line);stroke-width:1.5}82%,97%{stroke:var(--red);stroke-width:3}98%,100%{stroke:var(--line);stroke-width:1.5}}</style>
+<rect class="bg" width="884" height="270" rx="14"/>
+<text class="t" x="22" y="38">How a task travels</text>
+<path class="ln" d="M173 101 H191"/><path class="red" d="M194 101 l-8 -5 v10 z"/>
+<path class="ln" d="M347 101 H365"/><path class="red" d="M368 101 l-8 -5 v10 z"/>
+<path class="ln" d="M521 101 H539"/><path class="red" d="M542 101 l-8 -5 v10 z"/>
+<path class="ln" d="M695 101 H713"/><path class="red" d="M716 101 l-8 -5 v10 z"/>
+<path class="ln" d="M618 130 V182" stroke-dasharray="4 4"/>
+<rect class="box youbox" x="544" y="182" width="148" height="52" rx="10"/>
+<text class="b" x="618" y="204" text-anchor="middle">You</text><text class="s" x="618" y="222" text-anchor="middle">manual items</text>
+<rect class="box hl0" x="22" y="72" width="148" height="58" rx="10"/>
+<text class="b" x="96" y="97" text-anchor="middle">Goal</text><text class="s" x="96" y="116" text-anchor="middle">you describe it</text>
+<rect class="box hl1" x="196" y="72" width="148" height="58" rx="10"/>
+<text class="b" x="270" y="97" text-anchor="middle">Work</text><text class="s" x="270" y="116" text-anchor="middle">agent in a copy</text>
+<rect class="box hl2" x="370" y="72" width="148" height="58" rx="10"/>
+<text class="b" x="444" y="97" text-anchor="middle">Checks</text><text class="s" x="444" y="116" text-anchor="middle">tests, build</text>
+<rect class="box hl3" x="544" y="72" width="148" height="58" rx="10"/>
+<text class="b" x="618" y="97" text-anchor="middle">Acceptance sheet</text><text class="s" x="618" y="116" text-anchor="middle">what is proven</text>
+<rect class="box hl4" x="718" y="72" width="148" height="58" rx="10"/>
+<text class="b" x="792" y="97" text-anchor="middle">Accepted</text><text class="s" x="792" y="116" text-anchor="middle">merge, push</text>
+<g class="done"><circle class="ok" cx="852" cy="86" r="11"/><path d="M847 86 l4 4 l7 -8" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"/></g>
+<circle class="tok" cx="96" cy="62" r="7"/>
+<circle class="tok2" cx="618" cy="134" r="6"/>
+<text class="c" x="22" y="252">“Done” from a model is not acceptance yet. Whatever isn’t proven comes to you as a list.</text>
+</svg>

@@ -7,7 +7,9 @@
   "license": "MIT",
   "authors": ["DietrichGebert", "контрибьюторы Ponytail"],
   "support": "https://github.com/sponsors/DietrichGebert",
-  "files": { "SKILL.md": "skills/ponytail/SKILL.md", "REVIEW.md": "skills/ponytail-review/SKILL.md", "LICENSE": "LICENSE" },
-  "roles": ["implementer", "simplicity-reviewer"],
-  "notes": "Подключаются только тексты скиллов и только к указанным ролям. Hooks Ponytail (SessionStart, SubagentStart, UserPromptSubmit) не ставятся: они сделали бы режим глобальным."
+  "skills": {
+    "ponytail": { "files": ["SKILL.md"], "when": "сделать минимально и просто; уровень задаёт флаг --линза", "lens": true },
+    "ponytail-review": { "files": ["REVIEW.md"], "when": "ревью лишней сложности" }
+  },
+  "notes": "Подключаются только тексты навыков и только к указанным ролям. Hooks Ponytail (SessionStart, SubagentStart, UserPromptSubmit) не ставятся: они сделали бы режим глобальным."
 }

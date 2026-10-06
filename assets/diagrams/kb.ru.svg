@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="280" viewBox="0 0 860 280" role="img" aria-labelledby="t d" lang="ru">
+<title id="t">Знания: заметки + связи + SQL</title>
+<desc id="d">Одни и те же заметки — граф в Obsidian, ссылки на GitHub и таблицы для SQL.</desc>
+<style>
+:root{--bg:#fbf7f2;--ink:#2b1d1d;--muted:#6b5757;--red:#b3261e;--deep:#8c1c13;--line:#dccbc8;--card:#fffdfa;--ok:#2e7d32;--okbg:#e6f2e6;--off:#8f8282;--offbg:#efe8e6;--steam:#c9a9a6;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#171213;--ink:#f4ecea;--muted:#bfaeac;--red:#e0574b;--deep:#a8261b;--line:#4a3a39;--card:#221a1a;--ok:#7bc47f;--okbg:#1f2e20;--off:#8d7f7e;--offbg:#2a2222;--steam:#6e5856}}
+text{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","Apple SD Gothic Neo","Malgun Gothic","PingFang TC","Microsoft JhengHei","Noto Sans CJK TC",sans-serif;fill:var(--ink)}
+.bg{fill:var(--bg)}.t{font-size:19px;font-weight:700}.b{font-size:14px;font-weight:650}.s{font-size:11.5px;fill:var(--muted)}.c{font-size:13px;fill:var(--muted)}
+.m{font-family:var(--mono);font-size:12px}.box{fill:var(--card);stroke:var(--line);stroke-width:1.5}.ln{stroke:var(--line);stroke-width:2;fill:none}
+.red{fill:var(--red)}.ok{fill:var(--ok)}.off{fill:var(--off)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}.nd{fill:var(--card);stroke:var(--red);stroke-width:2}.ed{stroke:var(--muted);stroke-width:1.6;fill:none}.el{font-size:10px;fill:var(--muted)}.panel{fill:var(--card);stroke:var(--line)}.kw{fill:var(--red);font-weight:700}.n0{animation:pop 10s ease-out infinite;animation-delay:0s;transform-box:fill-box;transform-origin:center}.n1{animation:pop 10s ease-out infinite;animation-delay:0.25s;transform-box:fill-box;transform-origin:center}.n2{animation:pop 10s ease-out infinite;animation-delay:0.5s;transform-box:fill-box;transform-origin:center}.n3{animation:pop 10s ease-out infinite;animation-delay:0.75s;transform-box:fill-box;transform-origin:center}.n4{animation:pop 10s ease-out infinite;animation-delay:1s;transform-box:fill-box;transform-origin:center}@keyframes pop{0%{transform:scale(0);opacity:0}6%{transform:scale(1.15);opacity:1}9%,92%{transform:scale(1);opacity:1}100%{transform:scale(1);opacity:0}}.e0{stroke-dasharray:200;stroke-dashoffset:0;animation:draw0 10s linear infinite}@keyframes draw0{0%,12%{stroke-dashoffset:200}22%,92%{stroke-dashoffset:0}100%{stroke-dashoffset:0;opacity:0}}.e1{stroke-dasharray:200;stroke-dashoffset:0;animation:draw1 10s linear infinite}@keyframes draw1{0%,16%{stroke-dashoffset:200}26%,92%{stroke-dashoffset:0}100%{stroke-dashoffset:0;opacity:0}}.e2{stroke-dasharray:200;stroke-dashoffset:0;animation:draw2 10s linear infinite}@keyframes draw2{0%,20%{stroke-dashoffset:200}30%,92%{stroke-dashoffset:0}100%{stroke-dashoffset:0;opacity:0}}.e3{stroke-dasharray:200;stroke-dashoffset:0;animation:draw3 10s linear infinite}@keyframes draw3{0%,24%{stroke-dashoffset:200}34%,92%{stroke-dashoffset:0}100%{stroke-dashoffset:0;opacity:0}}.e4{stroke-dasharray:200;stroke-dashoffset:0;animation:draw4 10s linear infinite}@keyframes draw4{0%,28%{stroke-dashoffset:200}38%,92%{stroke-dashoffset:0}100%{stroke-dashoffset:0;opacity:0}}.q{animation:q 10s linear infinite}@keyframes q{0%,42%{opacity:0}46%,94%{opacity:1}100%{opacity:0}}.row{opacity:1;animation:row 10s linear infinite}.row2{animation-delay:.5s}@keyframes row{0%,56%{opacity:0}60%,94%{opacity:1}100%{opacity:0}}</style>
+<rect class="bg" width="860" height="280" rx="14"/>
+<text class="t" x="40" y="38">Знания: заметки + связи + SQL</text>
+<text class="s" x="40" y="60">проект</text><text class="s" x="300" y="60">граф (Obsidian)</text>
+<g><rect class="box" x="40" y="70" width="150" height="34" rx="8"/><text class="m" x="56" y="92">accept.mjs</text></g>
+<g><rect class="box" x="40" y="116" width="150" height="34" rx="8"/><text class="m" x="56" y="138">snapshot.mjs</text></g>
+<g><rect class="box" x="40" y="162" width="150" height="34" rx="8"/><text class="m" x="56" y="184">evidence.md</text></g>
+<path class="ln" d="M196 125 H290" stroke-dasharray="4 4"/>
+<path class="ed e0" d="M360 92 L470 70"/><text class="el" x="419" y="77">imports</text>
+<path class="ed e1" d="M440 168 L360 92"/><text class="el" x="404" y="126">documents</text>
+<path class="ed e2" d="M330 190 L360 92"/><text class="el" x="349" y="137">tested-by</text>
+<path class="ed e3" d="M470 70 L520 140"/><text class="el" x="499" y="101">imports</text>
+<path class="ed e4" d="M360 92 L520 140"/><text class="el" x="444" y="112">imports</text>
+<g class="n0"><circle class="nd" cx="360" cy="92" r="13"/><text class="s" x="360" y="122" text-anchor="middle">accept</text></g>
+<g class="n1"><circle class="nd" cx="470" cy="70" r="13"/><text class="s" x="470" y="100" text-anchor="middle">snapshot</text></g>
+<g class="n2"><circle class="nd" cx="440" cy="168" r="13"/><text class="s" x="440" y="198" text-anchor="middle">evidence</text></g>
+<g class="n3"><circle class="nd" cx="330" cy="190" r="13"/><text class="s" x="330" y="220" text-anchor="middle">accept.test</text></g>
+<g class="n4"><circle class="nd" cx="520" cy="140" r="13"/><text class="s" x="520" y="170" text-anchor="middle">io</text></g>
+<rect class="panel" x="590" y="64" width="230" height="160" rx="10"/>
+<text class="s" x="606" y="86">SQL</text>
+<g class="q"><text class="m" x="606" y="112"><tspan class="kw">SELECT</tspan> path</text><text class="m" x="606" y="130"><tspan class="kw">FROM</tspan> undocumented_</text><text class="m" x="606" y="148">modules;</text></g>
+<path d="M606 160 H804" stroke="var(--line)"/>
+<text class="m row" x="606" y="182">core/io.mjs</text><text class="m row row2" x="606" y="202">core/process.mjs</text>
+<text class="c" x="40" y="260">Одни и те же заметки — граф в Obsidian, ссылки на GitHub и таблицы для SQL.</text>
+</svg>

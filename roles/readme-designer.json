@@ -12,6 +12,11 @@
   },
   "crossProvider": false,
   "packs": [],
+  "library": [
+    "github-primer",
+    "lucide",
+    "apple-design-resources"
+  ],
   "timeoutMs": 1800000,
   "schemaVersion": 1
 }

@@ -3,11 +3,16 @@ Copyright 2026 Pavel Park
 
 Borshkit continues Claudex (https://github.com/ParkPavel/claudex, Apache-2.0, by the same
 author). The modules core/io.mjs, core/process.mjs, core/snapshot.mjs, core/secrets.mjs,
-core/contract.mjs and core/accept.mjs adapt Claudex code at commit
-ed73017abaab8c4ba77e36910fb996402e8c9646; each file names what it adapts.
+core/contract.mjs, core/accept.mjs, core/executors.mjs and core/adapters.mjs adapt Claudex
+code at commit ed73017abaab8c4ba77e36910fb996402e8c9646; each file names what it adapts.
 
-No third-party code is included. Projects whose ideas Borshkit studied or plans to connect,
-with their authors and licenses, are listed in docs/lineage.md.
+Third-party texts, unchanged and with their licenses beside them:
+- packs/ponytail/ — skills from DietrichGebert/ponytail @ 552acd5, MIT (packs/ponytail/LICENSE)
+- packs/emil/     — skills from emilkowalski/skills @ e8a175d, MIT, Copyright (c) 2026 Emil Kowalski (packs/emil/LICENSE)
+- packs/ecc/      — selected skills from affaan-m/ECC @ ef648e0, MIT, Copyright (c) 2026 Affaan Mustafa (packs/ecc/LICENSE)
 
-Claude, Codex, Obsidian, GitHub and other product names belong to their owners; Borshkit is
-independent and implies no endorsement.
+No other third-party code is included. Every project whose code, texts or ideas Borshkit uses,
+with authors, licenses and pinned versions, is listed in docs/ingredients.md and third-party.json.
+
+Claude, Codex, Obsidian, GitHub, Apple and other product names belong to their owners; Borshkit
+is independent and implies no endorsement.

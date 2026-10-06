@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="260" viewBox="0 0 860 260" role="img" aria-labelledby="t d" lang="ru">
+<title id="t">Доказательство устаревает</title>
+<desc id="d">PASS для a1b2c3 → правка → устарело → PASS для f9e8d7. Изменился хоть один байт — проверку надо повторить, даже если правка ещё не в коммите.</desc>
+<style>
+:root{--bg:#fbf7f2;--ink:#2b1d1d;--muted:#6b5757;--red:#b3261e;--deep:#8c1c13;--line:#dccbc8;--card:#fffdfa;--ok:#2e7d32;--okbg:#e6f2e6;--off:#8f8282;--offbg:#efe8e6;--steam:#c9a9a6;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#171213;--ink:#f4ecea;--muted:#bfaeac;--red:#e0574b;--deep:#a8261b;--line:#4a3a39;--card:#221a1a;--ok:#7bc47f;--okbg:#1f2e20;--off:#8d7f7e;--offbg:#2a2222;--steam:#6e5856}}
+text{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","Apple SD Gothic Neo","Malgun Gothic","PingFang TC","Microsoft JhengHei","Noto Sans CJK TC",sans-serif;fill:var(--ink)}
+.bg{fill:var(--bg)}.t{font-size:19px;font-weight:700}.b{font-size:14px;font-weight:650}.s{font-size:11.5px;fill:var(--muted)}.c{font-size:13px;fill:var(--muted)}
+.m{font-family:var(--mono);font-size:12px}.box{fill:var(--card);stroke:var(--line);stroke-width:1.5}.ln{stroke:var(--line);stroke-width:2;fill:none}
+.red{fill:var(--red)}.ok{fill:var(--ok)}.off{fill:var(--off)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}.passA{opacity:0;animation:passA 10s linear infinite}@keyframes passA{0%,14%{opacity:0}15%,35%{opacity:1}36%,100%{opacity:0}}.stale{opacity:0;animation:stale 10s linear infinite}@keyframes stale{0%,42%{opacity:0}43%,65%{opacity:1}66%,100%{opacity:0}}.hashA{opacity:0;animation:hashA 10s linear infinite}@keyframes hashA{0%,-1%{opacity:0}0%,37%{opacity:1}38%,100%{opacity:0}}.flash{opacity:0;animation:flash 10s linear infinite}@keyframes flash{0%,34%{opacity:0}35%,42%{opacity:1}43%,100%{opacity:0}}.hashB{opacity:1;animation:hashB 10s linear infinite}@keyframes hashB{0%,37%{opacity:0}38%,100%{opacity:1}}.passB{opacity:1;animation:passB 10s linear infinite}@keyframes passB{0%,71%{opacity:0}72%,100%{opacity:1}}.pulse{animation:pulse 10s linear infinite}@keyframes pulse{0%,5%{stroke:var(--line)}7%,14%{stroke:var(--red)}16%,64%{stroke:var(--line)}66%,72%{stroke:var(--red)}74%,100%{stroke:var(--line)}}.bar2{animation:bar 10s linear infinite}@keyframes bar{0%,35%{fill:var(--line)}36%,100%{fill:var(--red)}}.pass{fill:var(--okbg);stroke:var(--ok);stroke-width:1.5}.stl{fill:var(--offbg);stroke:var(--off);stroke-width:1.5;stroke-dasharray:5 4}</style>
+<rect class="bg" width="860" height="260" rx="14"/>
+<text class="t" x="40" y="38">Доказательство устаревает</text>
+<rect class="box" x="40" y="62" width="230" height="130" rx="10"/>
+<text class="b m" x="58" y="88">app.js</text>
+<rect x="58" y="102" width="150" height="8" rx="4" fill="var(--line)"/><rect class="bar2" x="58" y="118" width="110" height="8" rx="4" fill="var(--red)"/><rect x="58" y="134" width="170" height="8" rx="4" fill="var(--line)"/>
+<text class="s" x="58" y="172">состояние:</text>
+<text class="m hashA" x="132.7" y="172">a1b2c3</text><text class="m hashB" x="132.7" y="172" fill="var(--red)">f9e8d7</text>
+<g class="flash"><rect x="200" y="108" width="62" height="22" rx="11" fill="var(--red)"/><text x="231" y="123" text-anchor="middle" style="font-size:11px;fill:#fff;font-weight:650">правка</text></g>
+<text class="s" x="390" y="112" text-anchor="middle">проверка</text>
+<path class="ln pulse" d="M290 127 H482"/><path class="red" d="M490 127 l-10 -6 v12 z"/>
+<g class="passA"><rect class="pass" x="510" y="92" width="300" height="70" rx="12"/>
+<text class="b" x="660" y="122" text-anchor="middle" style="font-size:20px;fill:var(--ok)">PASS ✓</text>
+<text class="s m" x="660" y="146" text-anchor="middle">для a1b2c3</text></g>
+<g class="stale"><rect class="stl" x="510" y="92" width="300" height="70" rx="12"/>
+<text class="b" x="660" y="122" text-anchor="middle" style="font-size:20px;fill:var(--off)">устарело</text>
+<text class="s m" x="660" y="146" text-anchor="middle">снято с a1b2c3</text></g>
+<g class="passB"><rect class="pass" x="510" y="92" width="300" height="70" rx="12"/>
+<text class="b" x="660" y="122" text-anchor="middle" style="font-size:20px;fill:var(--ok)">PASS ✓</text>
+<text class="s m" x="660" y="146" text-anchor="middle">для f9e8d7</text></g>
+<text class="c" x="40" y="238">Изменился хоть один байт — проверку надо повторить, даже если правка ещё не в коммите.</text>
+</svg>

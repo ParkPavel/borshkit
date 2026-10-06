@@ -1,0 +1,82 @@
+---
+bk-type: concept
+related: ["space.md", "../graph/README.md", "glossary.md"]
+documents: ["../../core/kb.mjs"]
+---
+# База знаний: заметки, связи, SQL
+
+**Коротко:** `borshkit знания собрать` превращает проект в связанную базу. Заметки с `[[связями]]` открываются в Obsidian как граф. Поверх них строится SQL-индекс, по которому можно задавать вопросы. Из этой же базы каждая работа получает свой срез контекста.
+
+## Из чего состоит
+
+| Слой | Где | Кто пишет |
+|---|---|---|
+| Заметки о коде и документах | `borshkit/knowledge/_generated/` | Borshkit; перезаписываются при каждой сборке |
+| Твои заметки, уроки, решения | `borshkit/knowledge/` (кроме `_generated`) | ты и агенты; Borshkit их только читает |
+| SQL-индекс | `borshkit/.state/kb.sqlite` | Borshkit; пересобирается из заметок |
+
+Источник правды — заметки. SQL — производная, её можно удалить и собрать заново.
+
+## Формат заметки
+
+```markdown
+---
+bk-type: concept
+bk-provenance: DECLARED
+related: ["[[knowledge/ideas/кэш]]"]
+about: ["[[knowledge/_generated/code/src/cache.js.md|cache.js]]"]
+---
+# Кэш ответов
+
+Текст заметки. Ссылки [[как в Obsidian]] тоже становятся связями.
+```
+
+- `bk-type` — тип: `module`, `test`, `doc`, `decision`, `lesson`, `concept`, `guide`, `reference` или свой.
+- `bk-provenance` — откуда знание: `EXTRACTED` (извлечено из кода), `DECLARED` (заявлено человеком или агентом).
+- Типизированные связи: `imports`, `imported-by`, `tests`, `tested-by`, `documents`, `documented-by`, `references`, `decided-in`, `about`, `related`.
+
+## Документы проекта в том же формате
+
+Обычные `.md` файлы проекта тоже могут нести frontmatter Borshkit. Тогда связи в нём — это **пути относительно документа**, а в тексте — обычные Markdown-ссылки:
+
+```markdown
+---
+bk-type: concept
+related: ["acceptance.md"]
+documents: ["../../core/accept.mjs"]
+---
+```
+
+Так документ работает везде сразу:
+- **GitHub** показывает frontmatter таблицей и переходит по ссылкам;
+- **Obsidian** рисует связи из ссылок в графе;
+- **Borshkit** превращает frontmatter в типизированные связи SQL.
+
+Эта документация устроена именно так. Её граф лежит в [docs/graph](../graph/README.md).
+
+## Вопросы к базе
+
+```sh
+borshkit знания sql "SELECT path FROM undocumented_modules"     # модули без документации
+borshkit знания sql "SELECT src, dst FROM broken_links"         # битые связи
+borshkit знания найти кэш ответы                                # полнотекстовый поиск
+borshkit знания контекст <задача>                               # что связано с задачей
+```
+
+Запросы только на чтение: разрешены `SELECT` и `WITH`, а база открывается в режиме «только чтение».
+
+Таблицы: `notes`, `links`, `fts`. Готовые виды: `orphans`, `undocumented_modules`, `stale`, `broken_links`.
+
+## Уроки, которые устаревают
+
+`borshkit знания урок <задача> "что поняли"` записывает урок из принятой задачи и запоминает хеш кода, о котором он. Когда этот код изменится, урок помечается устаревшим и перестаёт попадать в контекст работ.
+
+## Выгрузка
+
+- `borshkit знания экспорт [папка]` — твои заметки с `[[связями]]`, переписанными в обычные ссылки для GitHub;
+- `borshkit знания экспорт --sql граф.sql` — весь граф одним SQL-скриптом: его можно сохранить в истории, читать на GitHub и загрузить в любую SQLite (`sqlite3 граф.db < граф.sql`).
+
+## Связи
+
+- Пример выгрузки — граф самой документации Borshkit: [docs/graph](../graph/README.md)
+- Где лежит база: [Пространство](space.md)

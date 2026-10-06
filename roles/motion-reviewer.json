@@ -1,0 +1,27 @@
+{
+  "id": "motion-reviewer",
+  "title": "Ревьюер анимаций",
+  "stage": "verify",
+  "authority": "read-only",
+  "output": "review",
+  "requires": {
+    "structuredOutput": true,
+    "output": [
+      "text"
+    ]
+  },
+  "crossProvider": false,
+  "packs": [
+    "emil/review-animations",
+    "emil/animation-vocabulary",
+    "ecc/motion-foundations"
+  ],
+  "library": [
+    "apple-hig-motion",
+    "mdn-view-transitions",
+    "motion",
+    "material-design-3"
+  ],
+  "timeoutMs": 900000,
+  "schemaVersion": 1
+}

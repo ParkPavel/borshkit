@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "emil",
+  "title": "Дизайн-инженерия и анимация (Emil Kowalski)",
+  "source": "https://github.com/emilkowalski/skills",
+  "commit": "e8a175de22ae1e49370fc144c1f3bb9aeedf988d",
+  "license": "MIT",
+  "authors": ["Emil Kowalski", "контрибьюторы emilkowalski/skills"],
+  "skills": {
+    "emil-design-eng": { "files": ["skills/emil-design-eng/SKILL.md"], "when": "главный навык: полировка интерфейса, решения об анимации, мелкие детали" },
+    "animate": { "files": ["skills/animate/SKILL.md", "skills/animate/RECIPES.md"], "when": "сделать анимацию с нуля: стоит ли анимировать, кривая, длительность, прерывание" },
+    "animate-expo": { "files": ["skills/animate-expo/SKILL.md", "skills/animate-expo/RECIPES.md"], "when": "анимации в React Native и Expo: жесты, шторки, отклик" },
+    "review-animations": { "files": ["skills/review-animations/SKILL.md", "skills/review-animations/STANDARDS.md"], "when": "строгое ревью анимаций" },
+    "improve-animations": { "files": ["skills/improve-animations/SKILL.md", "skills/improve-animations/AUDIT.md", "skills/improve-animations/PLAN-TEMPLATE.md"], "when": "аудит всех анимаций проекта и планы исправлений" },
+    "find-animation-opportunities": { "files": ["skills/find-animation-opportunities/SKILL.md"], "when": "где анимация нужна, а где нет" },
+    "animation-vocabulary": { "files": ["skills/animation-vocabulary/SKILL.md"], "when": "словарь: как точно назвать эффект" },
+    "apple-design": { "files": ["skills/apple-design/SKILL.md"], "when": "принципы Apple: жесты, пружины, прерываемые переходы, материалы" },
+    "write-swift": { "files": ["skills/write-swift/SKILL.md"], "when": "современный Swift: типы-значения, параллельность Swift 6, тесты" },
+    "pick-ui-library": { "files": ["skills/pick-ui-library/SKILL.md"], "when": "какую библиотеку взять под задачу интерфейса" },
+    "prototype": { "files": ["skills/prototype/SKILL.md", "skills/prototype/PICKER.md"], "when": "несколько разных вариантов интерфейса с переключателем" },
+    "mobile-native": { "files": ["skills/mobile-native/SKILL.md"], "when": "веб-приложение на телефоне как родное: 100vh, нажатия, безопасные зоны" },
+    "break-ui": { "files": ["skills/break-ui/SKILL.md", "skills/break-ui/CATALOG.md"], "when": "сломать интерфейс худшими данными: длинные имена, пустые списки, эмодзи" },
+    "ask-sonner": { "files": ["skills/ask-sonner/SKILL.md", "skills/ask-sonner/API.md"], "when": "уведомления-тосты на Sonner" }
+  },
+  "notes": "Копия навыков без изменений, с лицензией MIT. Каждая роль получает только свои навыки; дополнительные подключаются флагом --навыки."
+}

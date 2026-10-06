@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { buildKnowledge, exportForGithub, lessonFromTask, parseFrontmatter, queryKnowledge, searchKnowledge, taskContext, wikilinks } from '../core/kb.mjs';
+import { buildKnowledge, exportForGithub, knowledgeSQL, lessonFromTask, parseFrontmatter, queryKnowledge, searchKnowledge, taskContext, wikilinks } from '../core/kb.mjs';
 import { confirmItem, converge, verifyAll } from '../core/accept.mjs';
 import { commit, node, project, space, task, write } from './helpers.mjs';
 
@@ -91,4 +91,22 @@ test('the GitHub export turns wikilinks into relative Markdown links', async t =
   assert.deepEqual(await exportForGithub(s, out), ['concepts/cache.md']);
   const text = await fs.readFile(path.join(out, 'concepts', 'cache.md'), 'utf8');
   assert.equal(text, '# Кэш\n\nКод: [b.js](../../../src/b.js), идея: [быстро](../ideas/fast.md).\n');
+});
+
+test('project docs with Borshkit frontmatter give typed links, and the graph exports as stable SQL', async t => {
+  const s = await space(t, { project: await project(t, { ...files,
+    'docs/concepts/evidence.md': '---\nbk-type: concept\nrelated: ["../guide.md"]\ndocuments: ["../../src/b.js"]\n---\n# Доказательства\n\nСм. [руководство](../guide.md#как-считать).\n' }) });
+  await buildKnowledge(s);
+  const rows = await queryKnowledge(s, "SELECT l.rel, l.dst, l.provenance FROM links l WHERE l.src = 'knowledge/_generated/docs/docs/concepts/evidence.md.md' ORDER BY rel, dst");
+  assert.deepEqual(rows, [
+    { rel: 'documents', dst: 'knowledge/_generated/code/src/b.js.md', provenance: 'DECLARED' },
+    { rel: 'references', dst: 'knowledge/_generated/docs/docs/guide.md.md', provenance: 'EXTRACTED' },
+    { rel: 'related', dst: 'knowledge/_generated/docs/docs/guide.md.md', provenance: 'DECLARED' },
+  ]);
+  assert.deepEqual(await queryKnowledge(s, "SELECT kind, title FROM notes WHERE path = 'docs/concepts/evidence.md'"), [{ kind: 'concept', title: 'Доказательства' }]);
+  const sql = await knowledgeSQL(s);
+  assert.match(sql, /^-- Borshkit knowledge graph/);
+  assert.match(sql, /INSERT INTO notes VALUES \('knowledge\/_generated\/docs\/docs\/concepts\/evidence\.md\.md', 'doc', 'concept', /);
+  await buildKnowledge(s);
+  assert.equal(await knowledgeSQL(s), sql);
 });

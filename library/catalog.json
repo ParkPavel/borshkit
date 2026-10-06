@@ -1,0 +1,932 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "how": "Каждая ссылка проверена 2026-10-06: страницы — ответом 200, репозитории GitHub — клонированием, лицензия прочитана из файла LICENSE. «Не указана» — в репозитории нет файла лицензии (license: none); «на сайте» — условия на самом сайте (see-site).",
+  "categories": {
+    "agent-skills": "Навыки для агентов",
+    "components": "Компоненты интерфейса",
+    "motion": "Анимация",
+    "native-mobile": "iOS, Android и мобильные",
+    "design-systems": "Дизайн-системы",
+    "accessibility": "Доступность",
+    "styling-tokens": "Стили и токены",
+    "icons-fonts": "Иконки и шрифты",
+    "quality-tools": "Проверка качества",
+    "learning": "Учиться"
+  },
+  "entries": [
+    {
+      "id": "emilkowalski-skills",
+      "title": "Emil Kowalski Skills",
+      "url": "https://github.com/emilkowalski/skills",
+      "category": "agent-skills",
+      "kind": "skills",
+      "license": "MIT",
+      "commit": "e8a175d 2026-10-02",
+      "what": "Навыки, чтобы решать, делать и проверять анимации и полировку интерфейса; есть отдельные для Expo, Swift и Sonner.",
+      "forRoles": [
+        "motion-reviewer",
+        "ui-engineer",
+        "designer",
+        "ios-designer"
+      ]
+    },
+    {
+      "id": "hig-agent-skills",
+      "title": "Apple HIG Agent Skill",
+      "url": "https://github.com/justinwetch/HIGAgentSkills",
+      "category": "agent-skills",
+      "kind": "skills",
+      "license": "none",
+      "commit": "77f32a4 2026-09-29",
+      "what": "Сжатые Apple HIG для iOS, iPadOS, macOS, tvOS, visionOS и watchOS с точными значениями и правилами Apple.",
+      "forRoles": [
+        "ios-designer",
+        "designer",
+        "a11y-reviewer"
+      ]
+    },
+    {
+      "id": "anthropic-frontend-design-skill",
+      "title": "Anthropic frontend-design skill",
+      "url": "https://github.com/anthropics/skills/tree/main/skills/frontend-design",
+      "category": "agent-skills",
+      "kind": "skills",
+      "license": "Apache-2.0",
+      "commit": "683bc88 2026-10-05",
+      "what": "Навык, который заставляет агента выбрать осознанное визуальное направление, шрифты и сетку вместо шаблонных решений.",
+      "forRoles": [
+        "designer",
+        "ui-engineer"
+      ]
+    },
+    {
+      "id": "vercel-agent-skills",
+      "title": "Vercel Agent Skills",
+      "url": "https://github.com/vercel-labs/agent-skills",
+      "category": "agent-skills",
+      "kind": "skills",
+      "license": "none",
+      "commit": "063bee9 2026-08-28",
+      "what": "Навыки про производительность React, композицию компонентов, React Native и проверку интерфейса по правилам Vercel.",
+      "forRoles": [
+        "ui-engineer",
+        "a11y-reviewer",
+        "motion-reviewer"
+      ]
+    },
+    {
+      "id": "vercel-web-interface-guidelines",
+      "title": "Web Interface Guidelines",
+      "url": "https://github.com/vercel-labs/web-interface-guidelines",
+      "category": "agent-skills",
+      "kind": "guidelines",
+      "license": "MIT",
+      "commit": "434b7f9 2026-10-05",
+      "what": "Список конкретных правил для веб-интерфейса: клавиатура, фокус, области нажатия, формы, анимация, скорость.",
+      "forRoles": [
+        "ui-engineer",
+        "a11y-reviewer",
+        "tester"
+      ]
+    },
+    {
+      "id": "ecc-frontend-skills",
+      "title": "ECC skills (frontend subset)",
+      "url": "https://github.com/affaan-m/ECC/tree/main/skills",
+      "category": "agent-skills",
+      "kind": "skills",
+      "license": "MIT",
+      "commit": "ef648e0 2026-10-01",
+      "what": "Большая коллекция навыков; для интерфейса — frontend-patterns, accessibility, design-system, motion-*, swiftui-patterns, liquid-glass-design.",
+      "forRoles": [
+        "ui-engineer",
+        "a11y-reviewer",
+        "ios-designer",
+        "motion-reviewer"
+      ]
+    },
+    {
+      "id": "impeccable",
+      "title": "Impeccable",
+      "url": "https://github.com/pbakaus/impeccable",
+      "category": "agent-skills",
+      "kind": "skills",
+      "license": "Apache-2.0",
+      "commit": "cf3d2fa 2026-10-06",
+      "what": "Навык и команды по дизайну для агентов плюс правила, которые находят типичные визуальные ошибки сгенерированных интерфейсов.",
+      "forRoles": [
+        "designer",
+        "ui-engineer"
+      ]
+    },
+    {
+      "id": "swiftui-pro-skill",
+      "title": "SwiftUI Pro (Paul Hudson)",
+      "url": "https://github.com/twostraws/SwiftUI-Agent-Skill",
+      "category": "agent-skills",
+      "kind": "skills",
+      "license": "MIT",
+      "commit": "be297ff 2026-04-20",
+      "what": "Навык, который ведёт агента к современным API SwiftUI для навигации, раскладки, анимации, состояния и VoiceOver.",
+      "forRoles": [
+        "ios-designer",
+        "ui-engineer",
+        "a11y-reviewer"
+      ]
+    },
+    {
+      "id": "swiftui-expert-skill",
+      "title": "SwiftUI Expert Skill (Antoine van der Lee)",
+      "url": "https://github.com/AvdLee/SwiftUI-Agent-Skill",
+      "category": "agent-skills",
+      "kind": "skills",
+      "license": "MIT",
+      "commit": "204dba7 2026-10-06",
+      "what": "Справочники по SwiftUI: состояние, композиция представлений, скорость списков и прокрутки, Liquid Glass.",
+      "forRoles": [
+        "ios-designer",
+        "ui-engineer"
+      ]
+    },
+    {
+      "id": "expo-skills",
+      "title": "Expo Skills",
+      "url": "https://github.com/expo/skills",
+      "category": "agent-skills",
+      "kind": "skills",
+      "license": "MIT",
+      "commit": "d4f4840 2026-10-05",
+      "what": "Официальные навыки Expo: Expo Router, родной интерфейс, анимация, сборки EAS, обновления SDK.",
+      "forRoles": [
+        "ui-engineer",
+        "ios-designer"
+      ]
+    },
+    {
+      "id": "shadcn-ui",
+      "title": "shadcn/ui",
+      "url": "https://github.com/shadcn-ui/ui",
+      "category": "components",
+      "kind": "library",
+      "license": "MIT",
+      "commit": "debae9b 2026-10-06",
+      "what": "Компоненты React, которые копируются в проект; построены на Radix/Base UI и Tailwind, есть CLI и реестр.",
+      "forRoles": [
+        "ui-engineer",
+        "designer"
+      ]
+    },
+    {
+      "id": "radix-primitives",
+      "title": "Radix Primitives",
+      "url": "https://github.com/radix-ui/primitives",
+      "category": "components",
+      "kind": "library",
+      "license": "MIT",
+      "commit": "1fe601a 2026-10-06",
+      "what": "Доступные компоненты React без стилей (диалог, всплывающее окно, меню, вкладки), которые сами управляют фокусом и клавиатурой.",
+      "forRoles": [
+        "ui-engineer",
+        "a11y-reviewer"
+      ]
+    },
+    {
+      "id": "react-aria",
+      "title": "React Aria (Adobe React Spectrum monorepo)",
+      "url": "https://github.com/adobe/react-spectrum",
+      "category": "components",
+      "kind": "library",
+      "license": "Apache-2.0",
+      "commit": "99e6102 2026-10-03",
+      "what": "Хуки и компоненты Adobe без стилей для доступного React: клавиатура, программы чтения с экрана, локализация.",
+      "forRoles": [
+        "ui-engineer",
+        "a11y-reviewer"
+      ]
+    },
+    {
+      "id": "base-ui",
+      "title": "Base UI",
+      "url": "https://github.com/mui/base-ui",
+      "category": "components",
+      "kind": "library",
+      "license": "MIT",
+      "commit": "f292461 2026-10-06",
+      "what": "Доступные компоненты React без стилей от авторов Radix, Floating UI и MUI.",
+      "forRoles": [
+        "ui-engineer",
+        "a11y-reviewer"
+      ]
+    },
+    {
+      "id": "headless-ui",
+      "title": "Headless UI",
+      "url": "https://github.com/tailwindlabs/headlessui",
+      "category": "components",
+      "kind": "library",
+      "license": "MIT",
+      "commit": "eea57cf 2026-04-13",
+      "what": "Доступные компоненты React и Vue без стилей, созданные для работы с Tailwind CSS.",
+      "forRoles": [
+        "ui-engineer",
+        "a11y-reviewer"
+      ]
+    },
+    {
+      "id": "ark-ui",
+      "title": "Ark UI",
+      "url": "https://github.com/chakra-ui/ark",
+      "category": "components",
+      "kind": "library",
+      "license": "MIT",
+      "commit": "54e8c11 2026-10-06",
+      "what": "Компоненты без стилей на конечных автоматах Zag.js для React, Solid, Vue и Svelte.",
+      "forRoles": [
+        "ui-engineer",
+        "a11y-reviewer"
+      ]
+    },
+    {
+      "id": "sonner",
+      "title": "Sonner",
+      "url": "https://github.com/emilkowalski/sonner",
+      "category": "components",
+      "kind": "library",
+      "license": "MIT",
+      "commit": "8e4662b 2026-08-10",
+      "what": "Уведомления-тосты для React со стопкой и закрытием смахиванием.",
+      "forRoles": [
+        "ui-engineer",
+        "motion-reviewer"
+      ]
+    },
+    {
+      "id": "cmdk",
+      "title": "cmdk",
+      "url": "https://github.com/pacocoursey/cmdk",
+      "category": "components",
+      "kind": "library",
+      "license": "MIT",
+      "commit": "dd2250e 2025-10-28",
+      "what": "Командное меню (Cmd+K) для React без стилей, с встроенным поиском.",
+      "forRoles": [
+        "ui-engineer"
+      ]
+    },
+    {
+      "id": "motion",
+      "title": "Motion (formerly Framer Motion)",
+      "url": "https://github.com/motiondivision/motion",
+      "category": "motion",
+      "kind": "library",
+      "license": "MIT",
+      "commit": "55eb6bb 2026-10-05",
+      "what": "Библиотека анимации для React, JavaScript и Vue: пружины, жесты, анимация раскладки и исчезновения.",
+      "forRoles": [
+        "ui-engineer",
+        "motion-reviewer"
+      ]
+    },
+    {
+      "id": "gsap",
+      "title": "GSAP",
+      "url": "https://github.com/greensock/GSAP",
+      "category": "motion",
+      "kind": "library",
+      "license": "GSAP Standard 'no charge' license (not OSI; https://gsap.com/standard-license)",
+      "commit": "13e2b79 2026-04-13",
+      "what": "Анимация на временной шкале для CSS, SVG и canvas в любом фреймворке, плюс плагины прокрутки. Лицензия не открытая.",
+      "forRoles": [
+        "ui-engineer",
+        "motion-reviewer"
+      ]
+    },
+    {
+      "id": "react-native-reanimated",
+      "title": "React Native Reanimated",
+      "url": "https://github.com/software-mansion/react-native-reanimated",
+      "category": "motion",
+      "kind": "library",
+      "license": "MIT",
+      "commit": "9eaf504 2026-10-06",
+      "what": "Анимации React Native в потоке интерфейса, включая переходы раскладки и общих элементов.",
+      "forRoles": [
+        "ui-engineer",
+        "motion-reviewer"
+      ]
+    },
+    {
+      "id": "lottie-web",
+      "title": "Lottie (web)",
+      "url": "https://github.com/airbnb/lottie-web",
+      "category": "motion",
+      "kind": "library",
+      "license": "MIT",
+      "commit": "bede03d 2024-11-19",
+      "what": "Проигрывает в браузере анимации After Effects, сохранённые в JSON; есть версии для iOS, Android и React Native.",
+      "forRoles": [
+        "ui-engineer",
+        "motion-reviewer",
+        "designer"
+      ]
+    },
+    {
+      "id": "auto-animate",
+      "title": "AutoAnimate",
+      "url": "https://github.com/formkit/auto-animate",
+      "category": "motion",
+      "kind": "library",
+      "license": "MIT",
+      "commit": "06882a8 2026-07-10",
+      "what": "Анимация добавления, удаления и перемещения элементов списка одной строкой, в любом фреймворке.",
+      "forRoles": [
+        "ui-engineer",
+        "motion-reviewer"
+      ]
+    },
+    {
+      "id": "mdn-view-transitions",
+      "title": "View Transition API (MDN)",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API",
+      "category": "motion",
+      "kind": "reference",
+      "license": "see-site",
+      "what": "Справочник по встроенному в браузер View Transition API: анимация между состояниями страницы и переходами.",
+      "forRoles": [
+        "ui-engineer",
+        "motion-reviewer"
+      ]
+    },
+    {
+      "id": "apple-hig-motion",
+      "title": "Apple HIG: Motion",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/motion",
+      "category": "motion",
+      "kind": "guidelines",
+      "license": "see-site",
+      "what": "Правила Apple: когда и как анимировать, и как уважать настройку «Уменьшение движения».",
+      "forRoles": [
+        "motion-reviewer",
+        "ios-designer",
+        "a11y-reviewer"
+      ]
+    },
+    {
+      "id": "apple-hig",
+      "title": "Apple Human Interface Guidelines",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/",
+      "category": "native-mobile",
+      "kind": "guidelines",
+      "license": "see-site",
+      "what": "Официальные правила дизайна Apple: компоненты, раскладка, типографика, поведение платформ.",
+      "forRoles": [
+        "ios-designer",
+        "designer",
+        "a11y-reviewer"
+      ]
+    },
+    {
+      "id": "swiftui-docs",
+      "title": "SwiftUI documentation",
+      "url": "https://developer.apple.com/documentation/swiftui",
+      "category": "native-mobile",
+      "kind": "reference",
+      "license": "see-site",
+      "what": "Справочник API и уроки Apple по интерфейсам на SwiftUI.",
+      "forRoles": [
+        "ios-designer",
+        "ui-engineer"
+      ]
+    },
+    {
+      "id": "apple-liquid-glass",
+      "title": "Liquid Glass (Apple Developer)",
+      "url": "https://developer.apple.com/documentation/technologyoverviews/liquid-glass",
+      "category": "native-mobile",
+      "kind": "reference",
+      "license": "see-site",
+      "what": "Обзор материала Liquid Glass от Apple и как перейти на него в SwiftUI, UIKit и AppKit.",
+      "forRoles": [
+        "ios-designer",
+        "designer"
+      ]
+    },
+    {
+      "id": "apple-design-resources",
+      "title": "Apple Design Resources",
+      "url": "https://developer.apple.com/design/resources/",
+      "category": "native-mobile",
+      "kind": "reference",
+      "license": "see-site",
+      "what": "Официальные наборы интерфейса для Figma и Sketch, шаблоны и рамки устройств Apple.",
+      "forRoles": [
+        "ios-designer",
+        "designer",
+        "readme-designer"
+      ]
+    },
+    {
+      "id": "expo",
+      "title": "Expo",
+      "url": "https://github.com/expo/expo",
+      "category": "native-mobile",
+      "kind": "tool",
+      "license": "MIT",
+      "commit": "98274e99 2026-10-06",
+      "docsUrl": "https://docs.expo.dev/",
+      "what": "Фреймворк и SDK для приложений на React Native: маршрутизация по файлам, родные модули, сборки в облаке.",
+      "forRoles": [
+        "ui-engineer",
+        "ios-designer"
+      ]
+    },
+    {
+      "id": "react-native",
+      "title": "React Native",
+      "url": "https://github.com/facebook/react-native",
+      "category": "native-mobile",
+      "kind": "library",
+      "license": "MIT",
+      "commit": "e560782 2026-10-06",
+      "docsUrl": "https://reactnative.dev/",
+      "what": "Фреймворк Meta для родных приложений iOS и Android на React.",
+      "forRoles": [
+        "ui-engineer",
+        "ios-designer"
+      ]
+    },
+    {
+      "id": "jetpack-compose",
+      "title": "Jetpack Compose",
+      "url": "https://developer.android.com/compose",
+      "category": "native-mobile",
+      "kind": "reference",
+      "license": "see-site",
+      "what": "Документация Google по декларативному интерфейсу Android, включая компоненты и темы Material 3.",
+      "forRoles": [
+        "ui-engineer",
+        "designer"
+      ]
+    },
+    {
+      "id": "material-design-3",
+      "title": "Material Design 3",
+      "url": "https://m3.material.io/",
+      "category": "design-systems",
+      "kind": "design-system",
+      "license": "see-site",
+      "what": "Дизайн-система Google: компоненты, цвет, шрифт, движение, раскладка для Android, веба и Flutter.",
+      "forRoles": [
+        "designer",
+        "ui-engineer",
+        "motion-reviewer"
+      ]
+    },
+    {
+      "id": "fluent-2",
+      "title": "Fluent 2",
+      "url": "https://fluent2.microsoft.design/",
+      "category": "design-systems",
+      "kind": "design-system",
+      "license": "see-site",
+      "what": "Дизайн-система Microsoft и описания компонентов для веба, Windows, iOS и Android.",
+      "forRoles": [
+        "designer",
+        "ui-engineer"
+      ]
+    },
+    {
+      "id": "ibm-carbon",
+      "title": "IBM Carbon",
+      "url": "https://carbondesignsystem.com/",
+      "category": "design-systems",
+      "kind": "design-system",
+      "license": "see-site",
+      "what": "Открытая дизайн-система IBM: компоненты, токены, визуализация данных, доступность.",
+      "forRoles": [
+        "designer",
+        "ui-engineer",
+        "a11y-reviewer"
+      ]
+    },
+    {
+      "id": "github-primer",
+      "title": "GitHub Primer",
+      "url": "https://primer.style/",
+      "category": "design-systems",
+      "kind": "design-system",
+      "license": "see-site",
+      "what": "Дизайн-система GitHub: компоненты React, CSS, токены, иконки Octicons.",
+      "forRoles": [
+        "designer",
+        "ui-engineer",
+        "readme-designer"
+      ]
+    },
+    {
+      "id": "govuk-design-system",
+      "title": "GOV.UK Design System",
+      "url": "https://design-system.service.gov.uk/",
+      "category": "design-systems",
+      "kind": "design-system",
+      "license": "see-site",
+      "what": "Компоненты и шаблоны правительства Великобритании, проверенные исследованиями; сильные разделы о формах и доступности.",
+      "forRoles": [
+        "designer",
+        "ui-engineer",
+        "a11y-reviewer"
+      ]
+    },
+    {
+      "id": "atlassian-design-system",
+      "title": "Atlassian Design System",
+      "url": "https://atlassian.design/",
+      "category": "design-systems",
+      "kind": "design-system",
+      "license": "see-site",
+      "what": "Основы, токены, компоненты и правила текстов Atlassian.",
+      "forRoles": [
+        "designer",
+        "ui-engineer"
+      ]
+    },
+    {
+      "id": "shopify-polaris",
+      "title": "Shopify Polaris",
+      "url": "https://shopify.dev/docs/api/polaris",
+      "category": "design-systems",
+      "kind": "design-system",
+      "license": "see-site",
+      "what": "Актуальная Polaris от Shopify (веб-компоненты) для интерфейсов админки и приложений Shopify.",
+      "forRoles": [
+        "designer",
+        "ui-engineer"
+      ]
+    },
+    {
+      "id": "wcag-22",
+      "title": "WCAG 2.2",
+      "url": "https://www.w3.org/TR/WCAG22/",
+      "category": "accessibility",
+      "kind": "guidelines",
+      "license": "see-site",
+      "what": "Стандарт W3C с проверяемыми критериями доступности веб-содержимого.",
+      "forRoles": [
+        "a11y-reviewer",
+        "tester",
+        "ui-engineer"
+      ]
+    },
+    {
+      "id": "aria-apg",
+      "title": "WAI-ARIA Authoring Practices Guide",
+      "url": "https://www.w3.org/WAI/ARIA/apg/",
+      "category": "accessibility",
+      "kind": "guidelines",
+      "license": "see-site",
+      "what": "Шаблоны W3C: какое поведение клавиатуры и какие роли ARIA нужны меню, вкладкам, диалогам.",
+      "forRoles": [
+        "a11y-reviewer",
+        "ui-engineer"
+      ]
+    },
+    {
+      "id": "mdn-accessibility",
+      "title": "MDN Accessibility",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility",
+      "category": "accessibility",
+      "kind": "reference",
+      "license": "see-site",
+      "what": "Руководства MDN и справочник ARIA по доступным веб-страницам.",
+      "forRoles": [
+        "a11y-reviewer",
+        "ui-engineer"
+      ]
+    },
+    {
+      "id": "axe-core",
+      "title": "axe-core",
+      "url": "https://github.com/dequelabs/axe-core",
+      "category": "accessibility",
+      "kind": "tool",
+      "license": "MPL-2.0",
+      "commit": "8944d76 2026-10-05",
+      "what": "Движок правил доступности для браузера и тестов: автоматически находит нарушения WCAG.",
+      "forRoles": [
+        "a11y-reviewer",
+        "tester"
+      ]
+    },
+    {
+      "id": "inclusive-components",
+      "title": "Inclusive Components",
+      "url": "https://inclusive-components.design/",
+      "category": "accessibility",
+      "kind": "reference",
+      "license": "see-site",
+      "what": "Статьи Heydon Pickering о том, как сделать доступными переключатели, меню, вкладки, карточки.",
+      "forRoles": [
+        "a11y-reviewer",
+        "ui-engineer"
+      ]
+    },
+    {
+      "id": "tailwindcss",
+      "title": "Tailwind CSS",
+      "url": "https://github.com/tailwindlabs/tailwindcss",
+      "category": "styling-tokens",
+      "kind": "library",
+      "license": "MIT",
+      "commit": "fa81d69 2026-09-25",
+      "docsUrl": "https://tailwindcss.com/docs",
+      "what": "CSS-фреймворк из утилит; тема — токены дизайна, заданные в CSS.",
+      "forRoles": [
+        "ui-engineer"
+      ]
+    },
+    {
+      "id": "dtcg-format",
+      "title": "Design Tokens Format Module 2025.10",
+      "url": "https://www.designtokens.org/tr/2025.10/format/",
+      "category": "styling-tokens",
+      "kind": "reference",
+      "license": "see-site",
+      "what": "Спецификация группы W3C: формат JSON для обмена токенами дизайна между инструментами.",
+      "forRoles": [
+        "designer",
+        "ui-engineer"
+      ]
+    },
+    {
+      "id": "open-props",
+      "title": "Open Props",
+      "url": "https://github.com/argyleink/open-props",
+      "category": "styling-tokens",
+      "kind": "library",
+      "license": "MIT",
+      "commit": "530682d 2026-08-10",
+      "what": "Готовые CSS-переменные: цвета, отступы, шрифты, тени, кривые и анимации.",
+      "forRoles": [
+        "ui-engineer",
+        "motion-reviewer"
+      ]
+    },
+    {
+      "id": "radix-colors",
+      "title": "Radix Colors",
+      "url": "https://github.com/radix-ui/colors",
+      "category": "styling-tokens",
+      "kind": "library",
+      "license": "MIT",
+      "commit": "dbdb854 2025-12-17",
+      "what": "Шкалы цветов из 12 ступеней, светлые и тёмные, рассчитанные на доступный контраст.",
+      "forRoles": [
+        "designer",
+        "ui-engineer",
+        "a11y-reviewer"
+      ]
+    },
+    {
+      "id": "utopia",
+      "title": "Utopia",
+      "url": "https://utopia.fyi/",
+      "category": "styling-tokens",
+      "kind": "tool",
+      "license": "see-site",
+      "what": "Калькуляторы плавных шкал шрифта и отступов на CSS clamp().",
+      "forRoles": [
+        "designer",
+        "ui-engineer"
+      ]
+    },
+    {
+      "id": "lucide",
+      "title": "Lucide",
+      "url": "https://github.com/lucide-icons/lucide",
+      "category": "icons-fonts",
+      "kind": "library",
+      "license": "ISC",
+      "commit": "1fae58d 2026-10-06",
+      "what": "Единый набор контурных SVG-иконок с пакетами для React, Vue, Svelte и других.",
+      "forRoles": [
+        "ui-engineer",
+        "designer",
+        "readme-designer"
+      ]
+    },
+    {
+      "id": "phosphor-icons",
+      "title": "Phosphor Icons",
+      "url": "https://github.com/phosphor-icons/homepage",
+      "category": "icons-fonts",
+      "kind": "library",
+      "license": "MIT",
+      "commit": "7a57592 2026-08-25",
+      "what": "Семейство иконок в шести начертаниях — от тонкого до двухцветного.",
+      "forRoles": [
+        "ui-engineer",
+        "designer",
+        "readme-designer"
+      ]
+    },
+    {
+      "id": "heroicons",
+      "title": "Heroicons",
+      "url": "https://github.com/tailwindlabs/heroicons",
+      "category": "icons-fonts",
+      "kind": "library",
+      "license": "MIT",
+      "commit": "616b7a4 2026-05-12",
+      "what": "SVG-иконки в контурном и залитом стилях от команды Tailwind CSS.",
+      "forRoles": [
+        "ui-engineer",
+        "readme-designer"
+      ]
+    },
+    {
+      "id": "sf-symbols",
+      "title": "SF Symbols",
+      "url": "https://developer.apple.com/sf-symbols/",
+      "category": "icons-fonts",
+      "kind": "tool",
+      "license": "see-site",
+      "what": "Библиотека иконок Apple и приложение к ней; иконки согласованы со шрифтом San Francisco.",
+      "forRoles": [
+        "ios-designer",
+        "designer"
+      ]
+    },
+    {
+      "id": "inter",
+      "title": "Inter",
+      "url": "https://github.com/rsms/inter",
+      "category": "icons-fonts",
+      "kind": "library",
+      "license": "OFL-1.1",
+      "commit": "353b61b 2024-11-18",
+      "what": "Шрифт для экранов, часто используется в интерфейсах.",
+      "forRoles": [
+        "designer",
+        "ui-engineer",
+        "readme-designer"
+      ]
+    },
+    {
+      "id": "geist-font",
+      "title": "Geist",
+      "url": "https://github.com/vercel/geist-font",
+      "category": "icons-fonts",
+      "kind": "library",
+      "license": "OFL-1.1",
+      "commit": "10dc765 2026-06-01",
+      "what": "Шрифты Vercel — без засечек и моноширинный — для интерфейсов и кода.",
+      "forRoles": [
+        "designer",
+        "ui-engineer",
+        "readme-designer"
+      ]
+    },
+    {
+      "id": "storybook",
+      "title": "Storybook",
+      "url": "https://github.com/storybookjs/storybook",
+      "category": "quality-tools",
+      "kind": "tool",
+      "license": "MIT",
+      "commit": "d481ef5 2026-10-06",
+      "what": "Мастерская, где компоненты собирают, описывают и тестируют по отдельности.",
+      "forRoles": [
+        "ui-engineer",
+        "tester",
+        "designer"
+      ]
+    },
+    {
+      "id": "playwright",
+      "title": "Playwright",
+      "url": "https://github.com/microsoft/playwright",
+      "category": "quality-tools",
+      "kind": "tool",
+      "license": "Apache-2.0",
+      "commit": "5be1676 2026-10-06",
+      "what": "Автоматизация браузера и сквозные тесты в Chromium, Firefox и WebKit, со сравнением скриншотов.",
+      "forRoles": [
+        "tester",
+        "ui-engineer"
+      ]
+    },
+    {
+      "id": "lighthouse",
+      "title": "Lighthouse",
+      "url": "https://github.com/GoogleChrome/lighthouse",
+      "category": "quality-tools",
+      "kind": "tool",
+      "license": "Apache-2.0",
+      "commit": "20bbe9f 2026-10-05",
+      "what": "Аудит страницы: скорость, доступность, SEO, лучшие практики — из CLI или Chrome DevTools.",
+      "forRoles": [
+        "tester",
+        "a11y-reviewer",
+        "ui-engineer"
+      ]
+    },
+    {
+      "id": "web-vitals",
+      "title": "Core Web Vitals (web.dev)",
+      "url": "https://web.dev/articles/vitals",
+      "category": "quality-tools",
+      "kind": "reference",
+      "license": "see-site",
+      "what": "Что такое LCP, INP и CLS, их пороги и как их измерять.",
+      "forRoles": [
+        "tester",
+        "ui-engineer"
+      ]
+    },
+    {
+      "id": "webdev-learn-css",
+      "title": "Learn CSS (web.dev)",
+      "url": "https://web.dev/learn/css",
+      "category": "learning",
+      "kind": "reference",
+      "license": "see-site",
+      "what": "Бесплатный курс по CSS: блочная модель, раскладка, каскад, цвет и другое.",
+      "forRoles": [
+        "ui-engineer"
+      ]
+    },
+    {
+      "id": "mdn",
+      "title": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/",
+      "category": "learning",
+      "kind": "reference",
+      "license": "see-site",
+      "what": "Справочник по HTML, CSS и веб-API с таблицами поддержки браузерами.",
+      "forRoles": [
+        "ui-engineer",
+        "a11y-reviewer",
+        "tester"
+      ]
+    },
+    {
+      "id": "refactoring-ui",
+      "title": "Refactoring UI (paid)",
+      "url": "https://www.refactoringui.com/",
+      "category": "learning",
+      "kind": "reference",
+      "license": "see-site",
+      "paid": true,
+      "what": "Платная книга с практичными приёмами визуального дизайна для разработчиков: иерархия, отступы, цвет, глубина.",
+      "forRoles": [
+        "designer",
+        "ui-engineer",
+        "readme-designer"
+      ]
+    },
+    {
+      "id": "laws-of-ux",
+      "title": "Laws of UX",
+      "url": "https://lawsofux.com/",
+      "category": "learning",
+      "kind": "reference",
+      "license": "see-site",
+      "what": "Короткие описания психологических принципов (законы Фиттса, Хика, Якоба и др.) в дизайне интерфейсов.",
+      "forRoles": [
+        "designer",
+        "ui-engineer"
+      ]
+    }
+  ],
+  "rejected": [
+    {
+      "url": "https://github.com/emilkowalski/vaul",
+      "reason": "Clone OK (MIT, 3e97aac 2025-10-03) but README states the repo is unmaintained."
+    },
+    {
+      "url": "https://github.com/Shopify/polaris",
+      "reason": "README says Polaris React is archived and deprecated; replaced by the shopify.dev Polaris entry."
+    },
+    {
+      "url": "https://github.com/material-components/material-web",
+      "reason": "README says Material Web is in maintenance mode pending new maintainers; m3.material.io and Jetpack Compose cover Material 3."
+    },
+    {
+      "url": "https://github.com/Dimillian/Skills",
+      "reason": "Verified (MIT) but mostly build, debug and release workflow skills, little UI/design content."
+    },
+    {
+      "url": "https://www.chromatic.com/",
+      "reason": "Reachable (200) but a commercial hosted service; Storybook and Playwright screenshot tests cover the open-source need."
+    },
+    {
+      "url": "https://github.com/atlassian/design-system-docs",
+      "reason": "git clone failed (repo not found); atlassian.design site used instead."
+    },
+    {
+      "url": "https://github.com/utopia-fyi/utopia",
+      "reason": "git clone failed (repo not found); utopia.fyi site used instead."
+    }
+  ]
+}

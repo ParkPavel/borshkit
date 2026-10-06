@@ -1,0 +1,27 @@
+{
+  "id": "a11y-reviewer",
+  "title": "Ревьюер доступности",
+  "stage": "verify",
+  "authority": "read-only",
+  "output": "review",
+  "requires": {
+    "structuredOutput": true,
+    "output": [
+      "text"
+    ]
+  },
+  "crossProvider": false,
+  "packs": [
+    "ecc/accessibility",
+    "ecc/frontend-a11y"
+  ],
+  "library": [
+    "wcag-22",
+    "aria-apg",
+    "mdn-accessibility",
+    "axe-core",
+    "inclusive-components"
+  ],
+  "timeoutMs": 900000,
+  "schemaVersion": 1
+}

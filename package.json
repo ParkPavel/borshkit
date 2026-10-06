@@ -1,7 +1,7 @@
 {
   "name": "borshkit",
-  "version": "0.9.0",
-  "description": "Borshkit — Modular AI Workspace: tasks with goals, evidence bound to the exact state, automatic acceptance where it can be shown and a clear manual sheet where it cannot.",
+  "version": "0.10.0",
+  "description": "Borshkit — Modular AI Workspace: AI agents work, evidence bound to the exact file state decides acceptance, and whatever cannot be proven comes to you as a short manual checklist.",
   "type": "module",
   "private": true,
   "engines": {
@@ -37,10 +37,44 @@
     "README.md",
     "LICENSE",
     "NOTICE",
-    "assets",
     "CHANGELOG.md",
     "CONTRIBUTORS-REFERENCES.md",
     "SECURITY.md",
-    "CONTRIBUTING.md"
-  ]
+    "CONTRIBUTING.md",
+    "assets",
+    "library",
+    "README.en.md",
+    "README.de.md",
+    "README.ko.md",
+    "README.zh-TW.md",
+    "README.fr.md",
+    "scripts/library.mjs",
+    "scripts/diagrams.mjs"
+  ],
+  "keywords": [
+    "ai-agents",
+    "claude-code",
+    "claude-code-plugin",
+    "codex",
+    "agentic-workflow",
+    "acceptance-testing",
+    "evidence",
+    "multi-agent",
+    "llm",
+    "obsidian",
+    "knowledge-graph",
+    "sqlite",
+    "wikilinks",
+    "agent-skills",
+    "frontend",
+    "design-engineering",
+    "accessibility",
+    "ios",
+    "privacy",
+    "developer-tools"
+  ],
+  "homepage": "https://github.com/ParkPavel/borshkit#readme",
+  "bugs": {
+    "url": "https://github.com/ParkPavel/borshkit/issues"
+  }
 }
