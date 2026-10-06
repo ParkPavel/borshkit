@@ -10,6 +10,8 @@ import { verifyAll } from '../core/accept.mjs';
 import { commit, node, space, task, tempDir, write } from './helpers.mjs';
 
 const ID = ['-c', 'user.name=Test', '-c', 'user.email=test@example.invalid'];
+// Git on Windows may check files out with CRLF (core.autocrlf); compare text, not line endings.
+const read = async file => (await fs.readFile(file, 'utf8')).replace(/\r\n/g, '\n');
 async function identity(dir) { await git(dir, ['config', 'user.name', 'Ты']); await git(dir, ['config', 'user.email', 'you@example.invalid']); }
 
 test('history, what changed and who did it, in plain words with the git commands behind them', async t => {
@@ -33,7 +35,7 @@ test('restore keeps a copy of what it replaces, and the space history records th
   const s = await space(t);
   await write(s.project, { 'src/app.js': 'сломано\n', 'src/new.js': 'новый файл\n' });
   const r = await restoreFile(s, 'src/app.js');
-  assert.equal(await fs.readFile(path.join(s.project, 'src/app.js'), 'utf8'), 'export const answer = 42;\n');
+  assert.equal(await read(path.join(s.project, 'src/app.js')), 'export const answer = 42;\n');
   assert.equal(await fs.readFile(path.join(s.dir, r.backup), 'utf8'), 'сломано\n');
   const fresh = await restoreFile(s, 'src/new.js');
   await assert.rejects(fs.access(path.join(s.project, 'src/new.js')));
@@ -63,7 +65,7 @@ test('merging needs an accepted task and a person; then the worktree branch land
   await assert.rejects(mergeTask(s, 'feat'), /только человек/);
   const r = await mergeTask(s, 'feat', { confirmedByPerson: true });
   assert.notEqual(r.before, r.after);
-  assert.equal(await fs.readFile(path.join(s.project, 'feature.txt'), 'utf8'), 'сделано для feat\n');
+  assert.equal(await read(path.join(s.project, 'feature.txt')), 'сделано для feat\n');
   assert.ok((await readJSON(path.join(s.tasks, 'feat', 'worktree.json'))).mergedAt);
   await assert.rejects(mergeTask(s, 'feat', { confirmedByPerson: true }), /уже собрана/);
 });
