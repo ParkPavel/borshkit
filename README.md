@@ -9,6 +9,7 @@
   <img src="https://img.shields.io/badge/dependencies-0-2e7d32" alt="ноль зависимостей">
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="плагин Claude Code">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-6b5757" alt="лицензия Apache-2.0"></a>
+  <a href="https://t.me/parkpavel_chigon"><img src="https://img.shields.io/badge/Telegram-%D0%BA%D0%B0%D0%BD%D0%B0%D0%BB%20%D0%B0%D0%B2%D1%82%D0%BE%D1%80%D0%B0-26a5e4?logo=telegram&logoColor=white" alt="Telegram-канал автора"></a>
 </p>
 
 <p align="center">
@@ -156,6 +157,10 @@ Borshkit — это борщ: собран из лучших ингредиен�
 ```sh
 npm run verify   # статические проверки и все тесты; CI запускает их на Linux и Windows
 ```
+
+## Автор
+
+**Pavel Park** — [GitHub](https://github.com/ParkPavel) · [Telegram-канал](https://t.me/parkpavel_chigon)
 
 ## Лицензия
 

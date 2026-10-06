@@ -9,6 +9,7 @@
   <img src="https://img.shields.io/badge/dependencies-0-2e7d32" alt="zéro dépendance">
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="plugin Claude Code">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-6b5757" alt="licence Apache-2.0"></a>
+  <a href="https://t.me/parkpavel_chigon"><img src="https://img.shields.io/badge/Telegram-cha%C3%AEne%20de%20l%E2%80%99auteur-26a5e4?logo=telegram&logoColor=white" alt="Chaîne Telegram de l’auteur"></a>
 </p>
 
 <p align="center">
@@ -159,6 +160,10 @@ La documentation est en russe pour l’instant :
 ```sh
 npm run verify   # vérifications statiques et tous les tests ; la CI les lance sous Linux et Windows
 ```
+
+## Auteur
+
+**Pavel Park** — [GitHub](https://github.com/ParkPavel) · [chaîne Telegram](https://t.me/parkpavel_chigon)
 
 ## Licence
 

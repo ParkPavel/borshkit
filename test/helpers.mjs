@@ -5,10 +5,19 @@ import { git, readJSON, atomicJSON } from '../core/io.mjs';
 import { initSpace } from '../core/space.mjs';
 import { newTask } from '../core/contract.mjs';
 
+// After a commit Git may start `maintenance run --auto` (gc) as a detached
+// process that keeps writing into .git/objects/pack while a test already
+// removes its temporary folder (ENOTEMPTY on CI). Every git the tests spawn
+// inherits this environment, so turn automatic gc and maintenance off.
+const extra = [['gc.auto', '0'], ['maintenance.auto', 'false']];
+const base = Number(process.env.GIT_CONFIG_COUNT ?? 0);
+extra.forEach(([k, v], i) => { process.env[`GIT_CONFIG_KEY_${base + i}`] = k; process.env[`GIT_CONFIG_VALUE_${base + i}`] = v; });
+process.env.GIT_CONFIG_COUNT = String(base + extra.length);
+
 const ID = ['-c', 'user.name=Test', '-c', 'user.email=test@example.invalid', '-c', 'commit.gpgsign=false'];
 export async function tempDir(t) {
   const dir = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'borshkit-')));
-  t.after(() => fs.rm(dir, { recursive: true, force: true }));
+  t.after(() => fs.rm(dir, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 }));
   return dir;
 }
 /** A Git project with one committed file. */

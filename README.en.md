@@ -9,6 +9,7 @@
   <img src="https://img.shields.io/badge/dependencies-0-2e7d32" alt="zero dependencies">
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="Claude Code plugin">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-6b5757" alt="license Apache-2.0"></a>
+  <a href="https://t.me/parkpavel_chigon"><img src="https://img.shields.io/badge/Telegram-author%27s%20channel-26a5e4?logo=telegram&logoColor=white" alt="The author's Telegram channel"></a>
 </p>
 
 <p align="center">
@@ -159,6 +160,10 @@ The documentation is in Russian for now:
 ```sh
 npm run verify   # static checks and all tests; CI runs them on Linux and Windows
 ```
+
+## Author
+
+**Pavel Park** — [GitHub](https://github.com/ParkPavel) · [Telegram channel](https://t.me/parkpavel_chigon)
 
 ## License
 
