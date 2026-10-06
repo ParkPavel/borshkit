@@ -9,6 +9,7 @@
   <img src="https://img.shields.io/badge/dependencies-0-2e7d32" alt="의존성 0개">
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="Claude Code 플러그인">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-6b5757" alt="라이선스 Apache-2.0"></a>
+  <a href="https://t.me/parkpavel_chigon"><img src="https://img.shields.io/badge/Telegram-%EB%A7%8C%EB%93%A0%20%EC%82%AC%EB%9E%8C%20%EC%B1%84%EB%84%90-26a5e4?logo=telegram&logoColor=white" alt="만든 사람의 Telegram 채널"></a>
 </p>
 
 <p align="center">
@@ -159,6 +160,10 @@ Borshkit은 보르시입니다. 다른 사람들이 기르고 누구나 쓸 수 
 ```sh
 npm run verify   # 정적 검사와 전체 테스트. CI가 Linux와 Windows에서 실행
 ```
+
+## 만든 사람
+
+**Pavel Park** — [GitHub](https://github.com/ParkPavel) · [Telegram 채널](https://t.me/parkpavel_chigon)
 
 ## 라이선스
 

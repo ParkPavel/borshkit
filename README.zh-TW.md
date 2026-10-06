@@ -9,6 +9,7 @@
   <img src="https://img.shields.io/badge/dependencies-0-2e7d32" alt="零相依套件">
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="Claude Code 外掛">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-6b5757" alt="授權 Apache-2.0"></a>
+  <a href="https://t.me/parkpavel_chigon"><img src="https://img.shields.io/badge/Telegram-%E4%BD%9C%E8%80%85%E9%A0%BB%E9%81%93-26a5e4?logo=telegram&logoColor=white" alt="作者的 Telegram 頻道"></a>
 </p>
 
 <p align="center">
@@ -159,6 +160,10 @@ Borshkit 就是一鍋羅宋湯：用別人親手種出、公開分享的最好�
 ```sh
 npm run verify   # 靜態檢查與所有測試；CI 會在 Linux 和 Windows 上執行
 ```
+
+## 作者
+
+**Pavel Park** — [GitHub](https://github.com/ParkPavel) · [Telegram 頻道](https://t.me/parkpavel_chigon)
 
 ## 授權
 
