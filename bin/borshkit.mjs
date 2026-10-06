@@ -19,16 +19,19 @@ import { listRoles } from '../core/roles.mjs';
 import { buildKnowledge, exportForGithub, lessonFromTask, queryKnowledge, searchKnowledge, taskContext } from '../core/kb.mjs';
 import { attributionCheck, contributorsReport, readmeAssetsCheck, writeContributors } from '../core/attribution.mjs';
 import { runCommand } from '../core/process.mjs';
+import { explainGit, history, mergeTask, pushProject, restoreFile, saveProject, whatChanged, whoDid } from '../core/gitshell.mjs';
 
 const COMMANDS = { начать: 'init', статус: 'status', задача: 'task', сохранить: 'save', доктор: 'doctor', помощь: 'help', материал: 'material', приватность: 'privacy', настройки: 'settings', эксперимент: 'experiment',
-  исполнители: 'executors', исполнитель: 'executor', работа: 'job', вопрос: 'question', вопросы: 'question', роли: 'roles', знания: 'knowledge', атрибуция: 'attribution' };
+  исполнители: 'executors', исполнитель: 'executor', работа: 'job', вопрос: 'question', вопросы: 'question', роли: 'roles', знания: 'knowledge', атрибуция: 'attribution',
+  история: 'history', 'что-изменилось': 'changes', 'кто-что': 'who', вернуть: 'restore', 'сохранить-проект': 'save-project', собрать: 'merge', отправить: 'push' };
+const WHICH = { проект: 'project', пространство: 'space', project: 'project', space: 'space' };
 const SUB = { добавить: 'add', список: 'list', обновить: 'refresh', показать: 'show', предложить: 'propose', применить: 'apply', принять: 'accept', вернуть: 'revert', начать: 'start', ключ: 'key', завершить: 'end',
   проверить: 'probe', запустить: 'run', продолжить: 'resume', ответить: 'answer', собрать: 'build', найти: 'search', контекст: 'context', урок: 'lesson', экспорт: 'export', контрибьюторы: 'contributors', картинки: 'assets' };
 const MODES = { умеренный: 'moderate', строгий: 'strict', эксперимент: 'experiment' };
 const TASK = { новая: 'new', анализ: 'check', проверить: 'verify', отзыв: 'review', подтвердить: 'confirm', итог: 'converge', принять: 'accept' };
 const FLAGS = { цель: 'goal', вид: 'kind', папка: 'folder', проект: 'project', 'только-локально': 'local-only', исполнитель: 'executor', результат: 'result',
   текст: 'text', название: 'title', да: 'yes', 'ключи-отозваны': 'revoked', от: 'from', причина: 'reason', через: 'via', манифест: 'manifest', readme: 'readme',
-  роль: 'role', пул: 'pool', линза: 'lens', файл: 'file', следить: 'watch', строка: 'line', команда: 'command', семейство: 'provider', данные: 'data', модель: 'model' };
+  роль: 'role', пул: 'pool', к: 'to', сколько: 'limit', удалённый: 'remote', линза: 'lens', файл: 'file', следить: 'watch', строка: 'line', команда: 'command', семейство: 'provider', данные: 'data', модель: 'model' };
 const LONE = ['json', 'local-only', 'yes', 'revoked', 'help', 'watch', 'line'];
 // Ready-made manifests for the subscription CLIs; the data policy stays "unknown"
 // until the person states it, so the strict mode will not use them by accident.
@@ -90,6 +93,14 @@ const HELP = `Borshkit — Modular AI Workspace
   borshkit атрибуция проверить [--манифест third-party.json] [--readme README.md]   благодарности и лицензии
   borshkit атрибуция картинки [--readme README.md]          изображения README: есть, с alt-текстом, не тяжёлые
   borshkit атрибуция контрибьюторы [владелец/репо …] [--файл CONTRIBUTORS-REFERENCES.md] [--да]
+
+  Git простыми словами (проект — по умолчанию; добавь «пространство» для истории пространства):
+  borshkit история [пространство] [--сколько 10] | история объяснить
+  borshkit что-изменилось [пространство]      borshkit кто-что <файл> [пространство]
+  borshkit вернуть <файл> [пространство] [--к <сохранение>]   сначала копия в backups/, потом возврат
+  borshkit сохранить-проект "что изменилось"   точка в истории проекта (с проверкой на ключи)
+  borshkit собрать <задача>                   принятую работу агента — в основную версию (только в терминале)
+  borshkit отправить [--удалённый origin]     на GitHub, без перезаписи чужого (только в терминале)
 
 Английские имена тоже работают: init, status, doctor, save, task new|check|verify|review|converge|confirm|accept.
 Добавь --json, чтобы получить ответ для программ.`;
@@ -286,6 +297,49 @@ async function attribution([rawSub, ...rest], flags) {
   }
   throw new Error('Действие — проверить, картинки или контрибьюторы');
 }
+async function gitShell(command, args, flags) {
+  const space = await open(flags);
+  const which = WHICH[args.find(a => a in WHICH)] ?? 'project';
+  const rest = args.filter(a => !(a in WHICH));
+  const learn = r => r.git?.length ? `\n\nПодробнее (что сделал Git): ${r.git.join('; ')}` : '';
+  if (command === 'history') {
+    if (rest[0] === 'объяснить' || rest[0] === 'explain') { const rel = await explainGit(space); return print(flags, { note: rel }, `Объяснение с примерами из твоего проекта: ${path.join(space.dir, rel)}`); }
+    const r = await history(space, { which, limit: Number(flags.limit) || 10 });
+    return print(flags, r, r.entries.length ? `${which === 'space' ? 'История пространства' : 'История проекта'}:\n${r.entries.map(e => `  ${e.commit.slice(0, 8)}  ${e.when}  ${e.author}: ${e.message}`).join('\n')}${learn(r)}` : 'Сохранений пока нет.');
+  }
+  if (command === 'changes') {
+    const r = await whatChanged(space, { which });
+    return print(flags, r, r.files.length ? `Изменено после последнего сохранения:\n${r.files.map(f => `  ${f.change}: ${f.file}${f.added !== undefined ? ` (+${f.added} −${f.removed})` : ''}`).join('\n')}${learn(r)}` : 'Всё сохранено, изменений нет.');
+  }
+  if (command === 'who') {
+    assert(rest[0], 'Укажи файл: borshkit кто-что src/app.js');
+    const r = await whoDid(space, rest[0], { which });
+    return print(flags, r, `${r.file}, строк: ${r.lines}\n${r.authors.map(a => `  ${a.name} — ${a.lines} (${a.share}%)`).join('\n')}${learn(r)}`);
+  }
+  if (command === 'restore') {
+    assert(rest[0], 'Укажи файл: borshkit вернуть src/app.js');
+    const r = await restoreFile(space, rest[0], { which, to: typeof flags.to === 'string' ? flags.to : 'HEAD' });
+    return print(flags, r, `Файл ${r.file} возвращён к ${r.to.slice(0, 8)}.${r.backup ? ` Прежняя версия сохранена: ${r.backup}` : ''}${learn(r)}`);
+  }
+  if (command === 'save-project') {
+    const r = await saveProject(space, rest.join(' '));
+    return print(flags, r, r.commit ? `Точка сохранена: ${r.commit.slice(0, 8)}${learn(r)}` : 'Нечего сохранять: изменений нет.');
+  }
+  if (command === 'merge') {
+    assert(rest[0], 'Укажи задачу: borshkit собрать <задача>');
+    const confirmed = await confirmPerson(`Собрать изменения задачи «${rest[0]}» в основную версию проекта?`, 'да');
+    assert(confirmed, PERSON_ONLY);
+    const r = await mergeTask(space, rest[0], { confirmedByPerson: true });
+    return print(flags, r, `Собрано: ${r.before.slice(0, 8)} → ${r.after.slice(0, 8)}${learn(r)}`);
+  }
+  if (command === 'push') {
+    const remote = typeof flags.remote === 'string' ? flags.remote : 'origin';
+    const confirmed = await confirmPerson(`Отправить текущую ветку в ${remote}?`, 'да');
+    assert(confirmed, PERSON_ONLY);
+    const r = await pushProject(space, { remote, confirmedByPerson: true });
+    return print(flags, r, `Отправлено: ветка ${r.branch}, сохранений ${r.commits}${learn(r)}`);
+  }
+}
 async function job([rawSub, ...rest], flags) {
   const sub = SUB[rawSub] ?? rawSub ?? 'list';
   const space = await open(flags);
@@ -378,6 +432,7 @@ export async function main(argv = process.argv.slice(2)) {
   }
   if (command === 'knowledge') return knowledge(positional.slice(1), flags);
   if (command === 'attribution') return attribution(positional.slice(1), flags);
+  if (['history', 'changes', 'who', 'restore', 'save-project', 'merge', 'push'].includes(command)) return gitShell(command, positional.slice(1), flags);
   if (command === 'job') return job(positional.slice(1), flags);
   if (command === 'question') return question(positional.slice(1), flags);
   if (command === 'doctor') {
