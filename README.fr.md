@@ -120,7 +120,7 @@ La [bibliothèque](library/README.md) contient 3 packs de skills (25 skills) et 
 
 Borshkit, c’est un bortsch : il est cuisiné avec les meilleurs ingrédients, que d’autres ont fait pousser et partagés ouvertement.
 
-> Certains ingrédients ont été cuits deux fois. Spec Kit a d’abord mijoté dans Claudex, puis a mijoté une seconde fois sous forme de vérification de spécification, avant de finir sa cuisson dans Borshkit. Tout est arrivé à table en parfait état : licences conservées, auteurs cités.
+> Certains ingrédients ont été cuits deux fois. Spec Kit a d’abord mijoté dans Claudex, puis est repassé sur le feu sous forme de vérification de spécification, avant de finir sa cuisson dans Borshkit. Tout est arrivé à table en parfait état : licences conservées, auteurs cités.
 
 | Ingrédient | Ce qui a été pris |
 |---|---|
