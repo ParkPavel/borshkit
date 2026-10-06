@@ -1,0 +1,19 @@
+{
+  "id": "simplicity-reviewer",
+  "title": "Ленивый сеньор: ревью сложности",
+  "stage": "verify",
+  "authority": "read-only",
+  "output": "findings",
+  "requires": {
+    "structuredOutput": true,
+    "output": [
+      "text"
+    ]
+  },
+  "crossProvider": false,
+  "packs": [
+    "ponytail-review"
+  ],
+  "timeoutMs": 900000,
+  "schemaVersion": 1
+}

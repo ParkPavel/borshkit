@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 2,
+  "taskId": "dark-theme",
+  "kind": "feature",
+  "goal": "В настройках плагина появляется переключатель тёмной темы, и выбор сохраняется после перезапуска",
+  "nonGoals": ["Новые цвета для светлой темы"],
+  "decisions": ["Тема хранится в data.json плагина, а не в localStorage"],
+  "base": { "kind": "git", "head": null, "digest": "0000000000000000000000000000000000000000000000000000000000000000", "fileCount": 0 },
+  "paths": ["src", "styles.css"],
+  "goals": [
+    { "id": "G1", "text": "Пользователь может включить тёмную тему", "criteria": ["C1", "C2"] },
+    { "id": "G2", "text": "Выбор переживает перезапуск", "criteria": ["C3"] }
+  ],
+  "criteria": [
+    { "id": "C1", "text": "Сборка, типы и тесты проходят", "class": "auto" },
+    { "id": "C2", "text": "Переключатель подписан и доступен с клавиатуры", "class": "model", "tag": "ui-a11y" },
+    {
+      "id": "C3",
+      "text": "После перезапуска Obsidian тема остаётся тёмной",
+      "class": "manual",
+      "manual": {
+        "steps": ["Включи тёмную тему в настройках плагина", "Перезапусти Obsidian", "Открой любую заметку"],
+        "expect": "Тема по-прежнему тёмная, переключатель включён",
+        "where": "Тестовое хранилище, не рабочее"
+      }
+    }
+  ],
+  "checks": [
+    { "id": "build", "command": "npm", "args": ["run", "build"], "criteria": ["C1"] },
+    { "id": "test", "command": "npm", "args": ["test"], "criteria": ["C1"] },
+    { "id": "lint", "command": "npm", "args": ["run", "lint"], "criteria": ["C1"] }
+  ],
+  "acceptance": { "policy": "mixed" }
+}

@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "ponytail",
+  "title": "Ленивый сеньор (Ponytail)",
+  "source": "https://github.com/DietrichGebert/ponytail",
+  "commit": "552acd5efd0aeae2583a12efe39373d2f076f25e",
+  "license": "MIT",
+  "authors": ["DietrichGebert", "контрибьюторы Ponytail"],
+  "support": "https://github.com/sponsors/DietrichGebert",
+  "files": { "SKILL.md": "skills/ponytail/SKILL.md", "REVIEW.md": "skills/ponytail-review/SKILL.md", "LICENSE": "LICENSE" },
+  "roles": ["implementer", "simplicity-reviewer"],
+  "notes": "Подключаются только тексты скиллов и только к указанным ролям. Hooks Ponytail (SessionStart, SubagentStart, UserPromptSubmit) не ставятся: они сделали бы режим глобальным."
+}

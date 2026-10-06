@@ -1,0 +1,17 @@
+{
+  "id": "docs-writer",
+  "title": "Автор документации",
+  "stage": "present",
+  "authority": "workspace-write",
+  "output": "files",
+  "requires": {
+    "structuredOutput": true,
+    "output": [
+      "text"
+    ]
+  },
+  "crossProvider": false,
+  "packs": [],
+  "timeoutMs": 1800000,
+  "schemaVersion": 1
+}

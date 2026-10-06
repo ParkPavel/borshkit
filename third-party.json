@@ -1,0 +1,66 @@
+[
+  {
+    "name": "Claudex",
+    "url": "https://github.com/ParkPavel/claudex",
+    "license": "Apache-2.0",
+    "authors": [
+      "Pavel Park"
+    ],
+    "commit": "ed73017abaab8c4ba77e36910fb996402e8c9646",
+    "files": [
+      "core/io.mjs",
+      "core/process.mjs",
+      "core/snapshot.mjs",
+      "core/secrets.mjs",
+      "core/contract.mjs",
+      "core/accept.mjs",
+      "core/executors.mjs",
+      "core/adapters.mjs"
+    ]
+  },
+  {
+    "name": "ECC",
+    "url": "https://github.com/affaan-m/ECC",
+    "license": "MIT",
+    "authors": [
+      "Affaan Mustafa",
+      "контрибьюторы ECC"
+    ],
+    "commit": "ef648e01899ba3e8dc6371642deaaf64b4477775",
+    "support": "https://github.com/sponsors/affaan-m"
+  },
+  {
+    "name": "Ponytail",
+    "url": "https://github.com/DietrichGebert/ponytail",
+    "license": "MIT",
+    "authors": [
+      "DietrichGebert",
+      "контрибьюторы Ponytail"
+    ],
+    "commit": "552acd5efd0aeae2583a12efe39373d2f076f25e",
+    "support": "https://github.com/sponsors/DietrichGebert",
+    "files": [
+      "packs/ponytail/SKILL.md",
+      "packs/ponytail/REVIEW.md"
+    ]
+  },
+  {
+    "name": "Agent Reach",
+    "url": "https://github.com/panniantong/agent-reach",
+    "license": "MIT",
+    "authors": [
+      "Panniantong",
+      "контрибьюторы Agent Reach"
+    ],
+    "commit": "a19a171fa980a0785849596492e0af4db800c82f"
+  },
+  {
+    "name": "free-llm-api-resources",
+    "url": "https://github.com/raullenchai/free-llm-api-resources",
+    "license": "none",
+    "authors": [
+      "Jun Siang Cheah"
+    ],
+    "commit": "fb4762946660aba2563c3e64331ba7ceceb0ceda"
+  }
+]

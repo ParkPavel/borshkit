@@ -1,0 +1,46 @@
+{
+  "name": "borshkit",
+  "version": "0.9.0",
+  "description": "Borshkit — Modular AI Workspace: tasks with goals, evidence bound to the exact state, automatic acceptance where it can be shown and a clear manual sheet where it cannot.",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "borshkit": "bin/borshkit.mjs",
+    "borsch": "bin/borshkit.mjs"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "check": "node scripts/check.mjs",
+    "verify": "npm run check && npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ParkPavel/borshkit.git"
+  },
+  "license": "Apache-2.0",
+  "author": "Pavel Park",
+  "files": [
+    "bin",
+    "core",
+    "roles",
+    "packs",
+    "skills",
+    "hooks",
+    ".claude-plugin",
+    "docs",
+    "examples",
+    "third-party.json",
+    "AGENTS.md",
+    "README.md",
+    "LICENSE",
+    "NOTICE",
+    "assets",
+    "CHANGELOG.md",
+    "CONTRIBUTORS-REFERENCES.md",
+    "SECURITY.md",
+    "CONTRIBUTING.md"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "id": "architect",
+  "title": "Архитектор задачи",
+  "stage": "plan",
+  "authority": "read-only",
+  "output": "contract",
+  "requires": {
+    "structuredOutput": true,
+    "output": [
+      "text"
+    ]
+  },
+  "crossProvider": false,
+  "packs": [],
+  "timeoutMs": 900000,
+  "schemaVersion": 1
+}

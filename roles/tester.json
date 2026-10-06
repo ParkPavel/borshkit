@@ -1,0 +1,17 @@
+{
+  "id": "tester",
+  "title": "Тестировщик",
+  "stage": "verify",
+  "authority": "workspace-write",
+  "output": "files",
+  "requires": {
+    "structuredOutput": true,
+    "output": [
+      "code"
+    ]
+  },
+  "crossProvider": false,
+  "packs": [],
+  "timeoutMs": 1800000,
+  "schemaVersion": 1
+}

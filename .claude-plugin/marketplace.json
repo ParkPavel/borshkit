@@ -1,0 +1,14 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "borshkit",
+  "description": "Borshkit — Modular AI Workspace.",
+  "owner": { "name": "Pavel Park", "url": "https://github.com/ParkPavel" },
+  "plugins": [
+    {
+      "name": "borshkit",
+      "description": "Рабочее пространство для AI-агентов: цели, доказательства, приёмка, приватность, база знаний для Obsidian.",
+      "source": "./",
+      "category": "productivity"
+    }
+  ]
+}

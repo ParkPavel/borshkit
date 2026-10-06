@@ -1,0 +1,17 @@
+{
+  "id": "readme-designer",
+  "title": "Оформитель README",
+  "stage": "present",
+  "authority": "workspace-write",
+  "output": "image",
+  "requires": {
+    "structuredOutput": false,
+    "output": [
+      "image"
+    ]
+  },
+  "crossProvider": false,
+  "packs": [],
+  "timeoutMs": 1800000,
+  "schemaVersion": 1
+}

@@ -1,0 +1,19 @@
+{
+  "id": "implementer",
+  "title": "Разработчик",
+  "stage": "build",
+  "authority": "workspace-write",
+  "output": "files",
+  "requires": {
+    "structuredOutput": true,
+    "output": [
+      "code"
+    ]
+  },
+  "crossProvider": false,
+  "packs": [
+    "ponytail"
+  ],
+  "timeoutMs": 3600000,
+  "schemaVersion": 1
+}
