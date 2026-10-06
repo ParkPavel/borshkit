@@ -89,12 +89,19 @@ export async function mergeTask(space, taskId, { confirmedByPerson = false } = {
   const info = await readJSON(path.join(space.tasks, taskId, 'worktree.json')).catch(() => null);
   assert(info?.branch, `У задачи «${taskId}» нет отдельной копии — собирать нечего`);
   assert(!info.mergedAt, `Задача «${taskId}» уже собрана`);
+  // What was accepted must be exactly what lands: the copy has no unsaved
+  // edits, and the task branch already contains the project's current version,
+  // so the merge adds nothing that the checks have not seen together.
+  const unsaved = (await git(info.path, ['status', '--porcelain'])).trim();
+  assert(!unsaved, `В копии задачи есть изменения, которых нет в её истории. Приняты были файлы вместе с ними — собирать нельзя. Сохрани их через работу или верни, затем: borshkit задача проверить ${taskId}`);
+  const before = (await git(space.project, ['rev-parse', 'HEAD'])).trim();
+  const contains = await git(space.project, ['merge-base', '--is-ancestor', before, info.branch]).then(() => true, () => false);
+  assert(contains, `Основная версия проекта изменилась после начала задачи. Приёмка была без этих изменений, а вместе они могут работать иначе. Сначала: borshkit задача обновить ${taskId} — основная версия вольётся в копию задачи; потом проверки и приёмка заново.`);
   const report = await converge(space, taskId);
   assert(report.status === 'accepted', `Задача «${taskId}» не принята (${report.status}) — собирать рано. Смотри лист приёмки.`);
   assert(confirmedByPerson, 'Собрать изменения в основную версию может только человек в терминале');
   const dirty = (await git(space.project, ['status', '--porcelain', '--untracked-files=no'])).trim();
   assert(!dirty, 'В проекте есть несохранённые изменения. Сохрани их (borshkit сохранить-проект "…") или верни, потом собирай.');
-  const before = (await git(space.project, ['rev-parse', 'HEAD'])).trim();
   try { await git(space.project, ['-c', 'user.name=Borshkit', '-c', 'user.email=space@borshkit', '-c', 'commit.gpgsign=false', 'merge', '--no-ff', '-m', `Borshkit: собрана задача «${taskId}»`, info.branch]); }
   catch (e) {
     await git(space.project, ['merge', '--abort']).catch(() => {});
@@ -105,6 +112,28 @@ export async function mergeTask(space, taskId, { confirmedByPerson = false } = {
   await journal(space, `Задача «${taskId}» собрана в основную версию проекта: ${before.slice(0, 8)} → ${after.slice(0, 8)}.`);
   await saveSpace(space, `Собрана задача «${taskId}»`);
   return { taskId, before, after, git: [`git merge --no-ff ${info.branch}`] };
+}
+/**
+ * Bring the project's current version into a task's copy, so the task can be
+ * checked and accepted on the combined state. Nothing in the project changes;
+ * the copy's earlier evidence goes stale by itself because its files change.
+ */
+export async function updateTask(space, taskId) {
+  const info = await readJSON(path.join(space.tasks, taskId, 'worktree.json')).catch(() => null);
+  assert(info?.branch, `У задачи «${taskId}» нет отдельной копии — обновлять нечего`);
+  assert(!info.mergedAt, `Задача «${taskId}» уже собрана`);
+  assert(!(await git(info.path, ['status', '--porcelain'])).trim(), 'В копии задачи есть несохранённые изменения. Сначала сохрани или верни их.');
+  const head = (await git(space.project, ['rev-parse', 'HEAD'])).trim();
+  if (await git(space.project, ['merge-base', '--is-ancestor', head, info.branch]).then(() => true, () => false))
+    return { taskId, updated: false, head };
+  try { await git(info.path, ['-c', 'user.name=Borshkit', '-c', 'user.email=space@borshkit', '-c', 'commit.gpgsign=false', 'merge', '--no-ff', '-m', `Borshkit: основная версия ${head.slice(0, 8)} в задаче «${taskId}»`, head]); }
+  catch (e) {
+    await git(info.path, ['merge', '--abort']).catch(() => {});
+    throw new Error(`Изменения основной версии конфликтуют с работой задачи — копия как была. Нужна работа над конфликтом (поручи её implementer). Подробности: ${(e.stderr ?? e.message).split('\n')[0]}`);
+  }
+  await journal(space, `В копию задачи «${taskId}» влита основная версия ${head.slice(0, 8)}. Проверки и приёмку нужно пройти заново.`);
+  await saveSpace(space, `Задача «${taskId}» обновлена от основной версии`);
+  return { taskId, updated: true, head, git: [`git merge --no-ff ${head.slice(0, 8)}`] };
 }
 /**
  * Send the project's history to its remote. Critical: secret scan of what

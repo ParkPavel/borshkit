@@ -118,3 +118,46 @@ test('F9: a writer that hit a limit keeps its own commit and its family among th
   assert.equal(review.status, 'WAITING_HUMAN');
   assert.equal(review.attempts[0].failure, 'SAME_PROVIDER');
 });
+
+// ── What is accepted is what lands (F3), and evaluation compares like with like (F11) ──
+import { verifyAll } from '../core/accept.mjs';
+import { mergeTask, updateTask } from '../core/gitshell.mjs';
+import { evaluate } from '../core/eval.mjs';
+import { node } from './helpers.mjs';
+
+test('F3: when the project moved on, the task is accepted again on the combined state before it can land', async t => {
+  const s = await space(t);
+  await commit(s.project, 'ignore rule');
+  await settle(s, { executors: { dev: fake('write') } });
+  // The feature is correct only while config.txt does not switch it off.
+  await task(s, 'feat', { paths: ['.'], goals: [{ id: 'G1', text: 'Фича работает', criteria: ['C1'] }], criteria: [{ id: 'C1', text: 'feature.txt есть и не выключен', class: 'auto' }],
+    checks: [{ id: 'f', ...node("const fs=require('fs');process.exit(fs.existsSync('feature.txt')&&!(fs.existsSync('config.txt')&&fs.readFileSync('config.txt','utf8').includes('off'))?0:1)"), criteria: ['C1'] }] });
+  await runJob(s, { taskId: 'feat', role: 'implementer', executor: 'dev', ...fast });
+  await verifyAll(s, 'feat');
+  assert.equal((await converge(s, 'feat')).status, 'accepted');
+  // Meanwhile the project gets a change that merges cleanly but breaks the feature.
+  await write(s.project, { 'config.txt': 'feature: off\n' }); await commit(s.project, 'switch it off');
+  await assert.rejects(mergeTask(s, 'feat', { confirmedByPerson: true }), /Основная версия проекта изменилась/);
+  assert.equal((await updateTask(s, 'feat')).updated, true);
+  assert.equal((await converge(s, 'feat')).status, 'unknown', 'старые доказательства устарели');
+  await verifyAll(s, 'feat');
+  assert.equal((await converge(s, 'feat')).status, 'needs-fix', 'объединённое состояние сломано — и это видно');
+  await assert.rejects(mergeTask(s, 'feat', { confirmedByPerson: true }), /не принята \(needs-fix\)/);
+  // Unsaved edits in the task's copy are not what was committed, so they block landing too.
+  const copy = (await readJSON(path.join(s.tasks, 'feat', 'worktree.json'))).path;
+  await write(copy, { 'config.txt': 'feature: on\n' });
+  await assert.rejects(mergeTask(s, 'feat', { confirmedByPerson: true }), /изменения, которых нет в её истории/);
+});
+
+test('F11: evaluation does not compare a verdict with files that changed after it', async t => {
+  const s = await space(t);
+  await task(s, 'ev', { goals: [{ id: 'G1', text: 'g', criteria: ['C1'] }], criteria: [{ id: 'C1', text: 'тесты', class: 'auto' }], checks: [{ id: 'ok', ...node('process.exit(0)'), criteria: ['C1'] }] });
+  await verifyAll(s, 'ev');
+  assert.equal((await converge(s, 'ev')).status, 'accepted');
+  await write(s.project, { 'src/app.js': 'export const answer = 0;\n' });
+  const r = await evaluate(s, { ev: node('process.exit(1)') });
+  assert.equal(r.rows[0].comparable, false);
+  assert.equal(r.rows[0].falsePass, null);
+  assert.equal(r.summary.falsePass, 0);
+  assert.deepEqual(r.summary.incomparable, ['ev']);
+});

@@ -19,7 +19,7 @@ import { listPacks, listRoles, loadPack } from '../core/roles.mjs';
 import { buildKnowledge, exportForGithub, knowledgeSQL, lessonFromTask, queryKnowledge, searchKnowledge, taskContext } from '../core/kb.mjs';
 import { attributionCheck, contributorsFromGit, contributorsReport, readmeAssetsCheck, writeContributors } from '../core/attribution.mjs';
 import { runCommand } from '../core/process.mjs';
-import { explainGit, history, mergeTask, pushProject, restoreFile, saveProject, whatChanged, whoDid } from '../core/gitshell.mjs';
+import { explainGit, history, mergeTask, updateTask, pushProject, restoreFile, saveProject, whatChanged, whoDid } from '../core/gitshell.mjs';
 import { runHook } from '../core/hooks.mjs';
 import { evaluate, measureTrust, proposeTrust } from '../core/eval.mjs';
 
@@ -31,7 +31,7 @@ const WHICH = { проект: 'project', пространство: 'space', proj
 const SUB = { добавить: 'add', список: 'list', обновить: 'refresh', показать: 'show', предложить: 'propose', применить: 'apply', принять: 'accept', вернуть: 'revert', начать: 'start', ключ: 'key', завершить: 'end',
   проверить: 'probe', запустить: 'run', продолжить: 'resume', ответить: 'answer', собрать: 'build', найти: 'search', контекст: 'context', урок: 'lesson', экспорт: 'export', контрибьюторы: 'contributors', картинки: 'assets' };
 const MODES = { умеренный: 'moderate', строгий: 'strict', эксперимент: 'experiment' };
-const TASK = { новая: 'new', анализ: 'check', проверить: 'verify', отзыв: 'review', подтвердить: 'confirm', итог: 'converge', принять: 'accept' };
+const TASK = { новая: 'new', анализ: 'check', проверить: 'verify', отзыв: 'review', подтвердить: 'confirm', итог: 'converge', принять: 'accept', обновить: 'update' };
 const FLAGS = { цель: 'goal', вид: 'kind', папка: 'folder', проект: 'project', 'только-локально': 'local-only', исполнитель: 'executor', результат: 'result',
   текст: 'text', название: 'title', да: 'yes', 'ключи-отозваны': 'revoked', от: 'from', причина: 'reason', через: 'via', манифест: 'manifest', readme: 'readme',
   роль: 'role', пул: 'pool', клоны: 'clones', к: 'to', скрытые: 'hidden', порог: 'threshold', сколько: 'limit', удалённый: 'remote', линза: 'lens', файл: 'file', следить: 'watch', строка: 'line', команда: 'command', семейство: 'provider', данные: 'data', модель: 'model', навыки: 'skills' };
@@ -72,6 +72,7 @@ const HELP = `Borshkit — Modular AI Workspace
   borshkit задача итог <имя>            сверить и написать лист приёмки
   borshkit задача подтвердить <имя> <критерий> да|нет "что видел"
   borshkit задача принять <имя> ["заметка"]   общая приёмка (политика manual)
+  borshkit задача обновить <имя>       влить основную версию в копию задачи (перед сборкой, если она ушла вперёд)
 
   borshkit материал добавить <файл> | --url адрес [--через jina] [--да] | --текст "…" | --команда "yt-dlp …" [--url адрес]  [--название "…"]
   borshkit материал список | обновить <id>
@@ -108,7 +109,7 @@ const HELP = `Borshkit — Modular AI Workspace
   borshkit отправить [--удалённый origin]     на GitHub, без перезаписи чужого (только в терминале)
 
   borshkit оценка запустить --скрытые скрытые.json   ложные PASS, вмешательства, время, расход
-  borshkit оценка доверие <метка> [--порог 0.05]     насколько можно верить «готово» модели; предложение настроек
+  borshkit оценка доверие <метка> [--семейство openai] [--порог 0.05]   насколько можно верить «готово» модели этого семейства
 
 Английские имена тоже работают: init, status, doctor, save, task new|check|verify|review|converge|confirm|accept.
 Добавь --json, чтобы получить ответ для программ.`;
@@ -152,6 +153,10 @@ async function task(positional, flags) {
     print(flags, results, results.length ? results.map(e => `${e.status === 'PASS' ? '✅' : '❌'} ${e.checkId}${e.freshness === 'STALE' ? ' (файлы менялись во время проверки — результат устарел)' : ''} · лог: ${e.artifact}`).join('\n') : 'В задаче нет автоматических проверок.');
     if (results.some(e => e.status !== 'PASS')) process.exitCode = 1;
     return;
+  }
+  if (sub === 'update') {
+    const r = await updateTask(space, taskId);
+    return print(flags, r, r.updated ? `В копию задачи «${taskId}» влита основная версия ${r.head.slice(0, 8)}.\nДальше: borshkit задача проверить ${taskId}, затем borshkit задача итог ${taskId}` : `Копия задачи уже содержит основную версию — обновлять нечего.`);
   }
   if (sub === 'review') {
     assert(typeof flags.result === 'string', 'Укажи файл результата: --результат review.json');
@@ -478,8 +483,14 @@ export async function main(argv = process.argv.slice(2)) {
     }
     if (sub === 'доверие' || sub === 'trust') {
       const tag = positional[2];
-      if (flags.threshold === undefined) { const m = await measureTrust(space, tag); return print(flags, m, m.runs ? `«${tag}»: ложных «готово» ${m.falsePass} из ${m.runs} (${Math.round(m.rate * 100)}%)` : `Для «${tag}» сравнений с человеком пока нет.`); }
-      const p = await proposeTrust(space, tag, { maxFalsePassRate: Number(flags.threshold) });
+      const family = typeof flags.provider === 'string' ? flags.provider : undefined;
+      if (flags.threshold === undefined) {
+        const m = await measureTrust(space, tag, { provider: family });
+        const lines = Object.entries(m.byProvider).map(([p, x]) => `  ${p}: ложных «готово» ${x.falsePass} из ${x.runs}`);
+        return print(flags, m, m.runs ? [`«${tag}»: ложных «готово» ${m.falsePass} из ${m.runs} (${Math.round(m.rate * 100)}%), с учётом случайности — до ${Math.round(m.upperBound * 1000) / 10}%`, ...lines,
+          ...(m.skipped ? [`Не засчитано: ${m.skipped} (импортированные ревью или ответ человека на изменённые файлы)`] : [])].join('\n') : `Для «${tag}» сравнений с человеком пока нет.`);
+      }
+      const p = await proposeTrust(space, tag, { maxFalsePassRate: Number(flags.threshold), provider: family });
       return print(flags, p, `Предложение ${p.id}: ${p.changes.map(c => c.key).join(', ')}. Применить (только в терминале): borshkit настройки применить ${p.id}`);
     }
     throw new Error('Действие — запустить или доверие');
