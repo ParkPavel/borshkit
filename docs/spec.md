@@ -732,5 +732,8 @@ borshkit/
 | E6 плагин Claude Code, hooks, AGENTS.md | `.claude-plugin/`, `hooks/`, `skills/borshkit/`, `core/hooks.mjs` | манифесты и решения hooks — да | установка плагина через маркетплейс; кавычки команды hook в Windows |
 | E7 оценка | `core/eval.mjs` | да (ложный PASS, доверие) | сравнение B0/A/B на реальных задачах владельца |
 | 0.10: роли интерфейса, пакеты навыков, библиотека, документация как база знаний | `roles/`, `packs/emil/`, `packs/ecc/`, `library/`, `docs/`, `scripts/` | да: навыки и ссылки ролей находятся, размер пакета ограничен, генерируемые файлы свежие, ссылки документации живые | качество работы ролей интерфейса на живых моделях; отображение анимированных SVG в мобильном приложении GitHub |
+| 0.11: исправления по независимому аудиту (F2–F14) | `core/accept.mjs`, `core/jobs.mjs`, `core/gitshell.mjs`, `core/eval.mjs`, `core/snapshot.mjs`, `core/adapters.mjs`, `core/io.mjs` | да: `test/audit.test.mjs`, каждый тест падает на 0.10.1 | живые CLI и macOS; сравнение с прямой работой CLI |
+
+Ответ на аудит — [`docs/discussions/audit-2026-10-07.md`](discussions/audit-2026-10-07.md).
 
 Открыто для обсуждения на GitHub (D20): резервная копия истории пространства — черновик в `docs/discussions/space-history-backup.md`.

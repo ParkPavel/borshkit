@@ -23,11 +23,31 @@ async function hashFiles(root, files, seed) {
     try {
       const stat = await fs.lstat(full);
       if (stat.isSymbolicLink()) hash.update(`link:${await fs.readlink(full)}`);
-      else if (stat.isFile()) hash.update(await fs.readFile(full));
+      else if (stat.isFile()) {
+        // The executable bit changes behaviour (and Git records it); Windows has none to read.
+        if (process.platform !== 'win32') hash.update(stat.mode & 0o111 ? 'x:' : '-:');
+        hash.update(await fs.readFile(full));
+      } else if (stat.isDirectory()) hash.update(await submoduleState(full));
       else hash.update('non-file');
     } catch (e) { if (e.code === 'ENOENT') hash.update('deleted'); else throw e; }
   }
   return hash.digest('hex');
+}
+/**
+ * A directory in a Git listing is a submodule: its checked-out commit and
+ * any uncommitted change inside it are part of the state.
+ */
+async function submoduleState(dir) {
+  try {
+    const head = (await git(dir, ['rev-parse', 'HEAD'])).trim();
+    const status = await git(dir, ['status', '--porcelain', '--untracked-files=all']);
+    let dirty = '';
+    if (status.trim()) {
+      const files = (await git(dir, ['ls-files', '-z', '--modified', '--others', '--exclude-standard'])).split('\0').filter(Boolean).sort();
+      dirty = await hashFiles(dir, files, status);
+    }
+    return `submodule:${head}:${dirty}`;
+  } catch { return 'non-file'; }
 }
 async function gitSnapshot(repo) {
   let head = null;
@@ -36,7 +56,7 @@ async function gitSnapshot(repo) {
   const files = [...new Set(listed)].sort();
   return { kind: 'git', head, digest: await hashFiles(repo, files, head ?? 'unborn'), fileCount: files.length };
 }
-async function filesSnapshot(root, exclude) {
+async function listFiles(root, exclude) {
   const skip = new Set(['.git', ...exclude]);
   const files = [];
   async function walk(dir, prefix) {
@@ -48,5 +68,15 @@ async function filesSnapshot(root, exclude) {
     }
   }
   await walk(root, '');
+  return files;
+}
+async function filesSnapshot(root, exclude) {
+  const files = await listFiles(root, exclude);
   return { kind: 'files', head: null, digest: await hashFiles(root, files, 'files'), fileCount: files.length };
+}
+/** Per-file digests of a folder without Git, so a task can tell which files changed. */
+export async function fileDigests(root, { exclude = [] } = {}) {
+  const out = {};
+  for (const rel of await listFiles(root, exclude)) out[rel] = await hashFiles(root, [rel], '');
+  return out;
 }

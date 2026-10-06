@@ -7,7 +7,7 @@ import { promisify } from 'node:util';
 import { ROOT, readJSON } from '../core/io.mjs';
 import { judgeCommand, judgeFile, runHook } from '../core/hooks.mjs';
 import { evaluate, measureTrust, proposeTrust } from '../core/eval.mjs';
-import { confirmItem, converge, recordReview, verifyAll } from '../core/accept.mjs';
+import { confirmItem, converge, recordReview, taskState, verifyAll } from '../core/accept.mjs';
 import { applyProposal } from '../core/config.mjs';
 import { node, space, task, write } from './helpers.mjs';
 
@@ -75,18 +75,27 @@ test('evaluation finds a false PASS through a hidden check and counts interventi
   assert.ok(reports.some(f => f.endsWith('.md')));
 });
 
-test('model trust is measured against later human verdicts and becomes a proposal a person applies', async t => {
+test('model trust: one run per human verdict on the same work, per model family, judged by the pessimistic bound', async t => {
   const s = await space(t);
+  const pass = id => ({ taskId: id, criteria: [{ id: 'C1', status: 'PASS', evidence: ['src/x.js:1'] }], findings: [], unknowns: [] });
   for (let i = 0; i < 4; i++) {
     const id = `ui${i}`;
     await task(s, id, { goals: [{ id: 'G1', text: 'Доступно', criteria: ['C1'] }], criteria: [{ id: 'C1', text: 'Кнопка подписана', class: 'model', tag: 'ui-a11y' }], checks: [] });
-    await recordReview(s, id, { executor: 'codex', provider: 'openai', result: { taskId: id, criteria: [{ id: 'C1', status: 'PASS', evidence: ['src/x.js:1'] }], findings: [], unknowns: [] } });
+    await recordReview(s, id, { executor: 'codex', provider: 'openai', result: pass(id), seenState: await taskState(s, id) });
+    if (i === 0) await recordReview(s, id, { executor: 'codex', provider: 'openai', result: pass(id), seenState: await taskState(s, id) }); // a second PASS before the same verdict
     await confirmItem(s, id, 'C1', { verdict: i === 0 ? 'FAIL' : 'PASS' });
   }
-  assert.deepEqual(await measureTrust(s, 'ui-a11y'), { tag: 'ui-a11y', runs: 4, falsePass: 1, rate: 0.25 });
+  // An imported PASS and a verdict on changed files are not measurements.
+  await task(s, 'ui9', { goals: [{ id: 'G1', text: 'Доступно', criteria: ['C1'] }], criteria: [{ id: 'C1', text: 'Кнопка подписана', class: 'model', tag: 'ui-a11y' }], checks: [] });
+  await recordReview(s, 'ui9', { executor: 'codex', provider: 'openai', result: pass('ui9') });
+  await confirmItem(s, 'ui9', 'C1', { verdict: 'FAIL' });
+  const m = await measureTrust(s, 'ui-a11y');
+  assert.deepEqual([m.runs, m.falsePass, m.skipped], [4, 1, 1]);
+  assert.deepEqual(m.byProvider, { openai: { runs: 4, falsePass: 1 } });
   await assert.rejects(proposeTrust(s, 'ui-a11y', { maxFalsePassRate: 0.3 }), /нужно не меньше 20/);
-  const p = await proposeTrust(s, 'ui-a11y', { maxFalsePassRate: 0.3, minRuns: 4 });
+  await assert.rejects(proposeTrust(s, 'ui-a11y', { maxFalsePassRate: 0.3, minRuns: 4 }), /может доходить до/);
+  const p = await proposeTrust(s, 'ui-a11y', { maxFalsePassRate: 0.75, minRuns: 4 });
   await assert.rejects(applyProposal(s, p.id), /ослабляет защиту/);
   await applyProposal(s, p.id, { confirmedByPerson: true });
-  assert.deepEqual(s.settings.acceptance.modelTrust['ui-a11y'].measured.runs, 4);
+  assert.deepEqual(s.settings.acceptance.modelTrust['ui-a11y'].measured.provider, 'openai');
 });

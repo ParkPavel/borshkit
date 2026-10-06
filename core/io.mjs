@@ -72,3 +72,27 @@ export async function withLock(stateDir, fn) {
   try { return await fn(); }
   finally { await handle.close(); await fs.unlink(file); }
 }
+/**
+ * An exclusive lock file holding the owner's pid. A lock left by a process
+ * that no longer runs is taken over. With `waitMs` 0 a held lock is refused
+ * at once with `busy`; otherwise it is retried until the time is up.
+ */
+export async function acquireLock(file, { waitMs = 0, busy = 'Занято другой командой', owner = {} } = {}) {
+  await fs.mkdir(path.dirname(file), { recursive: true });
+  const alive = pid => { try { process.kill(pid, 0); return true; } catch (e) { return e.code === 'EPERM'; } };
+  const until = Date.now() + waitMs;
+  for (;;) {
+    try {
+      const handle = await fs.open(file, 'wx', 0o600);
+      await handle.writeFile(JSON.stringify({ pid: process.pid, created: new Date().toISOString(), ...owner }));
+      await handle.close();
+      return async () => { await fs.rm(file, { force: true }); };
+    } catch (e) {
+      if (e.code !== 'EEXIST') throw e;
+      const held = await readJSON(file).catch(() => null);
+      if (held && Number.isInteger(held.pid) && !alive(held.pid)) { await fs.rm(file, { force: true }); continue; }
+      if (Date.now() >= until) throw new Error(`${busy}${held?.jobId ? ` (работа ${held.jobId})` : ''}.`);
+      await new Promise(r => setTimeout(r, 25 + Math.random() * 50));
+    }
+  }
+}

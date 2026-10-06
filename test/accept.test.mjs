@@ -4,7 +4,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { git, readJSON, atomicJSON } from '../core/io.mjs';
 import { analyzeContract, checkTask, validateContract } from '../core/contract.mjs';
-import { confirmItem, converge, recordReview, signOff, verifyAll } from '../core/accept.mjs';
+import { confirmItem, converge, recordReview, signOff, taskState, verifyAll } from '../core/accept.mjs';
 import { applyProposal, proposeSettings } from '../core/config.mjs';
 import { node, space, task, write } from './helpers.mjs';
 
@@ -119,20 +119,24 @@ test('a model FAIL sends back, its PASS waits for a person unless the trust goal
   });
   await task(s, 'review', reviewContract);
   const result = status => ({ taskId: 'review', criteria: [{ id: 'C3', status, evidence: ['README.md:10 шаги установки'] }], findings: [], unknowns: [] });
+  const fromJob = async (status, provider = 'openai') => recordReview(s, 'review', { executor: 'codex', provider, result: result(status), seenState: await taskState(s, 'review') });
   await assert.rejects(recordReview(s, 'review', { executor: 'codex', result: { taskId: 'review', criteria: [{ id: 'C3', status: 'PASS', evidence: [] }] } }), /без доказательств/);
-  await recordReview(s, 'review', { executor: 'codex', result: result('FAIL') });
+  await fromJob('FAIL');
   assert.equal((await converge(s, 'review')).status, 'needs-fix');
-  await recordReview(s, 'review', { executor: 'codex', result: result('PASS') });
+  await fromJob('PASS');
   let r = await converge(s, 'review');
   assert.equal(r.status, 'waiting');
   assert.match(r.items[0].reason, /цель доверия/);
-  const proposal = await proposeSettings(s, { acceptance: { modelTrust: { docs: { maxFalsePassRate: 0.1, measured: { runs: 30, falsePass: 1, source: 'eval/docs' } } } } });
+  const proposal = await proposeSettings(s, { acceptance: { modelTrust: { docs: { maxFalsePassRate: 0.1, measured: { runs: 60, falsePass: 0, source: 'eval/docs', provider: 'openai' } } } } });
   await assert.rejects(applyProposal(s, proposal.id), /ослабляет защиту/);
   await applyProposal(s, proposal.id, { confirmedByPerson: true });
-  await recordReview(s, 'review', { executor: 'codex', result: result('PASS') });
+  await fromJob('PASS');
   r = await converge(s, 'review');
   assert.equal(r.status, 'accepted');
   assert.equal(r.criteria[0].decidedBy, 'trusted-model:codex');
+  await fromJob('PASS', 'mistral');
+  r = await converge(s, 'review');
+  assert.equal(r.status, 'waiting', 'доверие к openai не переносится на другое семейство');
 });
 
 test('the manual policy waits for an overall sign-off even when every goal is reached', async t => {

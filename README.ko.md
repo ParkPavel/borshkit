@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml"><img src="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml/badge.svg" alt="CI: Linux와 Windows"></a>
-  <img src="https://img.shields.io/badge/version-0.10.1-b3261e" alt="버전 0.10.1">
+  <img src="https://img.shields.io/badge/version-0.11.0-b3261e" alt="버전 0.11.0">
   <img src="https://img.shields.io/badge/node-%E2%89%A522-2b1d1d" alt="Node.js 22 이상">
   <img src="https://img.shields.io/badge/dependencies-0-2e7d32" alt="의존성 0개">
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="Claude Code 플러그인">
@@ -20,9 +20,9 @@
 
 **Modular AI Workspace** — 어떤 프로젝트에서든 AI 에이전트가 일하는 작업 공간입니다. 웹 앱, 플러그인, 라이브러리, 모바일 앱, 연구 어디에나 쓸 수 있습니다.
 
-무엇이 나와야 하는지 말하면 일은 에이전트가 합니다. Borshkit은 검사로 **증명된** 것과 직접 확인해야 할 것을 나눠 보여 줍니다. 말만 믿고 인수하는 것은 없습니다.
+무엇이 나와야 하는지 말하면 일은 에이전트가 합니다. Borshkit은 검사로 **증명된** 것과 직접 확인해야 할 것을 나눠 보여 줍니다. 모델의 말은 그런 종류의 기준에 대해 사용자가 직접 허용했고 측정으로 뒷받침될 때만 받아들입니다.
 
-> **상태: 0.10.1.** 아래 내용은 모두 동작하며, Linux와 Windows에서 테스트로 검증했습니다. 테스트에서는 실제 모델 대신 가짜 실행자를 씁니다. 아직 실제 환경에서 써 보지 않은 것은 [한계](#한계)에 정리해 두었습니다.
+> **상태: 0.11.0.** 아래 내용은 모두 동작하며, Linux와 Windows에서 테스트로 검증했습니다. 테스트에서는 실제 모델 대신 가짜 실행자를 씁니다. 아직 실제 환경에서 써 보지 않은 것은 [한계](#한계)에 정리해 두었습니다.
 >
 > **언어 안내:** Borshkit의 메시지는 지금은 러시아어로만 나옵니다. 모든 명령과 플래그에는 영어 이름도 있으며, 이 README는 영어 이름을 씁니다.
 
@@ -101,7 +101,7 @@ borshkit merge theme && borshkit push             # 메인 버전에 병합하�
 | **오토파일럿** | 일상적인 질문은 1분 뒤 기본 답으로 처리. 중대한 질문에서는 보고서와 맥락 인계를 남기고 멈춤 |
 | **상황판** | 누가 작업을 받았는지, 누가 일하는 중인지, 무엇이 사용자를 기다리는지. 터미널, `STATUS.md`, Claude Code 상태 줄에서 확인 |
 | **리서치** | 출처는 사본으로 저장. `citations` 검사가 모든 인용을 한 단어씩 대조 |
-| **프라이버시** | 모드 3가지. 키와 개인 정보는 컴퓨터 밖으로 나가지 않음. 설정은 제안을 거쳐야만 바뀜 |
+| **프라이버시** | 모드 3가지. 에이전트에게 보내는 작업 묶음은 보내기 전에 키와 개인 정보를 검사함. 설정은 제안을 거쳐야만 바뀜 |
 | **초보자를 위한 Git** | “무엇이 바뀌었나”, “누가 바꿨나”, “되돌려 줘”를 쉬운 말로. 파괴적인 명령은 쓰지 않음 |
 | **크레딧** | `attribution`, `readme-assets` 검사, 모든 출처의 전체 기여자 목록 |
 
@@ -143,6 +143,9 @@ Borshkit은 보르시입니다. 다른 사람들이 기르고 누구나 쓸 수 
 
 ## 한계
 
+- Borshkit은 자신이 에이전트에게 보내는 작업 묶음을 검사합니다. 그 뒤에 Claude Code나 Codex가 프로젝트 복사본의 파일에서 무엇을 읽는지는 보지 못합니다. 무시되는 파일(`.env`)은 복사본에 없지만, 나머지 파일은 에이전트가 모두 읽을 수 있습니다.
+- 작업 검사(테스트, 빌드)는 사용자의 환경 변수로 실행됩니다. 테스트에 키가 필요할 때가 있기 때문입니다. 환경 필터는 실행자에게만 적용됩니다.
+- 지식 지도는 JS/TS 코드와 Markdown의 연결만 이해합니다. Swift, Python, Go 등 다른 언어는 아직 지도에 들어가지 않습니다. 인수 결과는 이것과 무관합니다.
 - Claude Code와 Codex 어댑터는 같은 이벤트 형식을 쓰는 가짜 프로그램으로 테스트했습니다. 설치된 Claude Code의 플래그는 확인했습니다. CI에서는 실제 모델을 실행하지 않습니다.
 - Codex(GPT Image)를 통한 이미지 생성은 아직 테스트하지 않았습니다. 사용자의 구독에서 되는지는 `borshkit executor probe codex`로 확인할 수 있습니다.
 - Obsidian 그래프가 노트 속성에 있는 링크를 보여 주는지는 테스트하지 않았습니다. 그래서 같은 링크를 본문에도 일반 링크로 한 번 더 적어 둡니다.

@@ -3,7 +3,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { ROOT, assert, atomicJSON, atomicWrite, contained, exists, git, norm, readJSON, sha, withLock } from './io.mjs';
 import { runCommand } from './process.mjs';
-import { snapshot } from './snapshot.mjs';
+import { fileDigests, snapshot } from './snapshot.mjs';
 import { assertIgnored, journal, saveSpace, settingsDigest, trusted } from './space.mjs';
 import { checkTask, covered, loadTask, validateContract } from './contract.mjs';
 import { BUILTINS } from './builtins.mjs';
@@ -55,6 +55,11 @@ export async function taskRepo(space, taskId) {
 export async function authorProviders(space, taskId) {
   const authors = await readJSON(path.join(space.tasks, taskId, 'authors.json')).catch(() => []);
   return [...new Set(authors.map(a => a.provider))];
+}
+/** The exact state a task is in now: what a job sees when it starts. */
+export async function taskState(space, taskId) {
+  const t = await readyTask(space, taskId, { draft: true });
+  return context(space, t);
 }
 async function context(space, t) {
   return {
@@ -136,22 +141,32 @@ export async function verifyAll(space, taskId) {
  * A reviewer model's structured result (the Claudex result schema). Only
  * `model` criteria are recorded; PASS without evidence is refused; silence on
  * a criterion records nothing, so it stays "not checked".
+ *
+ * The review is bound to the state the model actually saw. A job passes the
+ * state taken when the reviewer started (`seenState`); if the files changed
+ * before the answer came, the review is stale at once. A review imported
+ * from a file has no such state: it is recorded as `imported` and can send a
+ * task back, but its PASS never closes a criterion by itself.
  */
-export async function recordReview(space, taskId, { executor, provider = null, result }) {
+export async function recordReview(space, taskId, { executor, provider = null, result, seenState = null, origin = seenState ? 'job' : 'imported', jobId = null }) {
   const t = await readyTask(space, taskId);
   assert(typeof executor === 'string' && /^[a-zA-Z0-9._@/-]{1,80}$/.test(executor), 'Укажи исполнителя-ревьюера: --исполнитель codex');
+  assert(provider === null || (typeof provider === 'string' && /^[a-z0-9._-]{1,40}$/.test(provider)), 'Семейство моделей — латиницей, например openai или anthropic');
+  assert(['job', 'imported'].includes(origin) && (origin === 'imported' || seenState), 'Ревью от работы должно нести состояние, которое видел ревьюер');
   assert(result && result.taskId === taskId && Array.isArray(result.criteria), 'Результат ревью не относится к этой задаче');
   const model = new Map(t.contract.criteria.filter(c => c.class === 'model').map(c => [c.id, c]));
   const current = await context(space, t), saved = [], ignored = [];
+  const state = seenState ?? current;
+  const freshness = origin === 'imported' ? 'UNVERIFIED' : sameState(seenState, current) ? 'CURRENT' : 'STALE';
   for (const answer of result.criteria) {
     if (!model.has(answer.id)) { ignored.push(String(answer.id)); continue; }
     assert(['PASS', 'FAIL', 'UNKNOWN'].includes(answer.status), `Неверный статус у ${answer.id}`);
     assert(Array.isArray(answer.evidence) && answer.evidence.every(e => typeof e === 'string' && e.trim()) && (answer.status !== 'PASS' || answer.evidence.length), `PASS по ${answer.id} без доказательств не принимается`);
-    saved.push(await saveEvidence(space, t, { id: crypto.randomUUID(), taskId, kind: 'review', executor, provider, criteria: [answer.id], status: answer.status,
-      evidence: answer.evidence, findings: Array.isArray(result.findings) ? result.findings : [], state: current, createdAt: new Date().toISOString() }));
+    saved.push(await saveEvidence(space, t, { id: crypto.randomUUID(), taskId, kind: 'review', origin, jobId, executor, provider, criteria: [answer.id], status: answer.status,
+      evidence: answer.evidence, findings: Array.isArray(result.findings) ? result.findings : [], state, freshness, createdAt: new Date().toISOString() }));
   }
-  await journal(space, `Ревью задачи «${taskId}» от ${executor}: записано ${saved.length} ответ(ов).`);
-  return { saved, ignored };
+  await journal(space, `Ревью задачи «${taskId}» от ${executor}${origin === 'imported' ? ' (импорт из файла)' : ''}: записано ${saved.length} ответ(ов)${freshness === 'STALE' ? '; файлы менялись, пока ревьюер работал, — ревью устарело сразу' : ''}.`);
+  return { saved, ignored, freshness };
 }
 
 /** A person's verdict on one item of the acceptance sheet, bound to the current state. */
@@ -189,7 +204,15 @@ async function evidenceProblem(space, t, e, current) {
   return null;
 }
 async function scopeViolations(space, t) {
-  if (!space.projectIsGit || t.contract.paths.includes('.') || !t.contract.base.head) return [];
+  if (t.contract.paths.includes('.')) return [];
+  if (!space.projectIsGit) {
+    // A folder without Git: compare every file with its digest when the task began.
+    if (!t.basis.files) return [];
+    const now = await fileDigests(space.project, { exclude: [space.folder] });
+    const touched = [...new Set([...Object.keys(now), ...Object.keys(t.basis.files)])].filter(f => now[f] !== t.basis.files[f]);
+    return touched.filter(f => !covered(f, t.contract.paths)).sort();
+  }
+  if (!t.contract.base.head) return [];
   const changed = (await git(t.repo, ['diff', '--no-renames', '--name-only', '-z', t.contract.base.head])).split('\0').filter(Boolean);
   const untracked = (await git(t.repo, ['ls-files', '--others', '--exclude-standard', '-z'])).split('\0').filter(Boolean);
   const before = t.repo === space.project ? t.basis.uncommitted ?? {} : {};
@@ -234,8 +257,10 @@ export async function converge(space, taskId) {
       evidence = review ? [{ executor: review.executor, status: review.status, evidence: review.evidence }] : [];
       if (human) { status = human.status; decidedBy = 'human'; }
       else if (review?.status === 'FAIL') { status = 'FAIL'; decidedBy = `model:${review.executor}`; }
-      else if (review?.status === 'PASS' && review.provider && authors.includes(review.provider)) { status = 'WAITING'; reason = `ревьюер ${review.executor} из того же семейства моделей (${review.provider}), что и автор, — независимой проверки нет`; }
-      else if (review?.status === 'PASS' && trusted(space.settings, c.tag)) { status = 'PASS'; decidedBy = `trusted-model:${review.executor}`; }
+      else if (review?.status === 'PASS' && review.origin !== 'job') { status = 'WAITING'; reason = `ревью ${review.executor} импортировано из файла: Borshkit не видел, на каком состоянии и кем оно сделано`; }
+      else if (review?.status === 'PASS' && !review.provider) { status = 'WAITING'; reason = `семейство моделей ревьюера ${review.executor} неизвестно — независимость от автора не установлена`; }
+      else if (review?.status === 'PASS' && authors.includes(review.provider)) { status = 'WAITING'; reason = `ревьюер ${review.executor} из того же семейства моделей (${review.provider}), что и автор, — независимой проверки нет`; }
+      else if (review?.status === 'PASS' && trusted(space.settings, c.tag, review.provider)) { status = 'PASS'; decidedBy = `trusted-model:${review.executor}`; }
       else if (review?.status === 'PASS') { status = 'WAITING'; reason = `модель ${review.executor} считает критерий выполненным, но цель доверия для этого типа не подтверждена измерением`; }
       else { status = 'UNKNOWN'; reason = review ? `модель ${review.executor} не смогла решить` : 'ревью ещё не было или устарело'; }
     } else {

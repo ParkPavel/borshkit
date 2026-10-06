@@ -1,6 +1,6 @@
 {
   "name": "borshkit",
-  "version": "0.10.1",
+  "version": "0.11.0",
   "description": "Borshkit — Modular AI Workspace: агенты работают, а принимается только то, что доказано проверками. Остальное — короткий список для тебя.",
   "author": {
     "name": "Pavel Park",

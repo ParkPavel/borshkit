@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { assert, atomicWrite, exists, git, isGitRoot, readJSON, sha } from './io.mjs';
 import { covered } from './contract.mjs';
+import { snapshot } from './snapshot.mjs';
 import { journal } from './space.mjs';
 
 // Project knowledge (decisions D6, D9): Markdown notes with typed [[wikilinks]]
@@ -153,10 +154,14 @@ export async function buildKnowledge(space) {
   const unique = [...new Map(edges.filter(e => nodes.has(e.src)).map(e => [`${e.src}\0${e.dst}\0${e.rel}`, e])).values()].sort((a, b) => `${a.src}${a.rel}${a.dst}`.localeCompare(`${b.src}${b.rel}${b.dst}`));
 
   // Lessons: stale when the code they are about changed since they were confirmed.
+  // A lesson from a task over the whole project is about the whole project.
+  let whole = null;
   for (const [id, n] of nodes) {
     if (n.type !== 'lesson') continue;
-    const about = unique.filter(e => e.src === id && e.rel === 'about').map(e => nodes.get(e.dst)?.digest ?? 'missing');
-    n.status = n.data?.['bk-sources-digest'] && n.data['bk-sources-digest'] !== sha(about.join('\n')) ? 'stale' : 'current';
+    const now = n.data?.['bk-scope'] === 'project'
+      ? (whole ??= (await snapshot(space.project, { exclude: [space.folder] })).digest)
+      : sha(unique.filter(e => e.src === id && e.rel === 'about').map(e => nodes.get(e.dst)?.digest ?? 'missing').join('\n'));
+    n.status = n.data?.['bk-sources-digest'] && n.data['bk-sources-digest'] !== now ? 'stale' : 'current';
   }
 
   // Write the generated notes.
@@ -272,11 +277,13 @@ export async function lessonFromTask(space, taskId, text) {
   const decision = await readJSON(path.join(space.tasks, taskId, 'decision.json')).catch(() => null);
   assert(decision, `Задача «${taskId}» ещё не принята — уроки записываются только из принятых задач`);
   const contract = await readJSON(path.join(space.tasks, taskId, 'contract.json'));
-  const files = (await projectFiles(space)).filter(f => CODE.test(f) && !contract.paths.includes('.') && covered(f, contract.paths));
+  const wholeProject = contract.paths.includes('.');
+  const files = wholeProject ? [] : (await projectFiles(space)).filter(f => CODE.test(f) && covered(f, contract.paths));
   const about = files.map(f => notePath('code', f));
   const digests = await Promise.all(files.map(f => fs.readFile(path.join(space.project, f)).then(sha, () => 'missing')));
+  const sourcesDigest = wholeProject ? (await snapshot(space.project, { exclude: [space.folder] })).digest : sha(digests.join('\n'));
   const rel = `knowledge/lessons/${taskId}.md`;
-  await atomicWrite(path.join(space.dir, rel), frontmatter({ 'bk-type': 'lesson', 'bk-provenance': 'DECLARED', 'bk-source': `задача ${taskId}`, 'bk-sources-digest': sha(digests.join('\n')),
+  await atomicWrite(path.join(space.dir, rel), frontmatter({ 'bk-type': 'lesson', 'bk-provenance': 'DECLARED', 'bk-source': `задача ${taskId}`, 'bk-scope': wholeProject ? 'project' : 'files', 'bk-sources-digest': sourcesDigest,
     about: about.map(a => link(a, a.slice(GEN.length + 6, -3))), 'decided-in': [link(`${GEN}/tasks/${taskId}.md`, taskId)] }) + `# Урок: ${contract.goal}\n\n${text.trim()}\n`, { mode: 0o644 });
   return rel;
 }

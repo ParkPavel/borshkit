@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { git } from '../core/io.mjs';
-import { initSpace, openSpace, saveSpace, validateSettings, defaultSettings, trusted } from '../core/space.mjs';
+import { initSpace, openSpace, saveSpace, validateSettings, defaultSettings, trusted, upperErrorBound } from '../core/space.mjs';
 import { snapshot } from '../core/snapshot.mjs';
 import { newTask } from '../core/contract.mjs';
 import { project, tempDir, write } from './helpers.mjs';
@@ -68,14 +68,23 @@ test('settings refuse anything that looks like a key, but accept commit IDs', ()
   validateSettings({ ...s, pinned: 'a'.repeat(40) });
 });
 
-test('a model PASS is trusted only when the measured false-PASS rate meets the user goal', () => {
+test('a model PASS is trusted only for the measured family and only when the pessimistic error rate meets the goal', () => {
   const s = defaultSettings('borshkit');
-  s.acceptance.modelTrust = { docs: { maxFalsePassRate: 0.1 }, ui: { maxFalsePassRate: 0.1, measured: { runs: 20, falsePass: 1, source: 'eval/2026-10' } }, api: { maxFalsePassRate: 0.01, measured: { runs: 20, falsePass: 1, source: 'eval/2026-10' } } };
+  s.acceptance.modelTrust = {
+    docs: { maxFalsePassRate: 0.1 },
+    ui: { maxFalsePassRate: 0.1, measured: { runs: 60, falsePass: 0, source: 'eval/2026-10', provider: 'openai' } },
+    small: { maxFalsePassRate: 0.1, measured: { runs: 20, falsePass: 1, source: 'eval/2026-10', provider: 'openai' } },
+    api: { maxFalsePassRate: 0.01, measured: { runs: 20, falsePass: 0, source: 'eval/2026-10', provider: 'openai' } },
+  };
   validateSettings(s);
-  assert.equal(trusted(s, 'docs'), false);
-  assert.equal(trusted(s, 'ui'), true);
-  assert.equal(trusted(s, 'api'), false);
-  assert.equal(trusted(s, undefined), false);
+  assert.equal(trusted(s, 'docs', 'openai'), false);
+  assert.equal(trusted(s, 'ui', 'openai'), true);
+  assert.equal(trusted(s, 'ui', 'anthropic'), false, 'доверие не переносится на другое семейство');
+  assert.equal(trusted(s, 'ui'), true, 'для анализа контракта: хоть какое-то семейство подтверждено');
+  assert.equal(trusted(s, 'small', 'openai'), false, '1 из 20: наблюдаемые 5%, но верхняя граница ~24%');
+  assert.equal(trusted(s, 'api', 'openai'), false, '0 из 20 не доказывают 1%');
+  assert.equal(trusted(s, undefined, 'openai'), false);
+  assert.ok(Math.abs(upperErrorBound(0, 20) - 0.161) < 0.001);
 });
 
 test('a restore point names who made the change', async t => {

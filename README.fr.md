@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml"><img src="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml/badge.svg" alt="CI : Linux et Windows"></a>
-  <img src="https://img.shields.io/badge/version-0.10.1-b3261e" alt="version 0.10.1">
+  <img src="https://img.shields.io/badge/version-0.11.0-b3261e" alt="version 0.11.0">
   <img src="https://img.shields.io/badge/node-%E2%89%A522-2b1d1d" alt="Node.js 22 ou plus récent">
   <img src="https://img.shields.io/badge/dependencies-0-2e7d32" alt="zéro dépendance">
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="plugin Claude Code">
@@ -20,9 +20,9 @@
 
 **Modular AI Workspace** — un poste de travail pour les agents d’IA, dans n’importe quel projet : une application web, un plugin, une bibliothèque, une application mobile ou un travail de recherche.
 
-Tu dis ce que tu veux obtenir. Les agents font le travail. Borshkit montre ce qui est **prouvé** par des vérifications et ce que tu dois regarder toi-même. Rien n’est accepté sur parole.
+Tu dis ce que tu veux obtenir. Les agents font le travail. Borshkit montre ce qui est **prouvé** par des vérifications et ce que tu dois regarder toi-même. Borshkit ne croit un modèle sur parole que là où tu l’as autorisé pour ce type de critère et qu’une mesure le confirme.
 
-> **Statut : 0.10.1.** Tout ce qui suit fonctionne et est couvert par des tests sous Linux et Windows. Les tests utilisent de faux exécutants à la place de vrais modèles. Ce qui n’a pas encore été essayé en conditions réelles est listé dans [Limites](#limites).
+> **Statut : 0.11.0.** Tout ce qui suit fonctionne et est couvert par des tests sous Linux et Windows. Les tests utilisent de faux exécutants à la place de vrais modèles. Ce qui n’a pas encore été essayé en conditions réelles est listé dans [Limites](#limites).
 >
 > **Note sur la langue :** pour l’instant, les messages de Borshkit sont en russe. Chaque commande et chaque option a aussi un nom anglais, et ce README utilise ces noms-là.
 
@@ -101,7 +101,7 @@ Toutes les commandes : [référence des commandes](docs/reference/commands.md) 
 | **Pilote automatique** | les questions de routine reçoivent leur réponse par défaut au bout d’une minute ; les questions critiques arrêtent tout, avec un rapport et une passation du contexte |
 | **Tableau de bord** | qui a reçu le travail, qui travaille, ce qui t’attend : dans le terminal, dans `STATUS.md` et dans la ligne d’état de Claude Code |
 | **Recherche** | les sources sont conservées en copie ; la vérification `citations` contrôle chaque citation mot pour mot |
-| **Confidentialité** | trois modes ; les clés et les données personnelles ne quittent pas la machine ; les réglages ne changent que par des propositions |
+| **Confidentialité** | trois modes ; le paquet de tâche envoyé à l’agent est vérifié avant l’envoi (clés, données personnelles) ; les réglages ne changent que par des propositions |
 | **Git pour débutants** | « qu’est-ce qui a changé », « qui a modifié ça », « remets comme avant » — avec des mots simples, sans commande destructrice |
 | **Remerciements** | vérifications `attribution` et `readme-assets`, la liste complète des contributeurs de chaque source |
 
@@ -143,6 +143,9 @@ La recette complète, avec les versions et les licences, se trouve dans [docs/in
 
 ## Limites
 
+- Borshkit vérifie le paquet de tâche qu’il envoie lui-même à l’agent. Ce que Claude Code ou Codex lisent ensuite dans les fichiers de la copie du projet, il ne le voit pas : les fichiers ignorés (`.env`) ne sont pas dans la copie, mais l’agent peut lire tous les autres.
+- Les vérifications des tâches (tests, build) tournent avec ton environnement, car les tests ont parfois besoin de clés. Le filtre d’environnement ne s’applique qu’aux exécutants.
+- La carte des connaissances comprend les liens du code JS/TS et du Markdown. Swift, Python, Go et les autres langages n’y entrent pas encore ; la recette n’en dépend pas.
 - Les adaptateurs Claude Code et Codex sont testés avec de faux programmes qui produisent le même format d’événements. Les options d’un Claude Code installé ont été vérifiées. La CI ne lance pas de vrais modèles.
 - Les images via Codex (GPT Image) ne sont pas encore testées : `borshkit executor probe codex` te le dira pour ton abonnement.
 - On n’a pas testé si le graphe d’Obsidian affiche les liens issus des propriétés des notes. C’est pourquoi les liens sont répétés sous forme de liens ordinaires dans le texte.
