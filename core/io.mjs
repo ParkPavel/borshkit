@@ -36,7 +36,16 @@ export async function atomicWrite(file, text, { mode = 0o600 } = {}) {
   await fs.mkdir(path.dirname(file), { recursive: true });
   const tmp = `${file}.${crypto.randomUUID()}.tmp`;
   await fs.writeFile(tmp, text, { mode });
-  await fs.rename(tmp, file);
+  // On Windows a rename over a file another handle is reading fails with
+  // EPERM/EBUSY/EACCES for a moment; the dispatcher and job watch read these
+  // files constantly, so retry briefly before giving up.
+  for (let attempt = 0; ; attempt++) {
+    try { await fs.rename(tmp, file); return; }
+    catch (e) {
+      if (!['EPERM', 'EBUSY', 'EACCES'].includes(e.code) || attempt >= 20) { await fs.rm(tmp, { force: true }); throw e; }
+      await new Promise(r => setTimeout(r, 10 + attempt * 10));
+    }
+  }
 }
 export const atomicJSON = (file, value) => atomicWrite(file, JSON.stringify(value, null, 2) + '\n');
 export async function git(cwd, args, options = {}) {
