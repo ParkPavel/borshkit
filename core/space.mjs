@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { assert, atomicJSON, atomicWrite, exists, git, isGitRoot, readJSON, sha } from './io.mjs';
 import { secretsInValue } from './secrets.mjs';
+import { validateExecutor, validatePool } from './executors.mjs';
 
 export const DEFAULT_FOLDER = 'borshkit';
 export const PRIVACY = ['moderate', 'strict', 'experiment'];
@@ -12,7 +13,7 @@ const SPACE_AUTHOR = ['Borshkit', 'space@borshkit'];
 
 export function defaultSettings(folder) {
   return { schemaVersion: 1, product: 'borshkit', folder, privacy: 'moderate', autopilot: false, silenceSeconds: 60,
-    trustedAgent: null, acceptance: { modelTrust: {} } };
+    trustedAgent: null, executors: {}, pools: {}, acceptance: { modelTrust: {} } };
 }
 export function validateSettings(s) {
   assert(s && s.schemaVersion === 1 && s.product === 'borshkit', 'Неизвестный формат настроек');
@@ -21,6 +22,10 @@ export function validateSettings(s) {
   assert(typeof s.autopilot === 'boolean', 'autopilot — да или нет (true/false)');
   assert(Number.isInteger(s.silenceSeconds) && s.silenceSeconds >= 10 && s.silenceSeconds <= 3600, 'silenceSeconds — от 10 до 3600');
   assert(s.trustedAgent == null || /^[a-zA-Z0-9._@/-]{1,80}$/.test(s.trustedAgent), 'trustedAgent — имя исполнителя или null');
+  const executors = s.executors ?? {}, pools = s.pools ?? {};
+  assert(typeof executors === 'object' && !Array.isArray(executors) && typeof pools === 'object' && !Array.isArray(pools), 'executors и pools — объекты');
+  for (const [id, e] of Object.entries(executors)) validateExecutor(id, e);
+  for (const [name, pool] of Object.entries(pools)) validatePool(name, pool, executors);
   const trust = s.acceptance?.modelTrust;
   assert(trust && typeof trust === 'object' && !Array.isArray(trust), 'acceptance.modelTrust — объект');
   for (const [tag, goal] of Object.entries(trust)) {

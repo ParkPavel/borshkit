@@ -17,9 +17,9 @@ const squash = s => s.replace(/\s+/g, ' ').trim().toLowerCase();
  * cannot be cited. Whether a claim follows from its source is not decided
  * here: that stays a `model` or `manual` criterion.
  */
-export async function citationsCheck(space, contract, check) {
+export async function citationsCheck(space, contract, check, repo = space.project) {
   const lines = [], failures = [], unknowns = [];
-  const file = await contained(space.project, path.resolve(space.project, check.report));
+  const file = await contained(repo, path.resolve(repo, check.report));
   const text = await fs.readFile(file, 'utf8').catch(() => null);
   if (text === null) return { status: 'FAIL', log: `Отчёт ${check.report} не найден.\n` };
   const declared = new Set(contract.materials ?? []);

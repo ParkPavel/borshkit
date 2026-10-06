@@ -2,6 +2,7 @@ import { findSecrets } from './secrets.mjs';
 
 // Privacy modes (decision D2): how much may leave the machine.
 export const STRICTNESS = { experiment: 0, moderate: 1, strict: 2 };
+const DATA_RANK = { local: 0, 'no-train': 1, unknown: 2, trains: 2 };
 export const PRIVACY_WORDS = { moderate: 'умеренный', strict: 'строгий', experiment: 'эксперимент' };
 
 /**
@@ -65,6 +66,17 @@ export function weakenings(before, after) {
     if (!old) out.push(`новая цель доверия «${tag}»: модель сможет закрывать такие критерии сама`);
     else if (goal.maxFalsePassRate > old.maxFalsePassRate) out.push(`цель доверия «${tag}»: допустимая доля ложных «готово» ${old.maxFalsePassRate} → ${goal.maxFalsePassRate}`);
     else if (JSON.stringify(goal.measured ?? null) !== JSON.stringify(old.measured ?? null)) out.push(`цель доверия «${tag}»: новое измерение`);
+  }
+  for (const [id, e] of Object.entries(after.executors ?? {})) {
+    const old = before.executors?.[id];
+    if (!old) out.push(`новый исполнитель «${id}» (${e.kind}, данные: ${e.dataPolicy})`);
+    else if (DATA_RANK[e.dataPolicy] > DATA_RANK[old.dataPolicy] || JSON.stringify({ ...e, model: 0, effort: 0 }) !== JSON.stringify({ ...old, model: 0, effort: 0 })) out.push(`исполнитель «${id}» изменён`);
+  }
+  for (const [name, pool] of Object.entries(after.pools ?? {})) {
+    const old = before.pools?.[name]?.members ?? [];
+    const added = pool.members.filter(m => !old.includes(m));
+    if (added.length) out.push(`пул «${name}»: добавлены ${added.join(', ')}`);
+    if ((pool.maxSwitches ?? 3) > (before.pools?.[name]?.maxSwitches ?? 3)) out.push(`пул «${name}»: больше переключений`);
   }
   if (after.folder !== before.folder) out.push('смена папки пространства');
   return out;

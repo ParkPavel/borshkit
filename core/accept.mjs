@@ -42,9 +42,23 @@ async function materialsDigest(space, contract) {
   }
   return sha(parts.join('\n'));
 }
+/**
+ * Where a task's work lives: its own worktree once a writer got one (the
+ * project's history stays untouched until a person merges), otherwise the
+ * project itself.
+ */
+export async function taskRepo(space, taskId) {
+  const info = await readJSON(path.join(space.tasks, taskId, 'worktree.json')).catch(() => null);
+  return info && await exists(info.path) ? info.path : space.project;
+}
+/** Model families that wrote this task's changes; a review from the same family is not independent. */
+export async function authorProviders(space, taskId) {
+  const authors = await readJSON(path.join(space.tasks, taskId, 'authors.json')).catch(() => []);
+  return [...new Set(authors.map(a => a.provider))];
+}
 async function context(space, t) {
   return {
-    source: await snapshot(space.project, { exclude: [space.folder] }),
+    source: await snapshot(t.repo, { exclude: [space.folder] }),
     materialsDigest: await materialsDigest(space, t.contract),
     settingsDigest: await settingsDigest(space),
     contractDigest: sha(await fs.readFile(t.file)),
@@ -53,12 +67,24 @@ async function context(space, t) {
 }
 const sameState = (a, b) => a.source.digest === b.source.digest && a.materialsDigest === b.materialsDigest && a.settingsDigest === b.settingsDigest && a.contractDigest === b.contractDigest && a.runtimeDigest === b.runtimeDigest;
 
-async function readyTask(space, taskId) {
+export async function readyTask(space, taskId, { draft = false } = {}) {
   await assertIgnored(space);
   await assertSettingsIntact(space);
   const t = await loadTask(space, taskId);
-  validateContract(t.contract);
+  if (!draft) validateContract(t.contract);
+  t.repo = await taskRepo(space, taskId);
   return t;
+}
+/** Latest CURRENT check results with log tails — handed to executors as data. */
+export async function currentChecks(space, t) {
+  const now = await context(space, t), out = [];
+  for (const check of t.contract.checks ?? []) {
+    const e = (await records(t)).find(r => r.kind === 'check' && r.checkId === check.id);
+    if (!e || await evidenceProblem(space, t, e, now)) continue;
+    const log = await fs.readFile(path.join(space.dir, e.artifact), 'utf8').catch(() => '');
+    out.push({ checkId: check.id, status: e.status, log: log.slice(-LOG_TAIL) });
+  }
+  return out;
 }
 async function records(t) {
   const dir = path.join(t.dir, 'evidence');
@@ -82,9 +108,9 @@ export async function verifyCheck(space, taskId, checkId) {
   assert(check, `В задаче нет проверки «${checkId}»`);
   const before = await context(space, t), evidenceId = crypto.randomUUID();
   let status = 'PASS', log = '', error = null;
-  if (check.builtin) ({ status, log, error = null } = await BUILTINS[check.builtin](space, t.contract, check));
+  if (check.builtin) ({ status, log, error = null } = await BUILTINS[check.builtin](space, t.contract, check, t.repo));
   else try {
-    const result = await runCommand(check.command, check.args, { cwd: space.project, timeout: check.timeoutMs ?? 120000, maxBuffer: 8 * 1024 * 1024 });
+    const result = await runCommand(check.command, check.args, { cwd: t.repo, timeout: check.timeoutMs ?? 120000, maxBuffer: 8 * 1024 * 1024 });
     log = result.stdout + result.stderr;
   } catch (e) { status = 'FAIL'; error = e.message; log = `${e.stdout ?? ''}${e.stderr ?? ''}\n${e.message}\n`; }
   const after = await context(space, t);
@@ -111,7 +137,7 @@ export async function verifyAll(space, taskId) {
  * `model` criteria are recorded; PASS without evidence is refused; silence on
  * a criterion records nothing, so it stays "not checked".
  */
-export async function recordReview(space, taskId, { executor, result }) {
+export async function recordReview(space, taskId, { executor, provider = null, result }) {
   const t = await readyTask(space, taskId);
   assert(typeof executor === 'string' && /^[a-zA-Z0-9._@/-]{1,80}$/.test(executor), 'Укажи исполнителя-ревьюера: --исполнитель codex');
   assert(result && result.taskId === taskId && Array.isArray(result.criteria), 'Результат ревью не относится к этой задаче');
@@ -121,7 +147,7 @@ export async function recordReview(space, taskId, { executor, result }) {
     if (!model.has(answer.id)) { ignored.push(String(answer.id)); continue; }
     assert(['PASS', 'FAIL', 'UNKNOWN'].includes(answer.status), `Неверный статус у ${answer.id}`);
     assert(Array.isArray(answer.evidence) && answer.evidence.every(e => typeof e === 'string' && e.trim()) && (answer.status !== 'PASS' || answer.evidence.length), `PASS по ${answer.id} без доказательств не принимается`);
-    saved.push(await saveEvidence(space, t, { id: crypto.randomUUID(), taskId, kind: 'review', executor, criteria: [answer.id], status: answer.status,
+    saved.push(await saveEvidence(space, t, { id: crypto.randomUUID(), taskId, kind: 'review', executor, provider, criteria: [answer.id], status: answer.status,
       evidence: answer.evidence, findings: Array.isArray(result.findings) ? result.findings : [], state: current, createdAt: new Date().toISOString() }));
   }
   await journal(space, `Ревью задачи «${taskId}» от ${executor}: записано ${saved.length} ответ(ов).`);
@@ -164,10 +190,10 @@ async function evidenceProblem(space, t, e, current) {
 }
 async function scopeViolations(space, t) {
   if (!space.projectIsGit || t.contract.paths.includes('.') || !t.contract.base.head) return [];
-  const changed = (await git(space.project, ['diff', '--no-renames', '--name-only', '-z', t.contract.base.head])).split('\0').filter(Boolean);
-  const untracked = (await git(space.project, ['ls-files', '--others', '--exclude-standard', '-z'])).split('\0').filter(Boolean);
-  const before = t.basis.uncommitted ?? {};
-  const unchanged = async f => f in before && before[f] === await fs.readFile(path.join(space.project, f)).then(sha, () => null);
+  const changed = (await git(t.repo, ['diff', '--no-renames', '--name-only', '-z', t.contract.base.head])).split('\0').filter(Boolean);
+  const untracked = (await git(t.repo, ['ls-files', '--others', '--exclude-standard', '-z'])).split('\0').filter(Boolean);
+  const before = t.repo === space.project ? t.basis.uncommitted ?? {} : {};
+  const unchanged = async f => f in before && before[f] === await fs.readFile(path.join(t.repo, f)).then(sha, () => null);
   const out = [];
   for (const f of [...new Set([...changed, ...untracked])].filter(f => !covered(f, t.contract.paths))) if (!(await unchanged(f))) out.push(f);
   return out;
@@ -184,6 +210,7 @@ export async function converge(space, taskId) {
   const readiness = await checkTask(space, taskId, { trusted: tag => trusted(space.settings, tag) });
   if (!readiness.ready) return { taskId, status: 'not-ready', errors: readiness.errors, criteria: [], goals: [], items: [] };
   const t = await readyTask(space, taskId), current = await context(space, t), all = await records(t);
+  const authors = await authorProviders(space, taskId);
   const latest = (kind, criterionId, extra = () => true) => all.find(e => e.kind === kind && e.criteria.includes(criterionId) && extra(e));
   const usable = async e => e && !(await evidenceProblem(space, t, e, current)) ? e : null;
   const criteria = [], items = [];
@@ -207,6 +234,7 @@ export async function converge(space, taskId) {
       evidence = review ? [{ executor: review.executor, status: review.status, evidence: review.evidence }] : [];
       if (human) { status = human.status; decidedBy = 'human'; }
       else if (review?.status === 'FAIL') { status = 'FAIL'; decidedBy = `model:${review.executor}`; }
+      else if (review?.status === 'PASS' && review.provider && authors.includes(review.provider)) { status = 'WAITING'; reason = `ревьюер ${review.executor} из того же семейства моделей (${review.provider}), что и автор, — независимой проверки нет`; }
       else if (review?.status === 'PASS' && trusted(space.settings, c.tag)) { status = 'PASS'; decidedBy = `trusted-model:${review.executor}`; }
       else if (review?.status === 'PASS') { status = 'WAITING'; reason = `модель ${review.executor} считает критерий выполненным, но цель доверия для этого типа не подтверждена измерением`; }
       else { status = 'UNKNOWN'; reason = review ? `модель ${review.executor} не смогла решить` : 'ревью ещё не было или устарело'; }

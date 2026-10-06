@@ -1,0 +1,17 @@
+{
+  "id": "flow-auditor",
+  "title": "Аудитор пользовательского пути",
+  "stage": "verify",
+  "authority": "read-only",
+  "output": "review",
+  "requires": {
+    "structuredOutput": true,
+    "output": [
+      "text"
+    ]
+  },
+  "crossProvider": true,
+  "packs": [],
+  "timeoutMs": 1800000,
+  "schemaVersion": 1
+}

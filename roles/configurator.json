@@ -1,0 +1,17 @@
+{
+  "id": "configurator",
+  "title": "Настройщик пространства",
+  "stage": "plan",
+  "authority": "read-only",
+  "output": "settings",
+  "requires": {
+    "structuredOutput": true,
+    "output": [
+      "text"
+    ]
+  },
+  "crossProvider": false,
+  "packs": [],
+  "timeoutMs": 600000,
+  "schemaVersion": 1
+}

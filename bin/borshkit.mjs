@@ -11,14 +11,28 @@ import { acceptManualEdit, applyProposal, proposeSettings, revertSettings } from
 import { endExperiment, recordKey, startExperiment } from '../core/experiment.mjs';
 import { PRIVACY_WORDS, STRICTNESS } from '../core/privacy.mjs';
 import readline from 'node:readline/promises';
+import { probeExecutor, readProbes, FAILURE_WORDS } from '../core/executors.mjs';
+import { runJob, resumeJob } from '../core/jobs.mjs';
+import { answer, getQuestion, listQuestions, resolveDue } from '../core/questions.mjs';
+import { cards, formatCards, listJobs, statusLine, writeStatusFiles } from '../core/dispatch.mjs';
+import { listRoles } from '../core/roles.mjs';
 
-const COMMANDS = { начать: 'init', статус: 'status', задача: 'task', сохранить: 'save', доктор: 'doctor', помощь: 'help', материал: 'material', приватность: 'privacy', настройки: 'settings', эксперимент: 'experiment' };
-const SUB = { добавить: 'add', список: 'list', обновить: 'refresh', показать: 'show', предложить: 'propose', применить: 'apply', принять: 'accept', вернуть: 'revert', начать: 'start', ключ: 'key', завершить: 'end' };
+const COMMANDS = { начать: 'init', статус: 'status', задача: 'task', сохранить: 'save', доктор: 'doctor', помощь: 'help', материал: 'material', приватность: 'privacy', настройки: 'settings', эксперимент: 'experiment',
+  исполнители: 'executors', исполнитель: 'executor', работа: 'job', вопрос: 'question', вопросы: 'question', роли: 'roles' };
+const SUB = { добавить: 'add', список: 'list', обновить: 'refresh', показать: 'show', предложить: 'propose', применить: 'apply', принять: 'accept', вернуть: 'revert', начать: 'start', ключ: 'key', завершить: 'end',
+  проверить: 'probe', запустить: 'run', продолжить: 'resume', ответить: 'answer' };
 const MODES = { умеренный: 'moderate', строгий: 'strict', эксперимент: 'experiment' };
 const TASK = { новая: 'new', анализ: 'check', проверить: 'verify', отзыв: 'review', подтвердить: 'confirm', итог: 'converge', принять: 'accept' };
 const FLAGS = { цель: 'goal', вид: 'kind', папка: 'folder', проект: 'project', 'только-локально': 'local-only', исполнитель: 'executor', результат: 'result',
-  текст: 'text', название: 'title', да: 'yes', 'ключи-отозваны': 'revoked', от: 'from', причина: 'reason' };
-const LONE = ['json', 'local-only', 'yes', 'revoked', 'help'];
+  текст: 'text', название: 'title', да: 'yes', 'ключи-отозваны': 'revoked', от: 'from', причина: 'reason',
+  роль: 'role', пул: 'pool', линза: 'lens', файл: 'file', следить: 'watch', строка: 'line', команда: 'command', семейство: 'provider', данные: 'data', модель: 'model' };
+const LONE = ['json', 'local-only', 'yes', 'revoked', 'help', 'watch', 'line'];
+// Ready-made manifests for the subscription CLIs; the data policy stays "unknown"
+// until the person states it, so the strict mode will not use them by accident.
+const PRESETS = {
+  claude: { kind: 'claude-cli', command: 'claude', provider: 'anthropic', dataPolicy: 'unknown', structuredOutput: 'json_schema', modalities: { output: ['text', 'code'] } },
+  codex: { kind: 'codex-cli', command: 'codex', provider: 'openai', dataPolicy: 'unknown', structuredOutput: 'json_schema', modalities: { output: ['text', 'code', 'image'] } },
+};
 const YES = ['да', 'yes', 'ok', 'y'], NO = ['нет', 'no', 'n'];
 
 export function parse(argv) {
@@ -56,6 +70,15 @@ const HELP = `Borshkit — Modular AI Workspace
   borshkit настройки показать | предложить <файл.json> --от <агент> --причина "…" | применить <p001>
   borshkit настройки принять | вернуть          ручная правка настроек: принять или откатить
   borshkit эксперимент начать | ключ <ИМЯ_ПЕРЕМЕННОЙ> | завершить [--ключи-отозваны]
+
+  borshkit исполнители                  кто может работать и что показала проверка
+  borshkit исполнитель добавить claude|codex [--данные no-train|trains|local] | <имя> --файл манифест.json
+  borshkit исполнитель проверить <имя>  сверить установленную программу или API с тем, что нужно
+  borshkit роли                         роли команды и что им нужно от исполнителя
+  borshkit работа запустить <задача> --роль <роль> --исполнитель <имя> | --пул <пул> [--линза lite|full|ultra] [--файл путь]
+  borshkit работа список | продолжить <работа> [--исполнитель <имя> | --пул <пул>]
+  borshkit вопросы | вопрос ответить <номер> <вариант>   критические — только в терминале
+  borshkit статус --следить | --строка  диспетчерская: кому ушло, кто работает
 
 Английские имена тоже работают: init, status, doctor, save, task new|check|verify|review|converge|confirm|accept.
 Добавь --json, чтобы получить ответ для программ.`;
@@ -210,6 +233,38 @@ async function experiment([rawSub, ...rest], flags) {
   throw new Error('Действие — начать, ключ или завершить');
 }
 
+async function job([rawSub, ...rest], flags) {
+  const sub = SUB[rawSub] ?? rawSub ?? 'list';
+  const space = await open(flags);
+  if (sub === 'list') return print(flags, await listJobs(space), formatCards(await cards(space, { recent: 20 })));
+  const opts = { executor: typeof flags.executor === 'string' ? flags.executor : null, pool: typeof flags.pool === 'string' ? flags.pool : null };
+  let j;
+  if (sub === 'run') {
+    assert(rest[0] && typeof flags.role === 'string', 'Формат: borshkit работа запустить <задача> --роль <роль> --исполнитель <имя> | --пул <пул>');
+    j = await runJob(space, { taskId: rest[0], role: flags.role, ...opts, lens: typeof flags.lens === 'string' ? flags.lens : null, imagePath: typeof flags.file === 'string' ? flags.file : null });
+  } else if (sub === 'resume') j = await resumeJob(space, rest[0], opts);
+  else throw new Error('Действие — запустить, список или продолжить');
+  const words = { COMPLETED: '🟢 готово', FAILED: '🔴 ошибка', STOPPED: '⏹ остановлено', WAITING_HUMAN: '⛔ ждёт тебя' };
+  print(flags, j, `${words[j.status] ?? j.status} · работа ${j.id} · исполнитель: ${j.executor ?? '—'}${j.attempts.some(a => a.outcome !== 'ok') ? `\nПопытки: ${j.attempts.map(a => `${a.executor} — ${a.outcome === 'ok' ? 'ок' : FAILURE_WORDS[a.failure] ?? a.outcome}`).join(' → ')}` : ''}${j.status === 'WAITING_HUMAN' ? `\nОтчёт: ${path.join(space.tasks, j.taskId, 'stop-report.md')}` : ''}${j.status === 'COMPLETED' ? `\nДальше: borshkit задача итог ${j.taskId}` : ''}`);
+  if (j.status !== 'COMPLETED') process.exitCode = 1;
+}
+async function question([rawSub, id, option], flags) {
+  const sub = SUB[rawSub] ?? rawSub ?? 'list';
+  const space = await open(flags);
+  if (sub === 'list') {
+    const open_ = await listQuestions(space, { open: true });
+    return print(flags, open_, open_.length ? open_.map(q => `${q.kind === 'critical' ? '⛔' : '❓'} ${q.id}: ${q.text}\n   варианты: ${q.options.map(o => `${o.id} — ${o.label}`).join('; ')}${q.defaultOption ? ` (по умолчанию: ${q.defaultOption})` : ''}`).join('\n') : 'Открытых вопросов нет.');
+  }
+  if (sub === 'answer') {
+    const q = await getQuestion(space, id);
+    const confirmed = q.kind === 'critical' ? await confirmPerson(`Критический вопрос: ${q.text}\nТвой ответ: ${option}`, 'да') : false;
+    assert(q.kind !== 'critical' || confirmed, PERSON_ONLY);
+    const r = await answer(space, id, option, { confirmedByPerson: confirmed });
+    return print(flags, r, `Ответ записан.${q.jobId && q.kind === 'critical' && option !== 'stop' ? ` Продолжить работу: borshkit работа продолжить ${q.jobId}` : ''}`);
+  }
+  throw new Error('Действие — список или ответить');
+}
+
 export async function main(argv = process.argv.slice(2)) {
   const { positional, flags } = parse(argv);
   const command = COMMANDS[positional[0]] ?? positional[0] ?? 'help';
@@ -225,7 +280,51 @@ export async function main(argv = process.argv.slice(2)) {
     const { space, ...report } = r;
     return print(flags, report, lines.join('\n'));
   }
-  if (command === 'status') { const s = await spaceStatus(await open(flags)); return print(flags, s, formatStatus(s)); }
+  if (command === 'status') {
+    const space = await open(flags);
+    if (flags.line) return console.log(await statusLine(space));
+    if (flags.watch) {
+      for (;;) {
+        await resolveDue(space);
+        await writeStatusFiles(space);
+        process.stdout.write('\x1b[2J\x1b[H' + `${await statusLine(space)}\n\n${formatCards(await cards(space))}\n\n(Ctrl+C — выйти)\n`);
+        await new Promise(r => setTimeout(r, 2000));
+      }
+    }
+    const s = await spaceStatus(space);
+    const work = await cards(space, { recent: 3 });
+    return print(flags, { ...s, jobs: work }, `${formatStatus(s)}${work.length ? `\n\nРаботы:\n${formatCards(work)}` : ''}`);
+  }
+  if (command === 'executors') {
+    const space = await open(flags), probes = await readProbes(space);
+    const list = Object.entries(space.settings.executors ?? {}).map(([id, e]) => ({ id, ...e, probe: probes[id] ?? null }));
+    return print(flags, list, list.length ? list.map(e => `${e.probe ? (e.probe.ok ? '✅' : '❌') : '⚪'} ${e.id} · ${e.kind} · ${e.provider} · данные: ${e.dataPolicy} · выход: ${e.modalities.output.join(', ')}${e.probe && !e.probe.ok ? ` · ${e.probe.missing.join('; ')}` : ''}`).join('\n')
+      + `${Object.keys(space.settings.pools ?? {}).length ? `\nПулы: ${Object.entries(space.settings.pools).map(([n, p]) => `${n} = ${p.members.join(' → ')}`).join('; ')}` : ''}` : 'Исполнителей пока нет. Добавь: borshkit исполнитель добавить claude');
+  }
+  if (command === 'executor') {
+    const [rawSub, id] = positional.slice(1), sub = SUB[rawSub] ?? rawSub;
+    const space = await open(flags);
+    assert(id, 'Укажи имя исполнителя');
+    if (sub === 'probe') { const p = await probeExecutor(space, id); return print(flags, p, p.ok ? `✅ ${id} готов${p.version ? ` (${p.version})` : ''}` : `❌ ${id}: ${p.missing.join('; ')}`); }
+    if (sub === 'add') {
+      const manifest = typeof flags.file === 'string' ? await readJSON(path.resolve(flags.file)) : { ...PRESETS[id] };
+      assert(manifest && manifest.kind, `Готовые исполнители: ${Object.keys(PRESETS).join(', ')}; для остальных — --файл манифест.json`);
+      for (const [flag, key] of [['command', 'command'], ['provider', 'provider'], ['data', 'dataPolicy'], ['model', 'model']]) if (typeof flags[flag] === 'string') manifest[key] = flags[flag];
+      const proposal = await proposeSettings(space, { executors: { ...(space.settings.executors ?? {}), [id]: manifest } }, { reason: `добавить исполнителя ${id}` });
+      const confirmed = await confirmPerson(`Добавить исполнителя ${id}: ${proposal.weakens.join('; ')}`, 'да, ослабить');
+      assert(confirmed, `${PERSON_ONLY} Предложение сохранено: ${proposal.id}`);
+      await applyProposal(space, proposal.id, { confirmedByPerson: true });
+      const p = await probeExecutor(space, id);
+      return print(flags, p, `Исполнитель ${id} добавлен. Проверка: ${p.ok ? 'пройдена' : p.missing.join('; ')}`);
+    }
+    throw new Error('Действие — добавить или проверить');
+  }
+  if (command === 'roles') {
+    const roles = await listRoles();
+    return print(flags, roles.map(({ prompt, ...r }) => r), roles.map(r => `${r.id} — ${r.title} · ${r.authority === 'workspace-write' ? 'пишет в копию проекта' : 'только читает'} · ответ: ${r.output}${r.crossProvider ? ' · нужна другая семья моделей, чем у автора' : ''}`).join('\n'));
+  }
+  if (command === 'job') return job(positional.slice(1), flags);
+  if (command === 'question') return question(positional.slice(1), flags);
   if (command === 'doctor') {
     const space = await openSpace(process.cwd(), { folder: flags.folder ?? DEFAULT_FOLDER, allowBrokenSettings: true }).catch(() => null);
     const checks = await doctor(space);

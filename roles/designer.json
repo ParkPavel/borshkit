@@ -1,0 +1,17 @@
+{
+  "id": "designer",
+  "title": "Дизайнер интерфейса",
+  "stage": "build",
+  "authority": "read-only",
+  "output": "review",
+  "requires": {
+    "structuredOutput": true,
+    "output": [
+      "text"
+    ]
+  },
+  "crossProvider": false,
+  "packs": [],
+  "timeoutMs": 900000,
+  "schemaVersion": 1
+}
