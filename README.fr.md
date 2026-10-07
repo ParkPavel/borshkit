@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml"><img src="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml/badge.svg" alt="CI : Linux et Windows"></a>
-  <img src="https://img.shields.io/badge/version-0.11.0-b3261e" alt="version 0.11.0">
+  <img src="https://img.shields.io/badge/version-0.11.1-b3261e" alt="version 0.11.1">
   <img src="https://img.shields.io/badge/node-%E2%89%A522-2b1d1d" alt="Node.js 22 ou plus récent">
   <img src="https://img.shields.io/badge/dependencies-0-2e7d32" alt="zéro dépendance">
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="plugin Claude Code">
@@ -22,13 +22,13 @@
 
 Tu dis ce que tu veux obtenir. Les agents font le travail. Borshkit montre ce qui est **prouvé** par des vérifications et ce que tu dois regarder toi-même. Borshkit ne croit un modèle sur parole que là où tu l’as autorisé pour ce type de critère et qu’une mesure le confirme.
 
-> **Statut : 0.11.0.** Tout ce qui suit fonctionne et est couvert par des tests sous Linux et Windows. Les tests utilisent de faux exécutants à la place de vrais modèles. Ce qui n’a pas encore été essayé en conditions réelles est listé dans [Limites](#limites).
+> **Statut : 0.11.1.** Tout ce qui suit fonctionne et est couvert par des tests sous Linux et Windows. Les tests utilisent de faux exécutants à la place de vrais modèles. Ce qui n’a pas encore été essayé en conditions réelles est listé dans [Limites](#limites).
 >
 > **Note sur la langue :** pour l’instant, les messages de Borshkit sont en russe. Chaque commande et chaque option a aussi un nom anglais, et ce README utilise ces noms-là.
 
 ## L’idée principale
 
-<p align="center"><img src="assets/diagrams/flow.fr.svg" alt="Le trajet d’une tâche : objectif → l’agent travaille dans une copie du projet → vérifications → feuille de recette → accepté ; ce qui ne peut pas être vérifié automatiquement te revient" width="100%"></p>
+<p align="center"><img src="assets/diagrams/flow.fr.svg" alt="Parcours d’une tâche : objectif et critères → l’agent travaille dans sa propre copie du projet → vérifications → revue par un autre exécutant → fiche de recette ; issues : à corriger, non vérifié, t’attend, accepté ; une fois acceptée, fusion dans main et envoi" width="100%"></p>
 
 Un modèle dit « terminé ». Ce n’est pas encore une recette :
 - chaque preuve est liée à l’état exact des fichiers ;
@@ -78,15 +78,19 @@ Toutes les commandes : [référence des commandes](docs/reference/commands.md) 
 
 ## Comment ça marche
 
-<p align="center"><img src="assets/diagrams/evidence.fr.svg" alt="Une preuve peut expirer : une vérification passe pour l’état a1b2c3, un fichier change, la preuve est périmée, une nouvelle vérification passe pour f9e8d7" width="100%"></p>
+<p align="center"><img src="assets/diagrams/architecture.fr.svg" alt="Organisation : toi, Claude Code et Codex appelez la même commande borshkit ; modules du noyau dans core/ ; fichiers dans borshkit/, .state/ et dans une copie de tâche séparée sur sa propre branche ; exécutants branchés par adaptateurs" width="100%"></p>
+
+**De quoi c’est fait.** Toi, Claude Code et Codex appelez tous la même commande `borshkit`. Le noyau, ce sont les modules de `core/`. Tout l’état est fait de fichiers ordinaires dans `borshkit/` et `.state/`, et l’agent travaille dans une copie séparée du projet, sur sa propre branche. Les exécutants se branchent par des adaptateurs. [En savoir plus](docs/concepts/space.md)
+
+<p align="center"><img src="assets/diagrams/evidence.fr.svg" alt="Empreinte d’état : commit et fichiers, contrat, réglages, matériaux et code de Borshkit ; une preuve garde cette empreinte et devient périmée au moindre écart" width="100%"></p>
 
 **Une preuve peut expirer.** Borshkit retient l’état exact sur lequel une vérification est passée : le commit et l’empreinte de chaque fichier, y compris les modifications pas encore commitées. Change un seul octet, et la vérification doit être relancée. [En savoir plus](docs/concepts/evidence.md)
 
-<p align="center"><img src="assets/diagrams/pool.fr.svg" alt="Pool d’exécutants : Claude Code a atteint sa limite, le travail est passé à Codex et s’est terminé ; le tableau de bord montre chaque passage de relais" width="100%"></p>
+<p align="center"><img src="assets/diagrams/pool.fr.svg" alt="Choix de l’exécutant : les candidats passent les filtres confidentialité, capacités, « le relecteur n’est pas l’auteur » et limite de relais ; en cas de limite ou d’échec le travail passe au suivant, et sans candidat c’est l’arrêt critique avec rapport, en attendant toi" width="100%"></p>
 
 **Une limite n’est pas un arrêt.** Un pool est une file d’exécutants : Claude Code, Codex, des API gratuites et locales. Quand l’un d’eux atteint sa limite, le travail passe au suivant que le mode de confidentialité autorise et qui sait faire ce travail. Les questions critiques n’attendent que toi. [En savoir plus](docs/concepts/executors.md)
 
-<p align="center"><img src="assets/diagrams/kb.fr.svg" alt="Connaissances : les fichiers du projet deviennent des notes reliées entre elles, que tu peux interroger en SQL" width="100%"></p>
+<p align="center"><img src="assets/diagrams/kb.fr.svg" alt="Connaissances : code, tests, docs, tâches et leçons deviennent des notes dans knowledge/_generated/ et un index .state/kb.sqlite ; le contexte des travaux, les requêtes SQL et l’export Obsidian s’en servent" width="100%"></p>
 
 **Les connaissances sont des notes, pas une boîte noire.** Le projet devient des notes avec des `[[links]]` pour Obsidian et, par-dessus, un index SQL. Chaque travail reçoit sa propre part du contexte. Cette documentation fonctionne de la même façon : Borshkit a construit lui-même son [graphe de documentation](docs/graph/README.md).
 

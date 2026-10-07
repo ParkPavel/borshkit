@@ -1,128 +1,126 @@
-// Animated SVG explainers for the README in every language Borshkit ships.
-// GitHub shows SVG through <img>, where CSS animations run and the page's
-// colour scheme and reduced-motion preference apply. Without motion each
-// picture shows its final, meaningful state. Run: node scripts/diagrams.mjs
+// Animated block diagrams for the README in every language Borshkit ships.
+// Each picture is drawn from the code it explains: names of files, commands
+// and fields are the real ones (scripts/diagram-texts.mjs holds the words).
+// GitHub shows SVG through <img>: SMIL moves a token along the real path, CSS
+// lights the step it is on, the page's colour scheme applies, and with
+// "reduce motion" the token is hidden and every block stays still.
+// Run: node scripts/diagrams.mjs
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { ROOT } from '../core/io.mjs';
+import { T } from './diagram-texts.mjs';
 
 export const LANGS = ['ru', 'en', 'de', 'ko', 'zh-TW', 'fr'];
-const T = {
-  ru: {
-    tagline: 'задачи · доказательства · приёмка · знания',
-    bannerDesc: 'Миска борща, над которой поднимается пар и модули-кубики: задачи, проверки и знания собираются в одно пространство.',
-    flow: { title: 'Путь одной задачи', steps: [['Цель', 'ты описываешь'], ['Работа', 'агент в копии'], ['Проверки', 'тесты, сборка'], ['Лист приёмки', 'что доказано'], ['Принято', 'собрать, отправить']], you: ['Ты', 'ручные пункты'],
-      caption: '«Готово» от модели — ещё не приёмка. Всё, что не доказано, приходит к тебе списком.' },
-    evidence: { title: 'Доказательство устаревает', state: 'состояние', check: 'проверка', edit: 'правка', passFor: 'для', stale: 'устарело', staleFrom: 'снято с',
-      caption: 'Изменился хоть один байт — проверку надо повторить, даже если правка ещё не в коммите.' },
-    pool: { title: 'Пул исполнителей', job: 'Работа', limit: 'лимит исчерпан', working: 'работает…', done: 'готово ✓', standby: 'ждёт', board: 'диспетчерская',
-      s: ['→ claude: начал работу', 'claude: лимит исчерпан → codex', 'codex: готово ✓ · переключений: 1'],
-      caption: 'Упёрся в лимит — работа сама переходит к следующему, кому это разрешено и кто это умеет.' },
-    kb: { title: 'Знания: заметки + связи + SQL', project: 'проект', graph: 'граф (Obsidian)',
-      caption: 'Одни и те же заметки — граф в Obsidian, ссылки на GitHub и таблицы для SQL.' },
-  },
-  en: {
-    tagline: 'tasks · evidence · acceptance · knowledge',
-    bannerDesc: 'A bowl of borscht with steam and module cubes rising above it: tasks, checks and knowledge come together in one workspace.',
-    flow: { title: 'How a task travels', steps: [['Goal', 'you describe it'], ['Work', 'agent in a copy'], ['Checks', 'tests, build'], ['Acceptance sheet', 'what is proven'], ['Accepted', 'merge, push']], you: ['You', 'manual items'],
-      caption: '“Done” from a model is not acceptance yet. Whatever isn’t proven comes to you as a list.' },
-    evidence: { title: 'Evidence goes stale', state: 'state', check: 'check', edit: 'edit', passFor: 'for', stale: 'stale', staleFrom: 'taken on',
-      caption: 'Change a single byte and the check must run again — even if the edit isn’t committed yet.' },
-    pool: { title: 'Executor pool', job: 'Job', limit: 'limit reached', working: 'working…', done: 'done ✓', standby: 'standby', board: 'dispatcher',
-      s: ['→ claude: started', 'claude: limit reached → codex', 'codex: done ✓ · switches: 1'],
-      caption: 'Hit a limit, and the job moves on to the next executor that is allowed and able.' },
-    kb: { title: 'Knowledge: notes + links + SQL', project: 'project', graph: 'graph (Obsidian)',
-      caption: 'The same notes: a graph in Obsidian, links on GitHub, tables for SQL.' },
-  },
-  de: {
-    tagline: 'Aufgaben · Nachweise · Abnahme · Wissen',
-    bannerDesc: 'Eine Schüssel Borschtsch, über der Dampf und Modulwürfel aufsteigen: Aufgaben, Prüfungen und Wissen kommen in einem Arbeitsbereich zusammen.',
-    flow: { title: 'Der Weg einer Aufgabe', steps: [['Ziel', 'du beschreibst es'], ['Arbeit', 'Agent in Kopie'], ['Prüfungen', 'Tests, Build'], ['Abnahmeblatt', 'was belegt ist'], ['Abgenommen', 'mergen, pushen']], you: ['Du', 'manuelle Punkte'],
-      caption: '„Fertig“ vom Modell ist noch keine Abnahme. Was nicht belegt ist, kommt als Liste zu dir.' },
-    evidence: { title: 'Nachweise veralten', state: 'Zustand', check: 'Prüfung', edit: 'Änderung', passFor: 'für', stale: 'veraltet', staleFrom: 'erhoben auf',
-      caption: 'Ändert sich auch nur ein Byte, muss die Prüfung neu laufen – auch ohne Commit.' },
-    pool: { title: 'Ausführer-Pool', job: 'Auftrag', limit: 'Limit erreicht', working: 'arbeitet…', done: 'fertig ✓', standby: 'wartet', board: 'Leitstand',
-      s: ['→ claude: gestartet', 'claude: Limit erreicht → codex', 'codex: fertig ✓ · Wechsel: 1'],
-      caption: 'Ist ein Limit erreicht, geht der Auftrag an den Nächsten, der darf und kann.' },
-    kb: { title: 'Wissen: Notizen + Links + SQL', project: 'Projekt', graph: 'Graph (Obsidian)',
-      caption: 'Dieselben Notizen: Graph in Obsidian, Links auf GitHub, Tabellen für SQL.' },
-  },
-  ko: {
-    tagline: '작업 · 증거 · 인수 · 지식',
-    bannerDesc: '김과 모듈 큐브가 피어오르는 보르시 한 그릇: 작업, 검사, 지식이 하나의 작업 공간에 모입니다.',
-    flow: { title: '작업 하나의 여정', steps: [['목표', '직접 설명'], ['작업', '복사본의 에이전트'], ['검사', '테스트, 빌드'], ['인수 시트', '증명된 것'], ['승인됨', '병합, 푸시']], you: ['나', '수동 항목'],
-      caption: '모델의 “완료”는 아직 인수가 아닙니다. 증명되지 않은 것은 목록으로 당신에게 옵니다.' },
-    evidence: { title: '증거는 낡는다', state: '상태', check: '검사', edit: '수정', passFor: '기준', stale: '만료됨', staleFrom: '측정 시점',
-      caption: '1바이트만 바뀌어도 검사를 다시 해야 합니다. 커밋 전 수정도 마찬가지입니다.' },
-    pool: { title: '실행자 풀', job: '작업', limit: '한도 도달', working: '작업 중…', done: '완료 ✓', standby: '대기', board: '상황판',
-      s: ['→ claude: 시작', 'claude: 한도 도달 → codex', 'codex: 완료 ✓ · 전환: 1회'],
-      caption: '한도에 걸리면 작업은 허용되고 할 수 있는 다음 실행자에게 넘어갑니다.' },
-    kb: { title: '지식: 노트 + 링크 + SQL', project: '프로젝트', graph: '그래프 (Obsidian)',
-      caption: '같은 노트가 Obsidian에서는 그래프, GitHub에서는 링크, SQL에서는 테이블이 됩니다.' },
-  },
-  'zh-TW': {
-    tagline: '任務 · 證據 · 驗收 · 知識',
-    bannerDesc: '一碗冒著熱氣的羅宋湯，上方升起模組方塊：任務、檢查與知識匯聚於同一個工作區。',
-    flow: { title: '一個任務的旅程', steps: [['目標', '由你描述'], ['工作', '代理在副本中'], ['檢查', '測試、建置'], ['驗收清單', '已證明的'], ['已驗收', '合併、推送']], you: ['你', '手動項目'],
-      caption: '模型說「完成」還不算驗收。未被證明的部分會列成清單交給你。' },
-    evidence: { title: '證據會過期', state: '狀態', check: '檢查', edit: '修改', passFor: '針對', stale: '已過期', staleFrom: '取自',
-      caption: '只要改動一個位元組就得重新檢查——即使修改尚未提交。' },
-    pool: { title: '執行者池', job: '工作', limit: '已達上限', working: '工作中…', done: '完成 ✓', standby: '待命', board: '調度台',
-      s: ['→ claude：開始', 'claude：已達上限 → codex', 'codex：完成 ✓ · 切換：1 次'],
-      caption: '遇到上限時，工作會自動交給下一個被允許且有能力的執行者。' },
-    kb: { title: '知識：筆記 + 連結 + SQL', project: '專案', graph: '圖譜（Obsidian）',
-      caption: '同一批筆記：在 Obsidian 是圖譜，在 GitHub 是連結，在 SQL 是資料表。' },
-  },
-  fr: {
-    tagline: 'tâches · preuves · recette · connaissances',
-    bannerDesc: 'Un bol de bortsch d’où montent de la vapeur et des cubes-modules : tâches, vérifications et connaissances réunies dans un même espace.',
-    flow: { title: 'Le trajet d’une tâche', steps: [['Objectif', 'tu le décris'], ['Travail', 'agent dans une copie'], ['Vérifications', 'tests, build'], ['Feuille de recette', 'ce qui est prouvé'], ['Accepté', 'fusionner, pousser']], you: ['Toi', 'points manuels'],
-      caption: '« Terminé » selon le modèle n’est pas une recette. Ce qui n’est pas prouvé te revient en liste.' },
-    evidence: { title: 'Une preuve peut expirer', state: 'état', check: 'vérification', edit: 'modification', passFor: 'pour', stale: 'périmée', staleFrom: 'prise sur',
-      caption: 'Un octet change, et la vérification doit être relancée — même sans commit.' },
-    pool: { title: 'Pool d’exécutants', job: 'Travail', limit: 'limite atteinte', working: 'en cours…', done: 'terminé ✓', standby: 'en attente', board: 'tableau de bord',
-      s: ['→ claude : démarré', 'claude : limite atteinte → codex', 'codex : terminé ✓ · bascules : 1'],
-      caption: 'Limite atteinte : le travail passe au suivant qui est autorisé et capable.' },
-    kb: { title: 'Connaissances : notes + liens + SQL', project: 'projet', graph: 'graphe (Obsidian)',
-      caption: 'Les mêmes notes : un graphe dans Obsidian, des liens sur GitHub, des tables pour SQL.' },
-  },
-};
 
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const FONT = 'system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","Apple SD Gothic Neo","Malgun Gothic","PingFang TC","Microsoft JhengHei","Noto Sans CJK TC",sans-serif';
 const BASE_CSS = `
-:root{--bg:#fbf7f2;--ink:#2b1d1d;--muted:#6b5757;--red:#b3261e;--deep:#8c1c13;--line:#dccbc8;--card:#fffdfa;--ok:#2e7d32;--okbg:#e6f2e6;--off:#8f8282;--offbg:#efe8e6;--steam:#c9a9a6;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
-@media (prefers-color-scheme:dark){:root{--bg:#171213;--ink:#f4ecea;--muted:#bfaeac;--red:#e0574b;--deep:#a8261b;--line:#4a3a39;--card:#221a1a;--ok:#7bc47f;--okbg:#1f2e20;--off:#8d7f7e;--offbg:#2a2222;--steam:#6e5856}}
+:root{--bg:#fbf7f2;--ink:#2b1d1d;--muted:#6b5757;--red:#b3261e;--deep:#8c1c13;--line:#cdb9b5;--card:#fffdfa;--group:#f5ede7;--ok:#2e7d32;--okbg:#e6f2e6;--wait:#9a5b00;--waitbg:#fbefdc;--off:#7d6f6f;--offbg:#efe8e6;--steam:#c9a9a6;--hl:#fde8e5;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#171213;--ink:#f4ecea;--muted:#bfaeac;--red:#ef6b5f;--deep:#a8261b;--line:#5a4846;--card:#221a1a;--group:#1d1617;--ok:#7bc47f;--okbg:#1f2e20;--wait:#f0a64a;--waitbg:#33261a;--off:#9d8f8e;--offbg:#2a2222;--steam:#6e5856;--hl:#3a1f1d}}
 text{font-family:${FONT};fill:var(--ink)}
-.bg{fill:var(--bg)}.t{font-size:19px;font-weight:700}.b{font-size:14px;font-weight:650}.s{font-size:11.5px;fill:var(--muted)}.c{font-size:13px;fill:var(--muted)}
-.m{font-family:var(--mono);font-size:12px}.box{fill:var(--card);stroke:var(--line);stroke-width:1.5}.ln{stroke:var(--line);stroke-width:2;fill:none}
-.red{fill:var(--red)}.ok{fill:var(--ok)}.off{fill:var(--off)}
-@media (prefers-reduced-motion:reduce){*{animation:none!important}}`;
-function svg(lang, { w, h, title, desc, css, body }) {
+.bg{fill:var(--bg)}.ttl{font-size:20px;font-weight:700}.sub{font-size:12px;fill:var(--muted)}.cap{font-size:13px;fill:var(--muted)}
+.b{font-size:13.5px;font-weight:650}.l{font-size:11.5px;fill:var(--muted)}.m{font-family:var(--mono);font-size:11px}.c{font-family:var(--mono);font-size:11.5px;fill:var(--red);font-weight:600}
+.gl{font-size:11px;font-weight:700;letter-spacing:.06em;fill:var(--muted);text-transform:uppercase}
+.al{font-size:10.5px;fill:var(--muted);paint-order:stroke;stroke:var(--bg);stroke-width:4px;stroke-linejoin:round}
+.box{fill:var(--card);stroke:var(--line);stroke-width:1.4}.grp{fill:var(--group);stroke:var(--line);stroke-width:1.2;stroke-dasharray:5 4}
+.ok .box,.box.ok{fill:var(--okbg);stroke:var(--ok)}.wait .box,.box.wait{fill:var(--waitbg);stroke:var(--wait)}.off .box,.box.off{fill:var(--offbg);stroke:var(--off)}.bad .box,.box.bad{fill:var(--hl);stroke:var(--red)}
+.ln{fill:none;stroke:var(--line);stroke-width:1.6}.ln.red{stroke:var(--red)}.ln.okl{stroke:var(--ok)}.ln.waitl{stroke:var(--wait)}.ln.offl{stroke:var(--off)}.ln.dash{stroke-dasharray:5 4}
+.mk{fill:var(--line)}.mk.red{fill:var(--red)}.mk.okl{fill:var(--ok)}.mk.waitl{fill:var(--wait)}.mk.offl{fill:var(--off)}
+.tok{fill:var(--red);stroke:var(--bg);stroke-width:2}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}.tok{display:none}}`;
+
+function svg(lang, { w, h, title, desc, css = '', body }) {
+  const markers = ['', 'red', 'okl', 'waitl', 'offl'].map(c => `<marker id="a${c}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk ${c}" d="M0 0L10 5L0 10z"/></marker>`).join('');
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" role="img" aria-labelledby="t d" lang="${lang}">
 <title id="t">${esc(title)}</title>
 <desc id="d">${esc(desc)}</desc>
+<defs>${markers}</defs>
 <style>${BASE_CSS}${css}</style>
 <rect class="bg" width="${w}" height="${h}" rx="14"/>
 ${body}
 </svg>
 `;
 }
-const kf = (name, frames) => `@keyframes ${name}{${frames}}`;
-// Rough text width for placing a label after another one: wide (CJK) characters take about twice the space.
-const textWidth = (s, px) => [...s].reduce((w, ch) => w + (ch.codePointAt(0) > 0x2e80 ? px : px * 0.58), 0);
+
+// ── Primitives ──────────────────────────────────────────────────────────────
+const LINE = { t: 18, c: 15.5, l: 15, m: 14.5 };
+/** A block: rows are [kind, text]; kind t = title, c = command, l = note, m = mono. */
+function block({ x, y, w, h, rows, cls = '', id = '', pad = 11 }) {
+  let cy = y + 20;
+  const text = rows.filter(([, s]) => s !== undefined && s !== '').map(([k, s]) => {
+    const out = `<text class="${k === 't' ? 'b' : k}" x="${x + pad}" y="${cy}">${esc(s)}</text>`;
+    cy += LINE[k];
+    return out;
+  }).join('');
+  return `<g class="${cls}"${id ? ` id="${id}"` : ''}><rect class="box${id ? ` hl-${id}` : ''}" x="${x}" y="${y}" width="${w}" height="${h}" rx="9"/>${text}</g>`;
+}
+const group = ({ x, y, w, h, label }) => `<rect class="grp" x="${x}" y="${y}" width="${w}" height="${h}" rx="12"/><text class="gl" x="${x + 12}" y="${y + 17}">${esc(label)}</text>`;
+/** An arrow along points; `color` is one of '', red, okl, waitl, offl. */
+function arrow(points, { color = '', dash = false, label = null, at = 0.5, dx = 0, dy = -6, anchor = 'middle', head = true } = {}) {
+  const d = points.map(([px, py], i) => `${i ? 'L' : 'M'}${px} ${py}`).join(' ');
+  let lab = '';
+  if (label) {
+    const [lx, ly] = pointAt(points, at);
+    lab = `<text class="al" x="${lx + dx}" y="${ly + dy}" text-anchor="${anchor}">${esc(label)}</text>`;
+  }
+  return `<path class="ln ${color}${dash ? ' dash' : ''}" d="${d}"${head ? ` marker-end="url(#a${color})"` : ''}/>${lab}`;
+}
+function lengths(points) {
+  const seg = points.slice(1).map(([x, y], i) => Math.hypot(x - points[i][0], y - points[i][1]));
+  return { seg, total: seg.reduce((a, b) => a + b, 0) };
+}
+function pointAt(points, t) {
+  const { seg, total } = lengths(points);
+  let left = t * total;
+  for (let i = 0; i < seg.length; i++) {
+    if (left <= seg[i]) { const f = seg[i] ? left / seg[i] : 0; return [points[i][0] + (points[i + 1][0] - points[i][0]) * f, points[i][1] + (points[i + 1][1] - points[i][1]) * f]; }
+    left -= seg[i];
+  }
+  return points.at(-1);
+}
+/**
+ * A token moving along `points` at constant speed, resting `pauses[i]`
+ * seconds at vertex i. Returns the SMIL element and, per vertex, the share of
+ * the cycle during which the token rests there (for CSS highlights).
+ */
+function token(points, pauses, { speed = 160, fadeAt = null } = {}) {
+  const { seg } = lengths(points);
+  const times = [], keyPoints = [];
+  let t = 0, dist = 0;
+  const total = seg.reduce((a, b) => a + b, 0);
+  const windows = [];
+  for (let i = 0; i < points.length; i++) {
+    const rest = pauses[i] ?? 0;
+    windows.push([t, t + rest]);
+    times.push(t); keyPoints.push(dist / total);
+    if (rest) { t += rest; times.push(t); keyPoints.push(dist / total); }
+    if (i < seg.length) { t += seg[i] / speed; dist += seg[i]; }
+  }
+  const dur = t;
+  const kt = times.map(x => (x / dur).toFixed(4)).join(';'), kp = keyPoints.map(x => Math.min(1, x).toFixed(4)).join(';');
+  const d = points.map(([px, py], i) => `${i ? 'L' : 'M'}${px} ${py}`).join(' ');
+  return {
+    dur, windows: windows.map(([a, b]) => [a / dur * 100, b / dur * 100]),
+    svg: `<circle class="tok" r="7" cx="0" cy="0"><animateMotion dur="${dur.toFixed(2)}s" repeatCount="indefinite" path="${d}" keyPoints="${kp}" keyTimes="${kt}" calcMode="linear"/></circle>`,
+  };
+}
+/** CSS that lights block `id` while the token rests in window [a, b] (percent of the cycle). */
+function light(id, [a, b], dur) {
+  if (b - a < 0.01) return '';
+  const p = v => Math.max(0, Math.min(100, v)).toFixed(2);
+  return `.hl-${id}{animation:hl-${id} ${dur.toFixed(2)}s linear infinite}@keyframes hl-${id}{0%,${p(a - 0.6)}%{stroke:var(--line);stroke-width:1.4}${p(a)}%,${p(b)}%{stroke:var(--red);stroke-width:2.6}${p(b + 0.6)}%,100%{stroke:var(--line);stroke-width:1.4}}`;
+}
 
 // ── Banner ─────────────────────────────────────────────────────────────────
 function banner(lang) {
   const t = T[lang];
-  const css = `
-.bowl{fill:var(--deep)}.rim{fill:var(--red)}.st{fill:none;stroke:var(--steam);stroke-width:7;stroke-linecap:round}
+  const css = `.bowl{fill:var(--deep)}.rim{fill:var(--red)}.st{fill:none;stroke:var(--steam);stroke-width:7;stroke-linecap:round}
 .cube{fill:var(--red)}.cube2{fill:var(--ink);opacity:.85}.cube3{fill:var(--red);opacity:.7}
-.big{font-size:92px;font-weight:700}.sub{font-size:40px;fill:var(--muted)}.tag{font-size:28px;fill:var(--muted)}
+.big{font-size:92px;font-weight:700}.bsub{font-size:40px;fill:var(--muted)}.tag{font-size:28px;fill:var(--muted)}
 .st{animation:rise 4s ease-in-out infinite}.st:nth-child(2){animation-delay:-1.3s}.st:nth-child(3){animation-delay:-2.6s}
-${kf('rise', '0%,100%{transform:translateY(0);opacity:.95}50%{transform:translateY(-8px);opacity:.55}')}
+@keyframes rise{0%,100%{transform:translateY(0);opacity:.95}50%{transform:translateY(-8px);opacity:.55}}
 .q{animation:bob 5s ease-in-out infinite;transform-box:fill-box;transform-origin:center}.q2{animation-delay:-1.6s}.q3{animation-delay:-3.2s}
-${kf('bob', '0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-10px) rotate(6deg)}')}`;
+@keyframes bob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-10px) rotate(6deg)}}`;
   const body = `<g transform="translate(170 205)">
   <path class="bowl" d="M-95 0 H95 A95 95 0 0 1 -95 0 Z"/>
   <rect class="rim" x="-110" y="-8" width="220" height="16" rx="8"/>
@@ -132,135 +130,237 @@ ${kf('bob', '0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(
   <rect class="cube3 q q3" x="44" y="-140" width="26" height="26" rx="5"/>
 </g>
 <text class="big" x="340" y="150">Borshkit</text>
-<text class="sub" x="344" y="205">Modular AI Workspace</text>
+<text class="bsub" x="344" y="205">Modular AI Workspace</text>
 <text class="tag" x="344" y="252">${esc(t.tagline)}</text>`;
   return svg(lang, { w: 1280, h: 320, title: 'Borshkit — Modular AI Workspace', desc: t.bannerDesc, css, body });
 }
 
-// ── 1. How a task travels ──────────────────────────────────────────────────
+// ── 1. Architecture: who calls what, where every file lives ─────────────────
+function architecture(lang) {
+  const t = T[lang].arch, W = 980, H = 660;
+  const A = { x: 20, w: 182 }, B = { x: 226, w: 396 }, C = { x: 646, w: 314 };
+  const parts = [`<text class="ttl" x="20" y="36">${esc(t.title)}</text><text class="sub" x="20" y="56">${esc(t.sub)}</text>`];
+  // Who calls it
+  parts.push(group({ x: A.x, y: 74, w: A.w, h: 380, label: t.inputs }));
+  parts.push(block({ x: A.x + 10, y: 100, w: A.w - 20, h: 66, id: 'you', rows: [['t', t.you], ['m', 'borshkit …'], ['l', t.youL]] }));
+  parts.push(block({ x: A.x + 10, y: 178, w: A.w - 20, h: 98, rows: [['t', 'Claude Code'], ['l', t.ccL], ['m', 'SessionStart'], ['m', 'PreToolUse']] }));
+  parts.push(block({ x: A.x + 10, y: 288, w: A.w - 20, h: 66, rows: [['t', t.agents], ['m', 'AGENTS.md'], ['l', t.agentsL]] }));
+  parts.push(block({ x: A.x + 10, y: 360, w: A.w - 20, h: 86, cls: 'wait', rows: [['t', t.person], ['l', t.personL1], ['l', t.personL2], ['l', t.personL3]] }));
+  // Core: jobs sit at the bottom, next to the executors they call
+  parts.push(group({ x: B.x, y: 74, w: B.w, h: 380, label: t.core }));
+  const g = [
+    ['g1', 100, t.g1, 'space · config · privacy · experiment · hooks', t.g1d],
+    ['g2', 186, t.g2, 'contract · snapshot · accept · builtins', t.g2d],
+    ['g4', 272, t.g4, 'kb · materials · gitshell · eval', t.g4d],
+    ['g3', 358, t.g3, 'jobs · roles · adapters · executors · questions', t.g3d],
+  ];
+  for (const [id, y, title, mods, d] of g) parts.push(block({ x: B.x + 12, y, w: B.w - 24, h: 76, rows: [['t', title], ['m', mods], ['l', d]], id }));
+  // Files
+  parts.push(group({ x: C.x, y: 74, w: C.w, h: 380, label: t.files }));
+  parts.push(block({ x: C.x + 10, y: 100, w: C.w - 20, h: 156, id: 'space', rows: [['t', 'borshkit/'], ['l', t.spaceL],
+    ['m', 'settings/workspace.json'], ['m', 'tasks/<id>/ contract · evidence'], ['m', '  logs · acceptance.md'], ['m', 'jobs/ · questions/ · STATUS.md'], ['m', 'knowledge/ · materials/'], ['m', '.state/ kb.sqlite · locks/']] }));
+  parts.push(block({ x: C.x + 10, y: 268, w: C.w - 20, h: 74, id: 'project', rows: [['t', t.project], ['m', '.gitignore: /borshkit/'], ['l', t.projectL]] }));
+  parts.push(block({ x: C.x + 10, y: 364, w: C.w - 20, h: 80, id: 'copy', rows: [['t', t.copy], ['m', '../<project>.borshkit-worktrees/<id>'], ['l', t.copyL]] }));
+  // Executors
+  parts.push(group({ x: B.x, y: 486, w: W - B.x - 20, h: 122, label: t.exec }));
+  const ex = [['Claude Code', 'claude-cli', t.sub2], ['Codex · GPT Image', 'codex-cli', t.sub2], [t.api, 'openai-compat', t.sub3], [t.own, 'command', t.sub4]];
+  const ew = (W - B.x - 20 - 24 - 3 * 12) / 4;
+  ex.forEach(([n, k, l], i) => parts.push(block({ x: B.x + 12 + i * (ew + 12), y: 512, w: ew, h: 80, rows: [['t', n], ['c', k], ['l', l]], id: i === 0 ? 'ex' : '' })));
+  // Arrows: every caller goes through the same CLI into the core
+  const bus = A.x + A.w + 10;
+  parts.push(`<path class="ln" d="M${A.x + A.w - 10} 133 H${bus} M${A.x + A.w - 10} 227 H${bus} M${A.x + A.w - 10} 321 H${bus} M${bus} 133 V403"/>`);
+  parts.push(`<path class="ln waitl dash" d="M${A.x + A.w - 10} 403 H${bus}"/>`);
+  parts.push(arrow([[bus, 267], [B.x + 12, 267]], { color: 'red' }));
+  // core ↔ files
+  parts.push(arrow([[B.x + B.w - 12, 224], [C.x + 10, 224]], { color: 'red' }));
+  parts.push(arrow([[B.x + B.w - 12, 138], [C.x + 10, 138]]));
+  // jobs ↔ executors
+  parts.push(arrow([[B.x + 110, 434], [B.x + 110, 512]], { color: 'red', label: t.aPacket, at: 0.45, dx: 6, anchor: 'start' }));
+  parts.push(arrow([[B.x + 290, 512], [B.x + 290, 434]], { label: t.aJson, at: 0.55, dx: 6, anchor: 'start' }));
+  // writers → task copy; gitshell: copy → project → remote
+  parts.push(arrow([[C.x + 150, 512], [C.x + 150, 444]], { color: 'red', label: t.aWrite, at: 0.5, dx: 6, anchor: 'start' }));
+  parts.push(arrow([[C.x + 60, 364], [C.x + 60, 342]], { color: 'okl' }));
+  parts.push(`<text class="al" x="${C.x + 70}" y="358">${esc(t.aMerge)}</text>`);
+  parts.push(arrow([[C.x + C.w - 10, 330], [W - 4, 330], [W - 4, 300]], { color: 'okl' }));
+  parts.push(`<text class="al" x="${W - 8}" y="292" text-anchor="end">${esc(t.aPush)}</text>`);
+  // Token: you → jobs → executor → task copy → acceptance → project
+  const path = [[A.x + A.w - 20, 133], [A.x + A.w + 10, 133], [A.x + A.w + 10, 267], [B.x + 200, 267], [B.x + 200, 396], [B.x + 110, 396], [B.x + 110, 552], [C.x + 150, 552], [C.x + 150, 404], [C.x + 150, 404], [B.x + 300, 224], [C.x + 60, 224], [C.x + 60, 305]];
+  const tk = token(path, [0.6, 0, 0, 0, 1.2, 0, 1.2, 0, 1.2, 0, 1.4, 0, 1.6]);
+  const css = [['you', 0], ['g3', 4], ['ex', 6], ['copy', 8], ['g2', 10], ['project', 12]].map(([id, i]) => light(id, tk.windows[i], tk.dur)).join('');
+  parts.push(tk.svg);
+  parts.push(`<text class="cap" x="20" y="${H - 22}">${esc(t.caption)}</text>`);
+  return svg(lang, { w: W, h: H, title: t.title, desc: `${t.sub}. ${t.caption}`, css, body: parts.join('\n') });
+}
+
+// ── 2. The path of a task, with every outcome of convergence ───────────────
 function flow(lang) {
-  const t = T[lang].flow, W = 884, H = 270, bw = 148, gap = 26, x0 = 22, y = 72, bh = 58;
-  const cx = i => x0 + i * (bw + gap) + bw / 2;
-  const lit = [[0, 8], [14, 28], [34, 48], [54, 76], [82, 97]];
-  let css = `.tok{fill:var(--red);opacity:0;animation:tok 12s ease-in-out infinite}.tok2{fill:var(--red);opacity:0;animation:tok2 12s ease-in-out infinite}
-.done{opacity:1;animation:done 12s linear infinite}.youbox{stroke-dasharray:5 4}`;
-  const pos = [[0, 0], [8, 0], [14, 1], [28, 1], [34, 2], [48, 2], [54, 3], [76, 3], [82, 4], [97, 4]];
-  css += kf('tok', `${pos.map(([p, i]) => `${p}%{transform:translate(${cx(i) - cx(0)}px,0);opacity:${p >= 97 ? 0 : 1}}`).join('')}100%{transform:translate(${cx(4) - cx(0)}px,0);opacity:0}`);
-  css += kf('tok2', `0%,57%{transform:translate(0,0);opacity:0}58%{opacity:1;transform:translate(0,0)}64%,70%{transform:translate(0,${110}px);opacity:1}76%{transform:translate(0,0);opacity:1}77%,100%{opacity:0}`);
-  css += kf('done', '0%,84%{opacity:0}86%,97%{opacity:1}100%{opacity:0}');
-  lit.forEach(([a, b], i) => { css += `.hl${i}{animation:hl${i} 12s linear infinite}` + kf(`hl${i}`, `0%,${Math.max(a - 1, 0)}%{stroke:var(--line);stroke-width:1.5}${a}%,${b}%{stroke:var(--red);stroke-width:3}${Math.min(b + 1, 100)}%,100%{stroke:var(--line);stroke-width:1.5}`); });
-  const boxes = t.steps.map(([a, b], i) => `<rect class="box hl${i}" x="${cx(i) - bw / 2}" y="${y}" width="${bw}" height="${bh}" rx="10"/>
-<text class="b" x="${cx(i)}" y="${y + 25}" text-anchor="middle">${esc(a)}</text><text class="s" x="${cx(i)}" y="${y + 44}" text-anchor="middle">${esc(b)}</text>`).join('\n');
-  const arrows = [0, 1, 2, 3].map(i => `<path class="ln" d="M${cx(i) + bw / 2 + 3} ${y + bh / 2} H${cx(i + 1) - bw / 2 - 5}"/><path class="red" d="M${cx(i + 1) - bw / 2 - 2} ${y + bh / 2} l-8 -5 v10 z"/>`).join('\n');
-  const yb = y + 110;
-  const you = `<path class="ln" d="M${cx(3)} ${y + bh} V${yb}" stroke-dasharray="4 4"/>
-<rect class="box youbox" x="${cx(3) - bw / 2}" y="${yb}" width="${bw}" height="${bh - 6}" rx="10"/>
-<text class="b" x="${cx(3)}" y="${yb + 22}" text-anchor="middle">${esc(t.you[0])}</text><text class="s" x="${cx(3)}" y="${yb + 40}" text-anchor="middle">${esc(t.you[1])}</text>`;
-  const body = `<text class="t" x="${x0}" y="38">${esc(t.title)}</text>
-${arrows}
-${you}
-${boxes}
-<g class="done"><circle class="ok" cx="${cx(4) + bw / 2 - 14}" cy="${y + 14}" r="11"/><path d="M${cx(4) + bw / 2 - 19} ${y + 14} l4 4 l7 -8" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"/></g>
-<circle class="tok" cx="${cx(0)}" cy="${y - 10}" r="7"/>
-<circle class="tok2" cx="${cx(3)}" cy="${y + bh + 4}" r="6"/>
-<text class="c" x="${x0}" y="${H - 18}">${esc(t.caption)}</text>`;
-  return svg(lang, { w: W, h: H, title: t.title, desc: [t.steps.map(s => s.join(' — ')).join(' → '), t.caption].join('. '), css, body });
+  const t = T[lang].flow, W = 980, H = 590;
+  const parts = [`<text class="ttl" x="20" y="36">${esc(t.title)}</text><text class="sub" x="20" y="56">${esc(t.sub)}</text>`];
+  const r1 = 78, bh = 84, bw = 180, X = [20, 214, 408];
+  parts.push(block({ x: X[0], y: r1, w: bw, h: bh, id: 'n1', rows: [['t', t.n1], ['c', t.n1c], ['l', t.n1l]] }));
+  parts.push(block({ x: X[1], y: r1, w: bw, h: bh, id: 'n2', rows: [['t', t.n2], ['c', t.n2c], ['l', t.n2l]] }));
+  parts.push(block({ x: X[2], y: r1, w: bw, h: bh, id: 'n3', rows: [['t', t.n3], ['c', t.n3c], ['l', t.n3l]] }));
+  parts.push(block({ x: 616, y: 70, w: 192, h: 84, id: 'n4a', rows: [['t', t.n4a], ['c', t.n4ac], ['l', t.n4al]] }));
+  parts.push(block({ x: 616, y: 166, w: 192, h: 84, id: 'n4b', rows: [['t', t.n4b], ['c', t.n4bc], ['l', t.n4bl]] }));
+  parts.push(block({ x: 830, y: 104, w: 130, h: 112, id: 'n5', rows: [['t', t.n5], ['c', t.n5c], ['l', t.n5l1], ['l', t.n5l2], ['m', 'acceptance.md']] }));
+  parts.push(arrow([[X[0] + bw, r1 + 42], [X[1], r1 + 42]], { color: 'red' }));
+  parts.push(arrow([[X[1] + bw, r1 + 42], [X[2], r1 + 42]], { color: 'red' }));
+  // Work → both kinds of evidence through one junction
+  parts.push(`<path class="ln red" d="M${X[2] + bw} ${r1 + 42} H600 M600 112 V208"/>`);
+  parts.push(arrow([[600, 112], [616, 112]], { color: 'red' }));
+  parts.push(arrow([[600, 208], [616, 208]], { color: 'red' }));
+  parts.push(arrow([[808, 112], [830, 140]], { color: 'red' }));
+  parts.push(arrow([[808, 208], [830, 180]], { color: 'red' }));
+  // Outcomes
+  const oy = 300, oh = 84, O = [[20, 220], [252, 220], [484, 220], [716, 244]];
+  const out = [['bad', `🔴 ${t.o1}`, t.o1l1, t.o1l2, 'o1'], ['off', `⚪ ${t.o2}`, t.o2l1, t.o2l2, 'o2'], ['wait', `🟡 ${t.o3}`, t.o3l1, t.o3l2, 'o3'], ['ok', `🟢 ${t.o4}`, t.o4l1, t.o4l2, 'o4']];
+  out.forEach(([cls, a, b, c, id], i) => parts.push(block({ x: O[i][0], y: oy, w: O[i][1], h: oh, cls, id, rows: [['t', a], ['l', b], ['l', c]] })));
+  // Convergence → outcome bus
+  parts.push(`<path class="ln" d="M895 216 V284 H130 M362 284 V${oy} M594 284 V${oy} M130 284 V${oy}"/>`);
+  parts.push(arrow([[895, 284], [895, oy]], { color: 'okl' }));
+  parts.push(`<text class="al" x="888" y="272" text-anchor="end">${esc(t.lConverge)}</text>`);
+  // Feedback loops
+  parts.push(arrow([[60, oy], [60, 186], [498, 186], [498, r1 + bh]], { color: 'red', dash: true, label: t.lFix, at: 0.3, dy: -5 }));
+  parts.push(arrow([[300, oy], [300, 232], [584, 232], [584, 208], [600, 208]], { color: 'offl', dash: true, label: t.lRecheck, at: 0.45, dy: -5, head: false }));
+  parts.push(block({ x: 484, y: 420, w: 220, h: 84, cls: 'wait', id: 'you', rows: [['t', t.you], ['c', t.youc], ['l', t.youl]] }));
+  parts.push(arrow([[594, oy + oh], [594, 420]], { color: 'waitl' }));
+  parts.push(arrow([[704, 462], [714, 462], [714, 262], [870, 262], [870, 216]], { color: 'waitl', dash: true, label: t.lAnswer, at: 0.62, dy: -5 }));
+  // Landing: update when main moved, merge, push
+  parts.push(block({ x: 252, y: 420, w: 220, h: 84, cls: 'off', id: 'up', rows: [['t', t.up], ['c', t.upc], ['l', t.upl]] }));
+  parts.push(block({ x: 726, y: 420, w: 112, h: 112, id: 'm', rows: [['t', t.m], ['c', t.mc], ['l', t.ml1], ['l', t.ml2], ['l', t.ml3]] }));
+  parts.push(block({ x: 848, y: 420, w: 112, h: 112, id: 'p', rows: [['t', t.p], ['c', t.pc], ['l', t.pl1], ['l', t.pl2], ['l', t.pl3]] }));
+  parts.push(arrow([[782, oy + oh], [782, 420]], { color: 'okl' }));
+  parts.push(arrow([[838, 476], [848, 476]], { color: 'okl' }));
+  parts.push(arrow([[726, 520], [362, 520], [362, 504]], { color: 'offl', dash: true, label: t.lMoved, at: 0.35, dy: 14 }));
+  parts.push(arrow([[362, 420], [362, oy + oh]], { color: 'offl', dash: true }));
+  // Token: the accepted path
+  const path = [[110, 120], [304, 120], [498, 120], [600, 120], [712, 112], [895, 160], [895, 284], [895, 342], [782, 342], [782, 476], [904, 476]];
+  const tk = token(path, [0.9, 0.9, 1.4, 0, 1.2, 1.2, 0, 1.0, 0, 1.0, 1.4]);
+  const css = [['n1', 0], ['n2', 1], ['n3', 2], ['n4a', 4], ['n5', 5], ['o4', 7], ['m', 9], ['p', 10]].map(([id, i]) => light(id, tk.windows[i], tk.dur)).join('') + light('n4b', tk.windows[4], tk.dur);
+  parts.push(tk.svg);
+  parts.push(`<text class="cap" x="20" y="${H - 18}">${esc(t.caption)}</text>`);
+  return svg(lang, { w: W, h: H, title: t.title, desc: `${t.sub}. ${t.caption}`, css, body: parts.join('\n') });
 }
 
-// ── 2. Evidence goes stale ─────────────────────────────────────────────────
+// ── 3. Evidence is bound to the exact state ────────────────────────────────
 function evidence(lang) {
-  const t = T[lang].evidence, W = 860, H = 260;
-  const show = (name, from, to, base) => `.${name}{opacity:${base};animation:${name} 10s linear infinite}` + kf(name, `0%,${from - 1}%{opacity:0}${from}%,${to}%{opacity:1}${to + 1}%,100%{opacity:0}`);
-  let css = show('passA', 15, 35, 0) + show('stale', 43, 65, 0) + show('hashA', 0, 37, 0) + show('flash', 35, 42, 0)
-    + `.hashB{opacity:1;animation:hashB 10s linear infinite}${kf('hashB', '0%,37%{opacity:0}38%,100%{opacity:1}')}`
-    + `.passB{opacity:1;animation:passB 10s linear infinite}${kf('passB', '0%,71%{opacity:0}72%,100%{opacity:1}')}`
-    + `.pulse{animation:pulse 10s linear infinite}${kf('pulse', '0%,5%{stroke:var(--line)}7%,14%{stroke:var(--red)}16%,64%{stroke:var(--line)}66%,72%{stroke:var(--red)}74%,100%{stroke:var(--line)}')}`
-    + `.bar2{animation:bar 10s linear infinite}${kf('bar', '0%,35%{fill:var(--line)}36%,100%{fill:var(--red)}')}`
-    + '.pass{fill:var(--okbg);stroke:var(--ok);stroke-width:1.5}.stl{fill:var(--offbg);stroke:var(--off);stroke-width:1.5;stroke-dasharray:5 4}';
-  const pw = Math.max(62, textWidth(t.edit, 11) + 20);
-  const card = `<rect class="box" x="40" y="62" width="230" height="130" rx="10"/>
-<text class="b m" x="58" y="88">app.js</text>
-<rect x="58" y="102" width="150" height="8" rx="4" fill="var(--line)"/><rect class="bar2" x="58" y="118" width="110" height="8" rx="4" fill="var(--red)"/><rect x="58" y="134" width="170" height="8" rx="4" fill="var(--line)"/>
-<text class="s" x="58" y="172">${esc(t.state)}:</text>
-<text class="m hashA" x="${66 + textWidth(t.state + ':', 11.5)}" y="172">a1b2c3</text><text class="m hashB" x="${66 + textWidth(t.state + ':', 11.5)}" y="172" fill="var(--red)">f9e8d7</text>
-<g class="flash"><rect x="${262 - pw}" y="108" width="${pw}" height="22" rx="11" fill="var(--red)"/><text x="${262 - pw / 2}" y="123" text-anchor="middle" style="font-size:11px;fill:#fff;font-weight:650">${esc(t.edit)}</text></g>`;
-  const arrow = `<text class="s" x="390" y="112" text-anchor="middle">${esc(t.check)}</text>
-<path class="ln pulse" d="M290 127 H482"/><path class="red" d="M490 127 l-10 -6 v12 z"/>`;
-  const badge = (cls, kind, big, small) => `<g class="${cls}"><rect class="${kind}" x="510" y="92" width="300" height="70" rx="12"/>
-<text class="b" x="660" y="122" text-anchor="middle" style="font-size:20px;fill:var(${kind === 'pass' ? '--ok' : '--off'})">${esc(big)}</text>
-<text class="s m" x="660" y="146" text-anchor="middle">${esc(small)}</text></g>`;
-  const after = (word, hash) => lang === 'ko' ? `${hash} ${word}` : `${word} ${hash}`;
-  const body = `<text class="t" x="40" y="38">${esc(t.title)}</text>
-${card}
-${arrow}
-${badge('passA', 'pass', 'PASS ✓', after(t.passFor, 'a1b2c3'))}
-${badge('stale', 'stl', t.stale, after(t.staleFrom, 'a1b2c3'))}
-${badge('passB', 'pass', 'PASS ✓', after(t.passFor, 'f9e8d7'))}
-<text class="c" x="40" y="${H - 22}">${esc(t.caption)}</text>`;
-  return svg(lang, { w: W, h: H, title: t.title, desc: `PASS ${after(t.passFor, 'a1b2c3')} → ${t.edit} → ${t.stale} → PASS ${after(t.passFor, 'f9e8d7')}. ${t.caption}`, css, body });
+  const t = T[lang].ev, W = 980, H = 580;
+  const parts = [`<text class="ttl" x="20" y="36">${esc(t.title)}</text><text class="sub" x="20" y="56">${esc(t.sub)}</text>`];
+  parts.push(group({ x: 20, y: 74, w: 340, h: 286, label: t.state }));
+  const rows = [[t.r1, 'source.digest', t.r1l], [t.r2, 'contractDigest', t.r2l], [t.r3, 'settingsDigest', t.r3l], [t.r4, 'materialsDigest', t.r4l], [t.r5, 'runtimeDigest', t.r5l]];
+  rows.forEach(([name, field, note], i) => {
+    const y = 98 + i * 52;
+    parts.push(`<g><rect class="box${i === 0 ? ' hl-files' : ''}" x="32" y="${y}" width="316" height="46" rx="7"/><text class="b" x="44" y="${y + 19}" style="font-size:12.5px">${esc(name)}</text><text class="m" x="336" y="${y + 19}" text-anchor="end">${esc(field)}</text><text class="l" x="44" y="${y + 36}">${esc(note)}</text></g>`);
+  });
+  parts.push(group({ x: 384, y: 74, w: 266, h: 286, label: t.src }));
+  parts.push(block({ x: 396, y: 98, w: 242, h: 78, rows: [['t', t.k1], ['c', t.k1c], ['l', t.k1l]] }));
+  parts.push(block({ x: 396, y: 186, w: 242, h: 78, id: 'rev', rows: [['t', t.k2], ['c', t.k2c], ['l', t.k2l]] }));
+  parts.push(block({ x: 396, y: 274, w: 242, h: 78, rows: [['t', t.k3], ['c', t.k3c], ['l', t.k3l]] }));
+  parts.push(block({ x: 674, y: 98, w: 286, h: 140, id: 'rec', rows: [['t', t.rec], ['m', 'tasks/<id>/evidence/<uuid>.json'], ['m', '{ kind, status, criteria,'], ['m', '  state, freshness, origin,'], ['m', '  artifactSha256, sequence }'], ['l', t.recl]] }));
+  parts.push(block({ x: 674, y: 252, w: 286, h: 108, rows: [['t', t.cmp], ['c', t.cmpc], ['l', t.cmpq], ['l', t.cmpl1], ['l', t.cmpl2]] }));
+  parts.push(arrow([[348, 216], [384, 216]], { color: 'red', label: 'state', dy: -6 }));
+  parts.push(arrow([[638, 168], [674, 168]], { color: 'red' }));
+  parts.push(arrow([[817, 238], [817, 252]]));
+  parts.push(group({ x: 20, y: 384, w: 940, h: 150, label: t.time }));
+  const lane = (y, items) => items.map(([x, w, cls, title, sub, id]) => block({ x, y, w, h: 50, cls, id, rows: [['t', title], ['m', sub]] })).join('');
+  parts.push(`<text class="l" x="34" y="429">${esc(t.lane1)}</text><text class="l" x="34" y="491">${esc(t.lane2)}</text>`);
+  parts.push(lane(408, [[166, 160, '', t.e1, 'state = A · CURRENT', 'e1'], [344, 150, 'bad', t.e2, 'A → B', 'e2'], [512, 178, 'off', t.e3, 'A ≠ B → STALE', 'e3'], [708, 240, 'ok', t.e4, 'state = B · CURRENT', 'e4']]));
+  parts.push(lane(470, [[166, 160, '', t.f1, 'seenState = B', 'f1'], [344, 150, 'bad', t.f2, 'B → C', 'f2'], [512, 436, 'off', t.f3, 'freshness: STALE', 'f3']]));
+  for (const [x1, x2, y] of [[326, 344, 433], [494, 512, 433], [690, 708, 433], [326, 344, 495], [494, 512, 495]]) parts.push(arrow([[x1, y], [x2, y]]));
+  const tk = token([[246, 433], [419, 433], [601, 433], [828, 433]], [1.2, 1.2, 1.6, 1.6], { speed: 120 });
+  const css = [['e1', 0], ['e2', 1], ['e3', 2], ['e4', 3]].map(([id, i]) => light(id, tk.windows[i], tk.dur)).join('') + light('files', tk.windows[1], tk.dur) + light('rec', tk.windows[0], tk.dur);
+  parts.push(tk.svg);
+  parts.push(`<text class="cap" x="20" y="${H - 20}">${esc(t.caption)}</text>`);
+  return svg(lang, { w: W, h: H, title: t.title, desc: `${t.sub}. ${t.caption}`, css, body: parts.join('\n') });
 }
 
-// ── 3. Executor pool ───────────────────────────────────────────────────────
+// ── 4. How a job finds an executor ─────────────────────────────────────────
 function pool(lang) {
-  const t = T[lang].pool, W = 860, H = 300, rows = [['Claude Code', 64], ['Codex', 118], ['API · free', 172]];
-  const win = (name, from, to, base) => `.${name}{opacity:${base};animation:${name} 10s linear infinite}` + kf(name, `0%,${from - 1}%{opacity:0}${from}%,${to}%{opacity:1}${to < 100 ? `${to + 1}%,100%{opacity:0}` : ''}`);
-  const css = win('lim', 26, 100, 1) + win('work', 48, 74, 0) + win('done', 75, 100, 1) + win('s0', 4, 30, 0) + win('s1', 31, 74, 0) + win('s2', 75, 100, 1)
-    + `.tok{fill:var(--red);opacity:0;animation:tok 10s ease-in-out infinite}`
-    + kf('tok', `0%,4%{transform:translate(0,0);opacity:0}6%{opacity:1;transform:translate(0,0)}18%,24%{transform:translate(206px,${rows[0][1] + 20 - 130}px);opacity:1}26%{transform:translate(196px,${rows[0][1] + 20 - 130}px)}40%,72%{transform:translate(206px,${rows[1][1] + 20 - 130}px);opacity:1}76%,100%{transform:translate(206px,${rows[1][1] + 20 - 130}px);opacity:0}`)
-    + '.r1{animation:r1 10s linear infinite}' + kf('r1', '0%,17%{stroke:var(--line)}18%,25%{stroke:var(--red);stroke-width:3}26%,100%{stroke:var(--line)}')
-    + '.r2{animation:r2 10s linear infinite}' + kf('r2', '0%,39%{stroke:var(--line)}40%,74%{stroke:var(--red);stroke-width:3}75%,100%{stroke:var(--ok);stroke-width:2.5}')
-    + '.pill{rx:11}.limbg{fill:var(--red)}.okbg{fill:var(--okbg);stroke:var(--ok)}.board{fill:var(--card);stroke:var(--line)}';
-  const job = `<rect class="box" x="40" y="104" width="190" height="56" rx="10"/><text class="b" x="135" y="129" text-anchor="middle">${esc(t.job)}</text><text class="s m" x="135" y="147" text-anchor="middle">implementer</text>`;
-  const lines = rows.map(([, y]) => `<path class="ln" d="M232 132 C330 132 330 ${y + 20} 430 ${y + 20}"/>`).join('\n');
-  const execs = rows.map(([name, y], i) => `<rect class="box${i === 0 ? ' r1' : i === 1 ? ' r2' : ''}" x="440" y="${y}" width="380" height="40" rx="10"/><text class="b" x="458" y="${y + 25}">${esc(name)}</text>`).join('\n');
-  const pill = (cls, y, text, kind) => `<g class="${cls}"><rect class="${kind}" x="${812 - 150}" y="${y + 8}" width="142" height="24" rx="12"/><text x="${812 - 79}" y="${y + 24}" text-anchor="middle" style="font-size:12px;font-weight:650;fill:${kind === 'limbg' ? '#fff' : 'var(--ok)'}">${esc(text)}</text></g>`;
-  const statuses = pill('lim', rows[0][1], t.limit, 'limbg') + `<text class="s work" x="${812 - 79}" y="${rows[1][1] + 25}" text-anchor="middle">${esc(t.working)}</text>` + pill('done', rows[1][1], t.done, 'okbg')
-    + `<text class="s" x="${812 - 79}" y="${rows[2][1] + 25}" text-anchor="middle">${esc(t.standby)}</text>`;
-  const board = `<rect class="board" x="40" y="${H - 72}" width="780" height="34" rx="8"/><text class="s" x="56" y="${H - 50}">${esc(t.board)}</text>
-${t.s.map((s, i) => `<text class="m s${i}" x="${70 + textWidth(t.board, 11.5)}" y="${H - 50}">${esc(s)}</text>`).join('')}`;
-  const body = `<text class="t" x="40" y="38">${esc(t.title)}</text>
-${lines}
-${job}
-${execs}
-${statuses}
-<circle class="tok" cx="226" cy="130" r="7"/>
-${board}
-<text class="c" x="40" y="${H - 14}">${esc(t.caption)}</text>`;
-  return svg(lang, { w: W, h: H, title: t.title, desc: `${t.s.join(' · ')}. ${t.caption}`, css, body });
+  const t = T[lang].pool, W = 980, H = 620;
+  const parts = [`<text class="ttl" x="20" y="36">${esc(t.title)}</text><text class="sub" x="20" y="56">${esc(t.sub)}</text>`];
+  parts.push(block({ x: 20, y: 78, w: 196, h: 84, id: 'job', rows: [['t', t.job], ['c', t.jobc], ['m', 'reviewer · pool=review'], ['l', t.jobl]] }));
+  parts.push(group({ x: 20, y: 184, w: 196, h: 214, label: t.cand }));
+  [['1 · claude', 'provider: anthropic', 'c1'], ['2 · codex', 'provider: openai', 'c2'], ['3 · groq', 'openai-compat', 'c3']]
+    .forEach(([n, m, id], i) => parts.push(block({ x: 32, y: 208 + i * 62, w: 172, h: 52, id, rows: [['t', n], ['m', m]] })));
+  parts.push(group({ x: 240, y: 78, w: 300, h: 320, label: t.gates }));
+  [[t.g1, t.g1l], [t.g2, t.g2l], [t.g3, t.g3l], [t.g4, t.g4l]].forEach(([n, l], i) => parts.push(block({ x: 252, y: 102 + i * 72, w: 276, h: 62, id: `g${i}`, rows: [['t', `${i + 1}. ${n}`], ['l', l]] })));
+  for (let i = 0; i < 3; i++) parts.push(arrow([[470, 164 + i * 72], [470, 174 + i * 72]], { color: 'red' }));
+  parts.push(block({ x: 564, y: 78, w: 396, h: 122, id: 'run', rows: [['t', t.run], ['m', 'spawn(command) · stdin ← prompt'], ['l', t.runl1], ['l', t.runl2], ['l', t.runl3]] }));
+  parts.push(block({ x: 564, y: 222, w: 188, h: 84, cls: 'ok', id: 'ok', rows: [['t', `✓ ${t.ok}`], ['l', t.okl1], ['l', t.okl2]] }));
+  parts.push(block({ x: 772, y: 222, w: 160, h: 84, cls: 'wait', id: 'next', rows: [['t', `↻ ${t.next}`], ['l', t.nextl1], ['l', t.nextl2]] }));
+  parts.push(block({ x: 564, y: 322, w: 188, h: 76, cls: 'bad', rows: [['t', `✗ ${t.fail}`], ['l', t.faill1], ['l', t.faill2]] }));
+  parts.push(block({ x: 772, y: 322, w: 188, h: 76, cls: 'wait', id: 'ask', rows: [['t', `⏸ ${t.ask}`], ['l', t.askl1], ['l', t.askl2]] }));
+  parts.push(group({ x: 20, y: 432, w: 940, h: 104, label: t.stopT }));
+  parts.push(block({ x: 32, y: 456, w: 296, h: 68, cls: 'bad', rows: [['t', t.stop], ['l', t.stopl]] }));
+  parts.push(block({ x: 346, y: 456, w: 296, h: 68, rows: [['t', 'stop-report.md · handoff.md'], ['m', 'status: WAITING_HUMAN'], ['l', t.stopf]] }));
+  parts.push(block({ x: 660, y: 456, w: 288, h: 68, cls: 'wait', rows: [['t', t.you], ['c', t.youc1], ['c', t.youc2]] }));
+  parts.push(arrow([[328, 490], [346, 490]], { color: 'red' }));
+  parts.push(arrow([[642, 490], [660, 490]], { color: 'waitl' }));
+  parts.push(arrow([[118, 162], [118, 184]], { color: 'red' }));
+  parts.push(arrow([[204, 234], [252, 133]], { color: 'red' }));
+  parts.push(arrow([[528, 349], [546, 349], [546, 139], [564, 139]], { color: 'red' }));
+  parts.push(arrow([[658, 200], [658, 222]], { color: 'okl' }));
+  parts.push(arrow([[852, 200], [852, 222]], { color: 'waitl' }));
+  parts.push(arrow([[948, 200], [948, 322]], { color: 'waitl' }));
+  parts.push(arrow([[852, 322], [852, 306]], { color: 'waitl' }));
+  parts.push(arrow([[658, 306], [658, 322]], { color: 'red', dash: true }));
+  parts.push(arrow([[772, 264], [762, 264], [762, 412], [228, 412], [228, 296], [204, 296]], { color: 'waitl', dash: true, label: t.toNext, at: 0.45, dy: -5 }));
+  parts.push(arrow([[118, 398], [118, 456]], { color: 'red', dash: true, label: t.exhausted, at: 0.62, dx: 6, anchor: 'start' }));
+  parts.push(`<rect class="box" x="20" y="552" width="940" height="30" rx="8"/><text class="l" x="34" y="572">${esc(t.board)}</text>`);
+  const lineX = 34 + 14 + measure(t.board, 11.5);
+  parts.push(t.s.map((s, i) => `<text class="m st${i}" x="${lineX}" y="572">${esc(s)}</text>`).join(''));
+  const loop = [[118, 120], [118, 234], [390, 133], [390, 349], [546, 349], [546, 139], [658, 139], [852, 264], [762, 264], [762, 412], [228, 412], [228, 296], [118, 296], [390, 133], [390, 349], [546, 349], [546, 139], [658, 139], [658, 264]];
+  const tk = token(loop, [0.6, 0.6, 0.5, 0.5, 0, 0, 1.2, 1.2, 0, 0, 0, 0, 0.6, 0.5, 0.5, 0, 0, 1.2, 1.8], { speed: 260 });
+  const w = tk.windows, p = v => v.toFixed(2), D = tk.dur.toFixed(2);
+  const css = [['job', 0], ['c1', 1], ['run', 6], ['next', 7], ['c2', 12], ['ok', 18]].map(([id, i]) => light(id, w[i], tk.dur)).join('')
+    + [0, 1, 2, 3].map(i => light(`g${i}`, [w[2][0], w[3][1]], tk.dur)).join('')
+    + `.st0{opacity:0;animation:s0 ${D}s linear infinite}@keyframes s0{0%,${p(w[7][0])}%{opacity:0}${p(w[7][0] + 0.4)}%,${p(w[17][0])}%{opacity:1}${p(w[17][0] + 0.4)}%,100%{opacity:0}}`
+    + `.st1{opacity:0;animation:s1 ${D}s linear infinite}@keyframes s1{0%,${p(w[17][0])}%{opacity:0}${p(w[17][0] + 0.4)}%,${p(w[18][0])}%{opacity:1}${p(w[18][0] + 0.4)}%,100%{opacity:0}}`
+    + `.st2{opacity:1;animation:s2 ${D}s linear infinite}@keyframes s2{0%,${p(w[18][0])}%{opacity:0}${p(w[18][0] + 0.4)}%,100%{opacity:1}}`;
+  parts.push(tk.svg);
+  parts.push(`<text class="cap" x="20" y="${H - 14}">${esc(t.caption)}</text>`);
+  return svg(lang, { w: W, h: H, title: t.title, desc: `${t.sub}. ${t.s.join(' · ')}. ${t.caption}`, css, body: parts.join('\n') });
 }
+const measure = (s, px) => [...s].reduce((w, ch) => w + (ch.codePointAt(0) > 0x2e80 ? px : px * 0.58), 0);
 
-// ── 4. Knowledge: notes + links + SQL ──────────────────────────────────────
+// ── 5. Knowledge: sources → notes and SQL → who uses them ─────────────────
 function kb(lang) {
-  const t = T[lang].kb, W = 860, H = 280;
-  const files = ['accept.mjs', 'snapshot.mjs', 'evidence.md'];
-  const nodes = [[360, 92, 'accept'], [470, 70, 'snapshot'], [440, 168, 'evidence'], [330, 190, 'accept.test'], [520, 140, 'io']];
-  const edges = [[0, 1, 'imports'], [2, 0, 'documents'], [3, 0, 'tested-by'], [1, 4, 'imports'], [0, 4, 'imports']];
-  let css = '.nd{fill:var(--card);stroke:var(--red);stroke-width:2}.ed{stroke:var(--muted);stroke-width:1.6;fill:none}.el{font-size:10px;fill:var(--muted)}.panel{fill:var(--card);stroke:var(--line)}.kw{fill:var(--red);font-weight:700}';
-  nodes.forEach((_, i) => { css += `.n${i}{animation:pop 10s ease-out infinite;animation-delay:${i * 0.25}s;transform-box:fill-box;transform-origin:center}`; });
-  css += kf('pop', '0%{transform:scale(0);opacity:0}6%{transform:scale(1.15);opacity:1}9%,92%{transform:scale(1);opacity:1}100%{transform:scale(1);opacity:0}');
-  edges.forEach((_, i) => { css += `.e${i}{stroke-dasharray:200;stroke-dashoffset:0;animation:draw${i} 10s linear infinite}` + kf(`draw${i}`, `0%,${12 + i * 4}%{stroke-dashoffset:200}${22 + i * 4}%,92%{stroke-dashoffset:0}100%{stroke-dashoffset:0;opacity:0}`); });
-  css += '.q{animation:q 10s linear infinite}' + kf('q', '0%,42%{opacity:0}46%,94%{opacity:1}100%{opacity:0}');
-  css += '.row{opacity:1;animation:row 10s linear infinite}.row2{animation-delay:.5s}' + kf('row', '0%,56%{opacity:0}60%,94%{opacity:1}100%{opacity:0}');
-  const fileCol = files.map((f, i) => `<g><rect class="box" x="40" y="${70 + i * 46}" width="150" height="34" rx="8"/><text class="m" x="56" y="${92 + i * 46}">${esc(f)}</text></g>`).join('\n');
-  const edgeEls = edges.map(([a, b, rel], i) => { const [x1, y1] = nodes[a], [x2, y2] = nodes[b]; return `<path class="ed e${i}" d="M${x1} ${y1} L${x2} ${y2}"/><text class="el" x="${(x1 + x2) / 2 + 4}" y="${(y1 + y2) / 2 - 4}">${rel}</text>`; }).join('\n');
-  const nodeEls = nodes.map(([x, y, label], i) => `<g class="n${i}"><circle class="nd" cx="${x}" cy="${y}" r="13"/><text class="s" x="${x}" y="${y + 30}" text-anchor="middle">${esc(label)}</text></g>`).join('\n');
-  const sql = `<rect class="panel" x="590" y="64" width="230" height="160" rx="10"/>
-<text class="s" x="606" y="86">SQL</text>
-<g class="q"><text class="m" x="606" y="112"><tspan class="kw">SELECT</tspan> path</text><text class="m" x="606" y="130"><tspan class="kw">FROM</tspan> undocumented_</text><text class="m" x="606" y="148">modules;</text></g>
-<path d="M606 160 H804" stroke="var(--line)"/>
-<text class="m row" x="606" y="182">core/io.mjs</text><text class="m row row2" x="606" y="202">core/process.mjs</text>`;
-  const body = `<text class="t" x="40" y="38">${esc(t.title)}</text>
-<text class="s" x="40" y="60">${esc(t.project)}</text><text class="s" x="300" y="60">${esc(t.graph)}</text>
-${fileCol}
-<path class="ln" d="M196 125 H${nodes[3][0] - 40}" stroke-dasharray="4 4"/>
-${edgeEls}
-${nodeEls}
-${sql}
-<text class="c" x="40" y="${H - 20}">${esc(t.caption)}</text>`;
-  return svg(lang, { w: W, h: H, title: t.title, desc: t.caption, css, body });
+  const t = T[lang].kb, W = 980, H = 640;
+  const parts = [`<text class="ttl" x="20" y="36">${esc(t.title)}</text><text class="sub" x="20" y="56">${esc(t.sub)}</text>`];
+  parts.push(group({ x: 20, y: 74, w: 290, h: 410, label: t.srcT }));
+  [[t.s1, 'import / export', t.s1l], [t.s2, '[text](path) · `path`', t.s2l], [t.s3, 'bk-type · related · documents', t.s3l], [t.s4, '[[wikilinks]]', t.s4l], [t.s5, 'decision.json · lessons/', t.s5l]]
+    .forEach(([n, m, l], i) => parts.push(block({ x: 32, y: 98 + i * 76, w: 266, h: 68, id: `s${i}`, rows: [['t', n], ['m', m], ['l', l]] })));
+  parts.push(block({ x: 334, y: 98, w: 262, h: 84, id: 'build', rows: [['t', t.build], ['c', t.buildc], ['m', 'core/kb.mjs'], ['l', t.buildl]] }));
+  parts.push(block({ x: 334, y: 204, w: 262, h: 104, id: 'gen', rows: [['t', 'knowledge/_generated/'], ['l', t.genl1], ['l', t.genl2], ['m', 'bk-provenance: EXTRACTED'], ['m', 'index.md']] }));
+  parts.push(block({ x: 334, y: 326, w: 262, h: 158, id: 'sql', rows: [['t', '.state/kb.sqlite'], ['l', t.sqll], ['m', 'notes(id, type, kind, path…)'], ['m', 'links(src, dst, rel, provenance)'], ['m', 'fts'], ['m', 'orphans · stale · broken_links'], ['m', 'undocumented_modules'], ['m', '']] }));
+  parts.push(arrow([[465, 182], [465, 204]], { color: 'red' }));
+  parts.push(arrow([[465, 308], [465, 326]], { color: 'red' }));
+  parts.push(`<path class="ln" d="M298 132 H316 M298 208 H316 M298 284 H316 M298 360 H316 M298 436 H316 M316 132 V436"/>`);
+  parts.push(arrow([[316, 140], [334, 140]], { color: 'red' }));
+  parts.push(group({ x: 620, y: 74, w: 340, h: 410, label: t.useT }));
+  [[t.u1, t.u1c, t.u1l, 'u1'], [t.u2, t.u2c, t.u2l, 'u2'], [t.u3, t.u3c, t.u3l, 'u3'], [t.u4, t.u4c, t.u4l, 'u4']]
+    .forEach(([n, c, l, id], i) => parts.push(block({ x: 632, y: 98 + i * 96, w: 316, h: 86, id, rows: [['t', n], ['c', c], ['l', l]] })));
+  parts.push(arrow([[596, 256], [608, 256], [608, 141], [632, 141]]));
+  parts.push(`<path class="ln red" d="M596 405 H614 M614 237 V429"/>`);
+  for (const y of [237, 333, 429]) parts.push(arrow([[614, y], [632, y]], { color: 'red' }));
+  // A small, correct example: an arrow goes from the note that holds the link
+  parts.push(group({ x: 20, y: 506, w: 940, h: 92, label: t.example }));
+  const nodeAt = { test: [110, 548], accept: [330, 548], snap: [550, 548], doc: [800, 548], lesson: [330, 584] };
+  const label = { test: 'test/accept.test.mjs', accept: 'core/accept.mjs', snap: 'core/snapshot.mjs', doc: 'docs/concepts/evidence.md', lesson: 'knowledge/lessons/<task>.md' };
+  parts.push(Object.entries(nodeAt).map(([k, [x, y]]) => `<text class="m" x="${x}" y="${y + 4}" text-anchor="middle">${esc(label[k])}</text>`).join(''));
+  parts.push(arrow([[180, 544], [270, 544]], { color: 'red', label: 'tests', dy: -5 }));
+  parts.push(arrow([[392, 544], [482, 544]], { label: 'imports', dy: -5 }));
+  parts.push(arrow([[712, 544], [622, 544]], { label: 'documents', dy: -5 }));
+  parts.push(arrow([[420, 584], [480, 584], [520, 556]], { label: 'about', at: 0.3, dy: -5 }));
+  const path = [[165, 132], [316, 132], [316, 140], [334, 140], [465, 140], [465, 405], [614, 405], [614, 333], [790, 333]];
+  const tk = token(path, [0.8, 0, 0, 0, 1.3, 1.3, 0, 0, 1.6], { speed: 170 });
+  const css = [['s0', 0], ['build', 4], ['sql', 5], ['u3', 8]].map(([id, i]) => light(id, tk.windows[i], tk.dur)).join('') + light('gen', [tk.windows[4][1] - 3, tk.windows[4][1] + 2], tk.dur);
+  parts.push(tk.svg);
+  parts.push(`<text class="cap" x="20" y="${H - 16}">${esc(t.caption)}</text>`);
+  return svg(lang, { w: W, h: H, title: t.title, desc: `${t.sub}. ${t.caption}`, css, body: parts.join('\n') });
 }
 
-export const DIAGRAMS = { banner, flow, evidence, pool, kb };
+export const DIAGRAMS = { banner, architecture, flow, evidence, pool, kb };
 export async function writeDiagrams() {
   const dir = path.join(ROOT, 'assets', 'diagrams'), written = [];
   await fs.mkdir(dir, { recursive: true });

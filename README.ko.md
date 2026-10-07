@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml"><img src="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml/badge.svg" alt="CI: Linux와 Windows"></a>
-  <img src="https://img.shields.io/badge/version-0.11.0-b3261e" alt="버전 0.11.0">
+  <img src="https://img.shields.io/badge/version-0.11.1-b3261e" alt="버전 0.11.1">
   <img src="https://img.shields.io/badge/node-%E2%89%A522-2b1d1d" alt="Node.js 22 이상">
   <img src="https://img.shields.io/badge/dependencies-0-2e7d32" alt="의존성 0개">
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="Claude Code 플러그인">
@@ -22,13 +22,13 @@
 
 무엇이 나와야 하는지 말하면 일은 에이전트가 합니다. Borshkit은 검사로 **증명된** 것과 직접 확인해야 할 것을 나눠 보여 줍니다. 모델의 말은 그런 종류의 기준에 대해 사용자가 직접 허용했고 측정으로 뒷받침될 때만 받아들입니다.
 
-> **상태: 0.11.0.** 아래 내용은 모두 동작하며, Linux와 Windows에서 테스트로 검증했습니다. 테스트에서는 실제 모델 대신 가짜 실행자를 씁니다. 아직 실제 환경에서 써 보지 않은 것은 [한계](#한계)에 정리해 두었습니다.
+> **상태: 0.11.1.** 아래 내용은 모두 동작하며, Linux와 Windows에서 테스트로 검증했습니다. 테스트에서는 실제 모델 대신 가짜 실행자를 씁니다. 아직 실제 환경에서 써 보지 않은 것은 [한계](#한계)에 정리해 두었습니다.
 >
 > **언어 안내:** Borshkit의 메시지는 지금은 러시아어로만 나옵니다. 모든 명령과 플래그에는 영어 이름도 있으며, 이 README는 영어 이름을 씁니다.
 
 ## 핵심 아이디어
 
-<p align="center"><img src="assets/diagrams/flow.ko.svg" alt="작업 하나의 여정: 목표 → 에이전트가 프로젝트 복사본에서 작업 → 검사 → 인수 시트 → 승인됨. 자동으로 검사할 수 없는 항목은 사용자에게 갑니다" width="100%"></p>
+<p align="center"><img src="assets/diagrams/flow.ko.svg" alt="작업의 흐름: 목표와 기준 → 에이전트가 프로젝트의 별도 사본에서 작업 → 검사 → 다른 실행기의 리뷰 → 인수 시트; 결과: 수정 필요, 미검증, 당신을 기다림, 인수됨; 인수 후 main에 병합하고 푸시" width="100%"></p>
 
 모델이 “완료”라고 말해도 아직 인수된 것은 아닙니다.
 - 모든 증거는 파일의 정확한 상태에 묶여 있습니다.
@@ -78,15 +78,19 @@ borshkit merge theme && borshkit push             # 메인 버전에 병합하�
 
 ## 동작 방식
 
-<p align="center"><img src="assets/diagrams/evidence.ko.svg" alt="증거는 낡는다: a1b2c3 상태에서 검사 통과 → 파일 변경 → 증거 만료됨 → f9e8d7 상태에서 새 검사 통과" width="100%"></p>
+<p align="center"><img src="assets/diagrams/architecture.ko.svg" alt="구조: 당신, Claude Code, Codex가 같은 borshkit 명령을 호출; 핵심 모듈은 core/; 파일은 borshkit/, .state/, 그리고 자체 브랜치의 별도 작업 사본에; 실행기는 어댑터로 연결" width="100%"></p>
+
+**무엇으로 이루어져 있나.** 당신, Claude Code, Codex 모두 같은 `borshkit` 명령을 호출합니다. 핵심은 `core/`의 모듈입니다. 모든 상태는 `borshkit/`과 `.state/`의 평범한 파일이고, 에이전트는 자체 브랜치의 별도 프로젝트 사본에서 작업합니다. 실행기는 어댑터로 연결됩니다. [자세히](docs/concepts/space.md)
+
+<p align="center"><img src="assets/diagrams/evidence.ko.svg" alt="상태 지문: 커밋과 파일, 계약, 설정, 자료, Borshkit 코드; 증거 기록은 이 지문을 저장하고 하나라도 다르면 만료됩니다" width="100%"></p>
 
 **증거는 낡습니다.** Borshkit은 검사를 통과한 시점의 정확한 상태, 즉 커밋과 모든 파일의 해시를 기억합니다. 커밋 전 수정도 포함됩니다. 1바이트만 바뀌어도 검사를 다시 해야 합니다. [자세히](docs/concepts/evidence.md)
 
-<p align="center"><img src="assets/diagrams/pool.ko.svg" alt="실행자 풀: Claude Code가 한도에 도달해 작업이 Codex로 넘어갔고 완료됐습니다. 상황판에는 모든 인계가 보입니다" width="100%"></p>
+<p align="center"><img src="assets/diagrams/pool.ko.svg" alt="실행기 선택: 후보는 개인정보, 능력, &quot;리뷰어는 작성자가 아님&quot;, 전환 한도 필터를 통과; 한도나 실패 시 다음 후보로 넘어가고, 후보가 없으면 보고서와 함께 당신을 기다리는 치명적 중단" width="100%"></p>
 
 **한도에 걸려도 멈추지 않습니다.** 풀은 실행자의 대기열입니다. Claude Code, Codex, 무료 API, 로컬 API를 넣을 수 있습니다. 한 실행자가 한도에 걸리면 작업은 다음 실행자로 넘어갑니다. 단, 프라이버시 모드가 허용하고 그 일을 할 수 있는 실행자여야 합니다. 중대한 질문은 오직 사용자의 답을 기다립니다. [자세히](docs/concepts/executors.md)
 
-<p align="center"><img src="assets/diagrams/kb.ko.svg" alt="지식: 프로젝트 파일이 링크로 연결된 노트가 되고, SQL로 조회할 수 있습니다" width="100%"></p>
+<p align="center"><img src="assets/diagrams/kb.ko.svg" alt="지식: 코드, 테스트, 문서, 작업, 교훈이 knowledge/_generated/의 노트와 .state/kb.sqlite 인덱스로 빌드됨; 작업 컨텍스트, SQL 쿼리, Obsidian 내보내기가 여기서 읽음" width="100%"></p>
 
 **지식은 블랙박스가 아니라 노트입니다.** 프로젝트는 Obsidian용 `[[links]]` 형식 링크가 달린 노트가 되고, 그 위에 SQL 인덱스가 만들어집니다. 각 작업은 자기 몫의 맥락만 받습니다. 이 문서도 같은 방식입니다. [문서 그래프](docs/graph/README.md)는 Borshkit이 직접 만들었습니다.
 

@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml"><img src="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml/badge.svg" alt="CI: Linux and Windows"></a>
-  <img src="https://img.shields.io/badge/version-0.11.0-b3261e" alt="version 0.11.0">
+  <img src="https://img.shields.io/badge/version-0.11.1-b3261e" alt="version 0.11.1">
   <img src="https://img.shields.io/badge/node-%E2%89%A522-2b1d1d" alt="Node.js 22 or newer">
   <img src="https://img.shields.io/badge/dependencies-0-2e7d32" alt="zero dependencies">
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="Claude Code plugin">
@@ -22,13 +22,13 @@
 
 You say what should come out. Agents do the work. Borshkit shows what has been **proven** by checks and what you need to look at yourself. Borshkit takes a model’s word only where you allowed it for that kind of criterion and a measurement backs it.
 
-> **Status: 0.11.0.** Everything below works and is covered by tests on Linux and Windows. The tests use fake executors instead of real models. What has not been tried live yet is listed in [Limits](#limits).
+> **Status: 0.11.1.** Everything below works and is covered by tests on Linux and Windows. The tests use fake executors instead of real models. What has not been tried live yet is listed in [Limits](#limits).
 >
 > **Language note:** Borshkit's messages are in Russian for now. Every command and flag also has an English name, and this README uses those.
 
 ## The main idea
 
-<p align="center"><img src="assets/diagrams/flow.en.svg" alt="How a task travels: goal → agent works in a copy of the project → checks → acceptance sheet → accepted; items that cannot be checked automatically go to you" width="100%"></p>
+<p align="center"><img src="assets/diagrams/flow.en.svg" alt="How a task travels: goal and criteria → agent works in its own copy of the project → checks → review by a different executor → acceptance sheet; outcomes: needs a fix, unverified, waiting for you, accepted; once accepted it is merged into main and pushed" width="100%"></p>
 
 A model says “done”. That is not acceptance yet:
 - every piece of evidence is bound to the exact state of the files;
@@ -78,15 +78,19 @@ All commands: [command reference](docs/reference/commands.md) (Russian and Engli
 
 ## How it works
 
-<p align="center"><img src="assets/diagrams/evidence.en.svg" alt="Evidence goes stale: a check passed for state a1b2c3, a file changed, the evidence went stale, a new check passed for f9e8d7" width="100%"></p>
+<p align="center"><img src="assets/diagrams/architecture.en.svg" alt="Layout: you, Claude Code and Codex call the same borshkit command; core modules live in core/; files live in borshkit/, .state/ and in a separate task copy on its own branch; executors plug in through adapters" width="100%"></p>
+
+**What it is made of.** You, Claude Code and Codex all call the same `borshkit` command. The core is the modules in `core/`. All state is plain files in `borshkit/` and `.state/`, and the agent works in a separate copy of the project on its own branch. Executors plug in through adapters. [More](docs/concepts/space.md)
+
+<p align="center"><img src="assets/diagrams/evidence.en.svg" alt="State fingerprint: commit and files, contract, settings, materials and Borshkit code; an evidence record stores this fingerprint and goes stale on any mismatch" width="100%"></p>
 
 **Evidence goes stale.** Borshkit remembers the exact state a check passed on: the commit and a hash of every file, uncommitted edits included. Change a single byte and the check must run again. [More](docs/concepts/evidence.md)
 
-<p align="center"><img src="assets/diagrams/pool.en.svg" alt="Executor pool: Claude Code hit its limit, the job moved to Codex and finished; the dispatcher shows every hand-over" width="100%"></p>
+<p align="center"><img src="assets/diagrams/pool.en.svg" alt="Picking an executor: candidates pass the privacy, capability, reviewer-is-not-the-author and hand-over-limit filters; on a limit or failure the job moves to the next one, and with no candidates left there is a critical stop with a report, waiting for you" width="100%"></p>
 
 **A limit is not a stop.** A pool is a queue of executors: Claude Code, Codex, free and local APIs. When one hits a limit, the job moves on to the next one that the privacy mode allows and that can do the work. Critical questions wait for you and only you. [More](docs/concepts/executors.md)
 
-<p align="center"><img src="assets/diagrams/kb.en.svg" alt="Knowledge: project files become notes with links, and you can query them with SQL" width="100%"></p>
+<p align="center"><img src="assets/diagrams/kb.en.svg" alt="Knowledge: code, tests, docs, tasks and lessons are built into notes in knowledge/_generated/ and an index in .state/kb.sqlite; job context, SQL queries and the Obsidian export all read from them" width="100%"></p>
 
 **Knowledge is notes, not a black box.** The project becomes notes with `[[links]]` for Obsidian and, on top of them, an SQL index. Each job gets its own slice of context. This documentation works the same way: Borshkit built its [documentation graph](docs/graph/README.md) itself.
 

@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml"><img src="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml/badge.svg" alt="CI：Linux 與 Windows"></a>
-  <img src="https://img.shields.io/badge/version-0.11.0-b3261e" alt="版本 0.11.0">
+  <img src="https://img.shields.io/badge/version-0.11.1-b3261e" alt="版本 0.11.1">
   <img src="https://img.shields.io/badge/node-%E2%89%A522-2b1d1d" alt="Node.js 22 或更新版本">
   <img src="https://img.shields.io/badge/dependencies-0-2e7d32" alt="零相依套件">
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="Claude Code 外掛">
@@ -22,13 +22,13 @@
 
 你說明想要的結果，代理負責動手。Borshkit 會告訴你哪些已經由檢查**證明**，哪些需要你自己看一下。只有在你允許該類準則採信模型、而且有實際量測支持時，Borshkit 才會採信模型的話。
 
-> **狀態：0.11.0。** 以下所有功能都能運作，並在 Linux 和 Windows 上有測試涵蓋。測試用假的執行者代替真正的模型。還沒實際試過的部分列在[限制](#限制)。
+> **狀態：0.11.1。** 以下所有功能都能運作，並在 Linux 和 Windows 上有測試涵蓋。測試用假的執行者代替真正的模型。還沒實際試過的部分列在[限制](#限制)。
 >
 > **語言說明：** Borshkit 的訊息目前是俄文。每個指令和旗標也都有英文名稱，本 README 使用的就是英文名稱。
 
 ## 核心概念
 
-<p align="center"><img src="assets/diagrams/flow.zh-TW.svg" alt="一個任務的旅程：目標 → 代理在專案副本中工作 → 檢查 → 驗收清單 → 已驗收；無法自動檢查的項目交給你" width="100%"></p>
+<p align="center"><img src="assets/diagrams/flow.zh-TW.svg" alt="任務流程：目標與標準 → 代理在專案的獨立副本中工作 → 檢查 → 由另一個執行者審查 → 驗收單；結果：需要修正、未驗證、等你處理、已驗收；驗收後合併進 main 並推送" width="100%"></p>
 
 模型說「完成」，還不算驗收：
 - 每一份證據都綁定檔案的確切狀態；
@@ -78,15 +78,19 @@ borshkit merge theme && borshkit push             # 合併進主版本並推送�
 
 ## 運作方式
 
-<p align="center"><img src="assets/diagrams/evidence.zh-TW.svg" alt="證據會過期：檢查在狀態 a1b2c3 上通過，接著檔案被修改，證據已過期；新的檢查在 f9e8d7 上通過" width="100%"></p>
+<p align="center"><img src="assets/diagrams/architecture.zh-TW.svg" alt="結構：你、Claude Code 與 Codex 呼叫同一個 borshkit 指令；核心模組在 core/；檔案位於 borshkit/、.state/ 以及獨立分支上的任務副本；執行者透過轉接器接入" width="100%"></p>
+
+**由什麼組成。** 你、Claude Code 與 Codex 都呼叫同一個 `borshkit` 指令。核心是 `core/` 中的模組。所有狀態都是 `borshkit/` 與 `.state/` 中的一般檔案，代理在獨立分支上的專案副本中工作。執行者透過轉接器接入。[詳細](docs/concepts/space.md)
+
+<p align="center"><img src="assets/diagrams/evidence.zh-TW.svg" alt="狀態指紋：提交與檔案、合約、設定、資料與 Borshkit 程式碼；證據記錄保存此指紋，任何不一致都會使其過期" width="100%"></p>
 
 **證據會過期。** Borshkit 會記住檢查是在哪個確切狀態下通過的：提交，以及每個檔案的雜湊值，連尚未提交的修改也算在內。只要改動一個位元組，就必須重新檢查。[詳細說明](docs/concepts/evidence.md)
 
-<p align="center"><img src="assets/diagrams/pool.zh-TW.svg" alt="執行者池：Claude Code 已達上限，工作轉給 Codex 並順利完成；調度台會顯示每一次交接" width="100%"></p>
+<p align="center"><img src="assets/diagrams/pool.zh-TW.svg" alt="選擇執行者：候選者依序通過隱私、能力、「審查者不是作者」與切換上限篩選；遇到額度或失敗時交給下一位，沒有候選者時進入嚴重停止，附報告並等你處理" width="100%"></p>
 
 **達到上限不等於停工。** 執行者池就是一個執行者佇列：Claude Code、Codex、免費與本機的 API。某個執行者達到上限時，工作會交給下一個隱私模式允許、而且有能力完成的執行者。關鍵問題只會等你本人回答。[詳細說明](docs/concepts/executors.md)
 
-<p align="center"><img src="assets/diagrams/kb.zh-TW.svg" alt="知識：專案檔案變成帶有連結的筆記，可以用 SQL 查詢" width="100%"></p>
+<p align="center"><img src="assets/diagrams/kb.zh-TW.svg" alt="知識：程式碼、測試、文件、任務與教訓建置成 knowledge/_generated/ 的筆記與 .state/kb.sqlite 索引；工作上下文、SQL 查詢與 Obsidian 匯出都從這裡讀取" width="100%"></p>
 
 **知識是筆記，不是黑盒子。** 專案會轉成帶有 `[[links]]` 的 Obsidian 筆記，上面再建一層 SQL 索引。每項工作只拿到屬於它的那一部分脈絡。這份文件也是這樣組成的：Borshkit 自己建出了它的[文件圖譜](docs/graph/README.md)。
 

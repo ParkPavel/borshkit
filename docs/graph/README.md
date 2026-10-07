@@ -6,7 +6,7 @@ related: ["../README.md", "../concepts/knowledge.md"]
 
 Эту страницу Borshkit написал сам: собрал свою базу знаний по этому репозиторию и выгрузил её. Команда — `node scripts/docs-graph.mjs`.
 
-Всего в графе: модулей 30, тестов 17, документов 82, связей 868.
+Всего в графе: модулей 31, тестов 17, документов 82, связей 872.
 
 - [`borshkit.sql`](borshkit.sql) — весь граф одним SQL-скриптом. Загрузить: `sqlite3 graph.db < borshkit.sql`, потом спрашивать, например, `SELECT * FROM undocumented_modules;`.
 - Ниже — карта документов: стрелка значит «ссылается на». GitHub рисует её сам (Mermaid).
@@ -47,6 +47,7 @@ flowchart LR
   n2 --> n4
   n2 --> n6
   n2 --> n7
+  n2 --> n13
   n2 --> n16
   n2 --> n17
   n2 --> n18
@@ -152,4 +153,5 @@ flowchart LR
 
 ## Модули ядра без документации
 
-Таких нет.
+- `core/builtins.mjs`
+- `core/process.mjs`
