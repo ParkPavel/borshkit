@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "product": "borshkit",
+  "folder": "borshkit",
+  "privacy": "moderate",
+  "autopilot": false,
+  "silenceSeconds": 60,
+  "trustedAgent": null,
+  "executors": {},
+  "pools": {},
+  "acceptance": {
+    "modelTrust": {}
+  }
+}
