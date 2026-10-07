@@ -5,6 +5,7 @@
 <p align="center">
   <a href="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml"><img src="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml/badge.svg" alt="CI: Linux и Windows"></a>
   <img src="https://img.shields.io/badge/version-0.11.1-b3261e" alt="версия 0.11.1">
+  <a href="https://github.com/ParkPavel/borshkit/releases"><img src="https://img.shields.io/github/downloads/ParkPavel/borshkit/total?label=%D1%81%D0%BA%D0%B0%D1%87%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F&color=b3261e" alt="скачивания архива из релизов"></a>
   <img src="https://img.shields.io/badge/node-%E2%89%A522-2b1d1d" alt="Node.js 22 и новее">
   <img src="https://img.shields.io/badge/dependencies-0-2e7d32" alt="ноль зависимостей">
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="плагин Claude Code">
@@ -54,7 +55,13 @@ git clone https://github.com/ParkPavel/borshkit.git
 cd borshkit && npm link        # появятся команды borshkit и borsch
 ```
 
-В npm пакет пока не опубликован.
+Или одной командой из последнего релиза, без клона:
+
+```sh
+npm install -g https://github.com/ParkPavel/borshkit/releases/latest/download/borshkit.tgz
+```
+
+В npm пакет пока не опубликован. Счётчик скачиваний в шапке считает только этот архив: установки плагином и через `git clone` в него не попадают.
 
 ## Первая задача
 

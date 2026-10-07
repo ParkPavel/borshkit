@@ -5,6 +5,7 @@
 <p align="center">
   <a href="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml"><img src="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml/badge.svg" alt="CI: Linux und Windows"></a>
   <img src="https://img.shields.io/badge/version-0.11.1-b3261e" alt="Version 0.11.1">
+  <a href="https://github.com/ParkPavel/borshkit/releases"><img src="https://img.shields.io/github/downloads/ParkPavel/borshkit/total?label=Downloads&color=b3261e" alt="Downloads des Release-Archivs"></a>
   <img src="https://img.shields.io/badge/node-%E2%89%A522-2b1d1d" alt="Node.js 22 oder neuer">
   <img src="https://img.shields.io/badge/dependencies-0-2e7d32" alt="keine Abhängigkeiten">
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="Claude-Code-Plugin">
@@ -56,7 +57,13 @@ git clone https://github.com/ParkPavel/borshkit.git
 cd borshkit && npm link        # fügt die Befehle borshkit und borsch hinzu
 ```
 
-Auf npm gibt es das Paket noch nicht.
+Oder mit einem Befehl aus dem neuesten Release, ohne Klonen:
+
+```sh
+npm install -g https://github.com/ParkPavel/borshkit/releases/latest/download/borshkit.tgz
+```
+
+Auf npm gibt es das Paket noch nicht. Der Download-Zähler oben zählt nur dieses Archiv: Installationen als Plugin und per `git clone` sind nicht enthalten.
 
 ## Deine erste Aufgabe
 
