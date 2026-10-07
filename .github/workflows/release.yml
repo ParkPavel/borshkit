@@ -1,0 +1,42 @@
+name: Release archive
+# Прикладывает borshkit.tgz к релизу. Ставится одной командой:
+#   npm install -g https://github.com/ParkPavel/borshkit/releases/latest/download/borshkit.tgz
+# Скачивания этого файла и показывает счётчик в README.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Тег существующего релиза
+        required: true
+permissions:
+  contents: write
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ github.event.release.tag_name || inputs.tag }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ env.TAG }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+      - name: Версия пакета совпадает с тегом
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          if [ "${TAG#v}" != "$version" ]; then
+            echo "Тег $TAG, а в package.json $version" >&2
+            exit 1
+          fi
+      - run: npm run verify
+      - run: |
+          npm pack
+          mv borshkit-*.tgz borshkit.tgz
+      - name: Приложить к релизу
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$TAG" borshkit.tgz --clobber --repo "$GITHUB_REPOSITORY"

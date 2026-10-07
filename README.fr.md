@@ -5,6 +5,7 @@
 <p align="center">
   <a href="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml"><img src="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml/badge.svg" alt="CI : Linux et Windows"></a>
   <img src="https://img.shields.io/badge/version-0.11.1-b3261e" alt="version 0.11.1">
+  <a href="https://github.com/ParkPavel/borshkit/releases"><img src="https://img.shields.io/github/downloads/ParkPavel/borshkit/total?label=t%C3%A9l%C3%A9chargements&color=b3261e" alt="téléchargements de l’archive des versions"></a>
   <img src="https://img.shields.io/badge/node-%E2%89%A522-2b1d1d" alt="Node.js 22 ou plus récent">
   <img src="https://img.shields.io/badge/dependencies-0-2e7d32" alt="zéro dépendance">
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="plugin Claude Code">
@@ -56,7 +57,13 @@ git clone https://github.com/ParkPavel/borshkit.git
 cd borshkit && npm link        # ajoute les commandes borshkit et borsch
 ```
 
-Le paquet n’est pas encore publié sur npm.
+Ou en une commande depuis la dernière version, sans clone :
+
+```sh
+npm install -g https://github.com/ParkPavel/borshkit/releases/latest/download/borshkit.tgz
+```
+
+Le paquet n’est pas encore publié sur npm. Le compteur de téléchargements en haut ne compte que cette archive : les installations par le plugin et par `git clone` n’y sont pas.
 
 ## Ta première tâche
 

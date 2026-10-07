@@ -5,6 +5,7 @@
 <p align="center">
   <a href="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml"><img src="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml/badge.svg" alt="CI: Linux와 Windows"></a>
   <img src="https://img.shields.io/badge/version-0.11.1-b3261e" alt="버전 0.11.1">
+  <a href="https://github.com/ParkPavel/borshkit/releases"><img src="https://img.shields.io/github/downloads/ParkPavel/borshkit/total?label=%EB%8B%A4%EC%9A%B4%EB%A1%9C%EB%93%9C&color=b3261e" alt="릴리스 아카이브 다운로드 수"></a>
   <img src="https://img.shields.io/badge/node-%E2%89%A522-2b1d1d" alt="Node.js 22 이상">
   <img src="https://img.shields.io/badge/dependencies-0-2e7d32" alt="의존성 0개">
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="Claude Code 플러그인">
@@ -56,7 +57,13 @@ git clone https://github.com/ParkPavel/borshkit.git
 cd borshkit && npm link        # borshkit, borsch 명령이 추가됩니다
 ```
 
-아직 npm에는 패키지를 올리지 않았습니다.
+또는 클론 없이 최신 릴리스에서 명령 하나로:
+
+```sh
+npm install -g https://github.com/ParkPavel/borshkit/releases/latest/download/borshkit.tgz
+```
+
+아직 npm에는 패키지를 올리지 않았습니다. 상단의 다운로드 수는 이 아카이브만 셉니다. 플러그인 설치와 `git clone`은 포함되지 않습니다.
 
 ## 첫 작업
 

@@ -5,6 +5,7 @@
 <p align="center">
   <a href="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml"><img src="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml/badge.svg" alt="CI：Linux 與 Windows"></a>
   <img src="https://img.shields.io/badge/version-0.11.1-b3261e" alt="版本 0.11.1">
+  <a href="https://github.com/ParkPavel/borshkit/releases"><img src="https://img.shields.io/github/downloads/ParkPavel/borshkit/total?label=%E4%B8%8B%E8%BC%89&color=b3261e" alt="發布封存檔下載次數"></a>
   <img src="https://img.shields.io/badge/node-%E2%89%A522-2b1d1d" alt="Node.js 22 或更新版本">
   <img src="https://img.shields.io/badge/dependencies-0-2e7d32" alt="零相依套件">
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="Claude Code 外掛">
@@ -56,7 +57,13 @@ git clone https://github.com/ParkPavel/borshkit.git
 cd borshkit && npm link        # 新增 borshkit 和 borsch 兩個指令
 ```
 
-這個套件還沒有發布到 npm。
+或者不用複製儲存庫，從最新發布一行安裝：
+
+```sh
+npm install -g https://github.com/ParkPavel/borshkit/releases/latest/download/borshkit.tgz
+```
+
+這個套件還沒有發布到 npm。頂部的下載次數只計算這個封存檔：外掛安裝與 `git clone` 不計入。
 
 ## 第一個任務
 
