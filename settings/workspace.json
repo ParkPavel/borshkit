@@ -19,6 +19,20 @@
           "code"
         ]
       }
+    },
+    "codex": {
+      "kind": "codex-cli",
+      "command": "codex",
+      "provider": "openai",
+      "dataPolicy": "unknown",
+      "structuredOutput": "json_schema",
+      "modalities": {
+        "output": [
+          "text",
+          "code",
+          "image"
+        ]
+      }
     }
   },
   "pools": {},
