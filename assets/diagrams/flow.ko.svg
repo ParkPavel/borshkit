@@ -1,36 +1,55 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="884" height="270" viewBox="0 0 884 270" role="img" aria-labelledby="t d" lang="ko">
-<title id="t">작업 하나의 여정</title>
-<desc id="d">목표 — 직접 설명 → 작업 — 복사본의 에이전트 → 검사 — 테스트, 빌드 → 인수 시트 — 증명된 것 → 승인됨 — 병합, 푸시. 모델의 “완료”는 아직 인수가 아닙니다. 증명되지 않은 것은 목록으로 당신에게 옵니다.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="590" viewBox="0 0 980 590" role="img" aria-labelledby="t d" lang="ko">
+<title id="t">작업 하나의 경로</title>
+<desc id="d">모든 단계는 파일의 정확한 상태에 묶인 기록을 남깁니다. 모델의 “완료”는 인수가 아닙니다. 검사, 다른 모델 계열의 리뷰, 그리고 내가 결정합니다.</desc>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk " d="M0 0L10 5L0 10z"/></marker><marker id="ared" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk red" d="M0 0L10 5L0 10z"/></marker><marker id="aokl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk okl" d="M0 0L10 5L0 10z"/></marker><marker id="awaitl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk waitl" d="M0 0L10 5L0 10z"/></marker><marker id="aoffl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk offl" d="M0 0L10 5L0 10z"/></marker></defs>
 <style>
-:root{--bg:#fbf7f2;--ink:#2b1d1d;--muted:#6b5757;--red:#b3261e;--deep:#8c1c13;--line:#dccbc8;--card:#fffdfa;--ok:#2e7d32;--okbg:#e6f2e6;--off:#8f8282;--offbg:#efe8e6;--steam:#c9a9a6;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
-@media (prefers-color-scheme:dark){:root{--bg:#171213;--ink:#f4ecea;--muted:#bfaeac;--red:#e0574b;--deep:#a8261b;--line:#4a3a39;--card:#221a1a;--ok:#7bc47f;--okbg:#1f2e20;--off:#8d7f7e;--offbg:#2a2222;--steam:#6e5856}}
+:root{--bg:#fbf7f2;--ink:#2b1d1d;--muted:#6b5757;--red:#b3261e;--deep:#8c1c13;--line:#cdb9b5;--card:#fffdfa;--group:#f5ede7;--ok:#2e7d32;--okbg:#e6f2e6;--wait:#9a5b00;--waitbg:#fbefdc;--off:#7d6f6f;--offbg:#efe8e6;--steam:#c9a9a6;--hl:#fde8e5;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#171213;--ink:#f4ecea;--muted:#bfaeac;--red:#ef6b5f;--deep:#a8261b;--line:#5a4846;--card:#221a1a;--group:#1d1617;--ok:#7bc47f;--okbg:#1f2e20;--wait:#f0a64a;--waitbg:#33261a;--off:#9d8f8e;--offbg:#2a2222;--steam:#6e5856;--hl:#3a1f1d}}
 text{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","Apple SD Gothic Neo","Malgun Gothic","PingFang TC","Microsoft JhengHei","Noto Sans CJK TC",sans-serif;fill:var(--ink)}
-.bg{fill:var(--bg)}.t{font-size:19px;font-weight:700}.b{font-size:14px;font-weight:650}.s{font-size:11.5px;fill:var(--muted)}.c{font-size:13px;fill:var(--muted)}
-.m{font-family:var(--mono);font-size:12px}.box{fill:var(--card);stroke:var(--line);stroke-width:1.5}.ln{stroke:var(--line);stroke-width:2;fill:none}
-.red{fill:var(--red)}.ok{fill:var(--ok)}.off{fill:var(--off)}
-@media (prefers-reduced-motion:reduce){*{animation:none!important}}.tok{fill:var(--red);opacity:0;animation:tok 12s ease-in-out infinite}.tok2{fill:var(--red);opacity:0;animation:tok2 12s ease-in-out infinite}
-.done{opacity:1;animation:done 12s linear infinite}.youbox{stroke-dasharray:5 4}@keyframes tok{0%{transform:translate(0px,0);opacity:1}8%{transform:translate(0px,0);opacity:1}14%{transform:translate(174px,0);opacity:1}28%{transform:translate(174px,0);opacity:1}34%{transform:translate(348px,0);opacity:1}48%{transform:translate(348px,0);opacity:1}54%{transform:translate(522px,0);opacity:1}76%{transform:translate(522px,0);opacity:1}82%{transform:translate(696px,0);opacity:1}97%{transform:translate(696px,0);opacity:0}100%{transform:translate(696px,0);opacity:0}}@keyframes tok2{0%,57%{transform:translate(0,0);opacity:0}58%{opacity:1;transform:translate(0,0)}64%,70%{transform:translate(0,110px);opacity:1}76%{transform:translate(0,0);opacity:1}77%,100%{opacity:0}}@keyframes done{0%,84%{opacity:0}86%,97%{opacity:1}100%{opacity:0}}.hl0{animation:hl0 12s linear infinite}@keyframes hl0{0%,0%{stroke:var(--line);stroke-width:1.5}0%,8%{stroke:var(--red);stroke-width:3}9%,100%{stroke:var(--line);stroke-width:1.5}}.hl1{animation:hl1 12s linear infinite}@keyframes hl1{0%,13%{stroke:var(--line);stroke-width:1.5}14%,28%{stroke:var(--red);stroke-width:3}29%,100%{stroke:var(--line);stroke-width:1.5}}.hl2{animation:hl2 12s linear infinite}@keyframes hl2{0%,33%{stroke:var(--line);stroke-width:1.5}34%,48%{stroke:var(--red);stroke-width:3}49%,100%{stroke:var(--line);stroke-width:1.5}}.hl3{animation:hl3 12s linear infinite}@keyframes hl3{0%,53%{stroke:var(--line);stroke-width:1.5}54%,76%{stroke:var(--red);stroke-width:3}77%,100%{stroke:var(--line);stroke-width:1.5}}.hl4{animation:hl4 12s linear infinite}@keyframes hl4{0%,81%{stroke:var(--line);stroke-width:1.5}82%,97%{stroke:var(--red);stroke-width:3}98%,100%{stroke:var(--line);stroke-width:1.5}}</style>
-<rect class="bg" width="884" height="270" rx="14"/>
-<text class="t" x="22" y="38">작업 하나의 여정</text>
-<path class="ln" d="M173 101 H191"/><path class="red" d="M194 101 l-8 -5 v10 z"/>
-<path class="ln" d="M347 101 H365"/><path class="red" d="M368 101 l-8 -5 v10 z"/>
-<path class="ln" d="M521 101 H539"/><path class="red" d="M542 101 l-8 -5 v10 z"/>
-<path class="ln" d="M695 101 H713"/><path class="red" d="M716 101 l-8 -5 v10 z"/>
-<path class="ln" d="M618 130 V182" stroke-dasharray="4 4"/>
-<rect class="box youbox" x="544" y="182" width="148" height="52" rx="10"/>
-<text class="b" x="618" y="204" text-anchor="middle">나</text><text class="s" x="618" y="222" text-anchor="middle">수동 항목</text>
-<rect class="box hl0" x="22" y="72" width="148" height="58" rx="10"/>
-<text class="b" x="96" y="97" text-anchor="middle">목표</text><text class="s" x="96" y="116" text-anchor="middle">직접 설명</text>
-<rect class="box hl1" x="196" y="72" width="148" height="58" rx="10"/>
-<text class="b" x="270" y="97" text-anchor="middle">작업</text><text class="s" x="270" y="116" text-anchor="middle">복사본의 에이전트</text>
-<rect class="box hl2" x="370" y="72" width="148" height="58" rx="10"/>
-<text class="b" x="444" y="97" text-anchor="middle">검사</text><text class="s" x="444" y="116" text-anchor="middle">테스트, 빌드</text>
-<rect class="box hl3" x="544" y="72" width="148" height="58" rx="10"/>
-<text class="b" x="618" y="97" text-anchor="middle">인수 시트</text><text class="s" x="618" y="116" text-anchor="middle">증명된 것</text>
-<rect class="box hl4" x="718" y="72" width="148" height="58" rx="10"/>
-<text class="b" x="792" y="97" text-anchor="middle">승인됨</text><text class="s" x="792" y="116" text-anchor="middle">병합, 푸시</text>
-<g class="done"><circle class="ok" cx="852" cy="86" r="11"/><path d="M847 86 l4 4 l7 -8" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"/></g>
-<circle class="tok" cx="96" cy="62" r="7"/>
-<circle class="tok2" cx="618" cy="134" r="6"/>
-<text class="c" x="22" y="252">모델의 “완료”는 아직 인수가 아닙니다. 증명되지 않은 것은 목록으로 당신에게 옵니다.</text>
+.bg{fill:var(--bg)}.ttl{font-size:20px;font-weight:700}.sub{font-size:12px;fill:var(--muted)}.cap{font-size:13px;fill:var(--muted)}
+.b{font-size:13.5px;font-weight:650}.l{font-size:11.5px;fill:var(--muted)}.m{font-family:var(--mono);font-size:11px}.c{font-family:var(--mono);font-size:11.5px;fill:var(--red);font-weight:600}
+.gl{font-size:11px;font-weight:700;letter-spacing:.06em;fill:var(--muted);text-transform:uppercase}
+.al{font-size:10.5px;fill:var(--muted);paint-order:stroke;stroke:var(--bg);stroke-width:4px;stroke-linejoin:round}
+.box{fill:var(--card);stroke:var(--line);stroke-width:1.4}.grp{fill:var(--group);stroke:var(--line);stroke-width:1.2;stroke-dasharray:5 4}
+.ok .box,.box.ok{fill:var(--okbg);stroke:var(--ok)}.wait .box,.box.wait{fill:var(--waitbg);stroke:var(--wait)}.off .box,.box.off{fill:var(--offbg);stroke:var(--off)}.bad .box,.box.bad{fill:var(--hl);stroke:var(--red)}
+.ln{fill:none;stroke:var(--line);stroke-width:1.6}.ln.red{stroke:var(--red)}.ln.okl{stroke:var(--ok)}.ln.waitl{stroke:var(--wait)}.ln.offl{stroke:var(--off)}.ln.dash{stroke-dasharray:5 4}
+.mk{fill:var(--line)}.mk.red{fill:var(--red)}.mk.okl{fill:var(--ok)}.mk.waitl{fill:var(--wait)}.mk.offl{fill:var(--off)}
+.tok{fill:var(--red);stroke:var(--bg);stroke-width:2}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}.tok{display:none}}.hl-n1{animation:hl-n1 17.39s linear infinite}@keyframes hl-n1{0%,0.00%{stroke:var(--line);stroke-width:1.4}0.00%,5.18%{stroke:var(--red);stroke-width:2.6}5.78%,100%{stroke:var(--line);stroke-width:1.4}}.hl-n2{animation:hl-n2 17.39s linear infinite}@keyframes hl-n2{0%,11.55%{stroke:var(--line);stroke-width:1.4}12.15%,17.32%{stroke:var(--red);stroke-width:2.6}17.92%,100%{stroke:var(--line);stroke-width:1.4}}.hl-n3{animation:hl-n3 17.39s linear infinite}@keyframes hl-n3{0%,23.69%{stroke:var(--line);stroke-width:1.4}24.29%,32.35%{stroke:var(--red);stroke-width:2.6}32.95%,100%{stroke:var(--line);stroke-width:1.4}}.hl-n4a{animation:hl-n4a 17.39s linear infinite}@keyframes hl-n4a{0%,39.45%{stroke:var(--line);stroke-width:1.4}40.05%,46.95%{stroke:var(--red);stroke-width:2.6}47.55%,100%{stroke:var(--line);stroke-width:1.4}}.hl-n5{animation:hl-n5 17.39s linear infinite}@keyframes hl-n5{0%,53.15%{stroke:var(--line);stroke-width:1.4}53.75%,60.65%{stroke:var(--red);stroke-width:2.6}61.25%,100%{stroke:var(--line);stroke-width:1.4}}.hl-o4{animation:hl-o4 17.39s linear infinite}@keyframes hl-o4{0%,66.59%{stroke:var(--line);stroke-width:1.4}67.19%,72.94%{stroke:var(--red);stroke-width:2.6}73.54%,100%{stroke:var(--line);stroke-width:1.4}}.hl-m{animation:hl-m 17.39s linear infinite}@keyframes hl-m{0%,81.21%{stroke:var(--line);stroke-width:1.4}81.81%,87.57%{stroke:var(--red);stroke-width:2.6}88.17%,100%{stroke:var(--line);stroke-width:1.4}}.hl-p{animation:hl-p 17.39s linear infinite}@keyframes hl-p{0%,91.35%{stroke:var(--line);stroke-width:1.4}91.95%,100.00%{stroke:var(--red);stroke-width:2.6}100.00%,100%{stroke:var(--line);stroke-width:1.4}}.hl-n4b{animation:hl-n4b 17.39s linear infinite}@keyframes hl-n4b{0%,39.45%{stroke:var(--line);stroke-width:1.4}40.05%,46.95%{stroke:var(--red);stroke-width:2.6}47.55%,100%{stroke:var(--line);stroke-width:1.4}}</style>
+<rect class="bg" width="980" height="590" rx="14"/>
+<text class="ttl" x="20" y="36">작업 하나의 경로</text><text class="sub" x="20" y="56">모든 단계는 파일의 정확한 상태에 묶인 기록을 남깁니다</text>
+<g class="" id="n1"><rect class="box hl-n1" x="20" y="78" width="180" height="84" rx="9"/><text class="b" x="31" y="98">작업</text><text class="c" x="31" y="116">task new</text><text class="l" x="31" y="131.5">목표 · 기준 · paths</text></g>
+<g class="" id="n2"><rect class="box hl-n2" x="214" y="78" width="180" height="84" rx="9"/><text class="b" x="225" y="98">분석</text><text class="c" x="225" y="116">task check</text><text class="l" x="225" y="131.5">사각지대를 미리 표시</text></g>
+<g class="" id="n3"><rect class="box hl-n3" x="408" y="78" width="180" height="84" rx="9"/><text class="b" x="419" y="98">작업 실행</text><text class="c" x="419" y="116">job run</text><text class="l" x="419" y="131.5">복사본의 implementer</text></g>
+<g class="" id="n4a"><rect class="box hl-n4a" x="616" y="70" width="192" height="84" rx="9"/><text class="b" x="627" y="90">검사 (auto)</text><text class="c" x="627" y="108">task verify</text><text class="l" x="627" y="123.5">복사본에서 → 로그 + sha256</text></g>
+<g class="" id="n4b"><rect class="box hl-n4b" x="616" y="166" width="192" height="84" rx="9"/><text class="b" x="627" y="186">리뷰 (model)</text><text class="c" x="627" y="204">--role reviewer</text><text class="l" x="627" y="219.5">다른 모델 계열</text></g>
+<g class="" id="n5"><rect class="box hl-n5" x="830" y="104" width="130" height="112" rx="9"/><text class="b" x="841" y="124">판정</text><text class="c" x="841" y="142">task converge</text><text class="l" x="841" y="157.5">상태</text><text class="l" x="841" y="172.5">비교</text><text class="m" x="841" y="187.5">acceptance.md</text></g>
+<path class="ln red" d="M200 120 L214 120" marker-end="url(#ared)"/>
+<path class="ln red" d="M394 120 L408 120" marker-end="url(#ared)"/>
+<path class="ln red" d="M588 120 H600 M600 112 V208"/>
+<path class="ln red" d="M600 112 L616 112" marker-end="url(#ared)"/>
+<path class="ln red" d="M600 208 L616 208" marker-end="url(#ared)"/>
+<path class="ln red" d="M808 112 L830 140" marker-end="url(#ared)"/>
+<path class="ln red" d="M808 208 L830 180" marker-end="url(#ared)"/>
+<g class="bad" id="o1"><rect class="box hl-o1" x="20" y="300" width="220" height="84" rx="9"/><text class="b" x="31" y="320">🔴 수정 필요</text><text class="l" x="31" y="338">검사나 리뷰의 FAIL</text><text class="l" x="31" y="353">또는 paths 밖의 수정</text></g>
+<g class="off" id="o2"><rect class="box hl-o2" x="252" y="300" width="220" height="84" rx="9"/><text class="b" x="263" y="320">⚪ 검사 안 됨</text><text class="l" x="263" y="338">증거가 없거나</text><text class="l" x="263" y="353">만료됨</text></g>
+<g class="wait" id="o3"><rect class="box hl-o3" x="484" y="300" width="220" height="84" rx="9"/><text class="b" x="495" y="320">🟡 내 확인 대기</text><text class="l" x="495" y="338">수동 기준, 또는 신뢰</text><text class="l" x="495" y="353">목표가 없는 모델 PASS</text></g>
+<g class="ok" id="o4"><rect class="box hl-o4" x="716" y="300" width="244" height="84" rx="9"/><text class="b" x="727" y="320">🟢 인수됨</text><text class="l" x="727" y="338">모든 목표 달성</text><text class="l" x="727" y="353">이 상태에서</text></g>
+<path class="ln" d="M895 216 V284 H130 M362 284 V300 M594 284 V300 M130 284 V300"/>
+<path class="ln okl" d="M895 284 L895 300" marker-end="url(#aokl)"/>
+<text class="al" x="888" y="272" text-anchor="end">결과 중 하나</text>
+<path class="ln red dash" d="M60 300 L60 186 L498 186 L498 162" marker-end="url(#ared)"/><text class="al" x="118.79999999999998" y="181" text-anchor="middle">수정</text>
+<path class="ln offl dash" d="M300 300 L300 232 L584 232 L584 208 L600 208"/><text class="al" x="408.40000000000003" y="227" text-anchor="middle">다시 검사</text>
+<g class="wait" id="you"><rect class="box hl-you" x="484" y="420" width="220" height="84" rx="9"/><text class="b" x="495" y="440">나</text><text class="c" x="495" y="458">task confirm</text><text class="l" x="495" y="473.5">인수 시트의 단계대로</text></g>
+<path class="ln waitl" d="M594 384 L594 420" marker-end="url(#awaitl)"/>
+<path class="ln waitl dash" d="M704 462 L714 462 L714 262 L870 262 L870 216" marker-end="url(#awaitl)"/><text class="al" x="759.44" y="257" text-anchor="middle">다시 판정</text>
+<g class="off" id="up"><rect class="box hl-up" x="252" y="420" width="220" height="84" rx="9"/><text class="b" x="263" y="440">작업 갱신</text><text class="c" x="263" y="458">task update</text><text class="l" x="263" y="473.5">main → 복사본, 다시 검사</text></g>
+<g class="" id="m"><rect class="box hl-m" x="726" y="420" width="112" height="112" rx="9"/><text class="b" x="737" y="440">병합</text><text class="c" x="737" y="458">merge</text><text class="l" x="737" y="473.5">복사본이 깨끗</text><text class="l" x="737" y="488.5">하고 현재</text><text class="l" x="737" y="503.5">main 포함</text></g>
+<g class="" id="p"><rect class="box hl-p" x="848" y="420" width="112" height="112" rx="9"/><text class="b" x="859" y="440">푸시</text><text class="c" x="859" y="458">push</text><text class="l" x="859" y="473.5">remote에</text><text class="l" x="859" y="488.5">새로 가는 것</text><text class="l" x="859" y="503.5">전부 키 검사</text></g>
+<path class="ln okl" d="M782 384 L782 420" marker-end="url(#aokl)"/>
+<path class="ln okl" d="M838 476 L848 476" marker-end="url(#aokl)"/>
+<path class="ln offl dash" d="M726 520 L362 520 L362 504" marker-end="url(#aoffl)"/><text class="al" x="593" y="534" text-anchor="middle">main이 앞서감</text>
+<path class="ln offl dash" d="M362 420 L362 384" marker-end="url(#aoffl)"/>
+<circle class="tok" r="7" cx="0" cy="0"><animateMotion dur="17.39s" repeatCount="indefinite" path="M110 120 L304 120 L498 120 L600 120 L712 112 L895 160 L895 284 L895 342 L782 342 L782 476 L904 476" keyPoints="0.0000;0.0000;0.1445;0.1445;0.2890;0.2890;0.3650;0.4486;0.4486;0.5896;0.5896;0.6819;0.7251;0.7251;0.8093;0.9091;0.9091;1.0000;1.0000" keyTimes="0.0000;0.0518;0.1215;0.1732;0.2429;0.3235;0.3601;0.4005;0.4695;0.5375;0.6065;0.6510;0.6719;0.7294;0.7700;0.8181;0.8757;0.9195;1.0000" calcMode="linear"/></circle>
+<text class="cap" x="20" y="572">모델의 “완료”는 인수가 아닙니다. 검사, 다른 모델 계열의 리뷰, 그리고 내가 결정합니다.</text>
 </svg>

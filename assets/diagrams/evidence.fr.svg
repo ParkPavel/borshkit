@@ -1,32 +1,47 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="860" height="260" viewBox="0 0 860 260" role="img" aria-labelledby="t d" lang="fr">
-<title id="t">Une preuve peut expirer</title>
-<desc id="d">PASS pour a1b2c3 → modification → périmée → PASS pour f9e8d7. Un octet change, et la vérification doit être relancée — même sans commit.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="580" viewBox="0 0 980 580" role="img" aria-labelledby="t d" lang="fr">
+<title id="t">Une preuve est liée à un état</title>
+<desc id="d">un état, ce sont cinq empreintes ; si toutes concordent, la trace compte. Un octet, le contrat, les réglages ou Borshkit lui-même changent : la trace ne compte plus.</desc>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk " d="M0 0L10 5L0 10z"/></marker><marker id="ared" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk red" d="M0 0L10 5L0 10z"/></marker><marker id="aokl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk okl" d="M0 0L10 5L0 10z"/></marker><marker id="awaitl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk waitl" d="M0 0L10 5L0 10z"/></marker><marker id="aoffl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk offl" d="M0 0L10 5L0 10z"/></marker></defs>
 <style>
-:root{--bg:#fbf7f2;--ink:#2b1d1d;--muted:#6b5757;--red:#b3261e;--deep:#8c1c13;--line:#dccbc8;--card:#fffdfa;--ok:#2e7d32;--okbg:#e6f2e6;--off:#8f8282;--offbg:#efe8e6;--steam:#c9a9a6;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
-@media (prefers-color-scheme:dark){:root{--bg:#171213;--ink:#f4ecea;--muted:#bfaeac;--red:#e0574b;--deep:#a8261b;--line:#4a3a39;--card:#221a1a;--ok:#7bc47f;--okbg:#1f2e20;--off:#8d7f7e;--offbg:#2a2222;--steam:#6e5856}}
+:root{--bg:#fbf7f2;--ink:#2b1d1d;--muted:#6b5757;--red:#b3261e;--deep:#8c1c13;--line:#cdb9b5;--card:#fffdfa;--group:#f5ede7;--ok:#2e7d32;--okbg:#e6f2e6;--wait:#9a5b00;--waitbg:#fbefdc;--off:#7d6f6f;--offbg:#efe8e6;--steam:#c9a9a6;--hl:#fde8e5;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#171213;--ink:#f4ecea;--muted:#bfaeac;--red:#ef6b5f;--deep:#a8261b;--line:#5a4846;--card:#221a1a;--group:#1d1617;--ok:#7bc47f;--okbg:#1f2e20;--wait:#f0a64a;--waitbg:#33261a;--off:#9d8f8e;--offbg:#2a2222;--steam:#6e5856;--hl:#3a1f1d}}
 text{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","Apple SD Gothic Neo","Malgun Gothic","PingFang TC","Microsoft JhengHei","Noto Sans CJK TC",sans-serif;fill:var(--ink)}
-.bg{fill:var(--bg)}.t{font-size:19px;font-weight:700}.b{font-size:14px;font-weight:650}.s{font-size:11.5px;fill:var(--muted)}.c{font-size:13px;fill:var(--muted)}
-.m{font-family:var(--mono);font-size:12px}.box{fill:var(--card);stroke:var(--line);stroke-width:1.5}.ln{stroke:var(--line);stroke-width:2;fill:none}
-.red{fill:var(--red)}.ok{fill:var(--ok)}.off{fill:var(--off)}
-@media (prefers-reduced-motion:reduce){*{animation:none!important}}.passA{opacity:0;animation:passA 10s linear infinite}@keyframes passA{0%,14%{opacity:0}15%,35%{opacity:1}36%,100%{opacity:0}}.stale{opacity:0;animation:stale 10s linear infinite}@keyframes stale{0%,42%{opacity:0}43%,65%{opacity:1}66%,100%{opacity:0}}.hashA{opacity:0;animation:hashA 10s linear infinite}@keyframes hashA{0%,-1%{opacity:0}0%,37%{opacity:1}38%,100%{opacity:0}}.flash{opacity:0;animation:flash 10s linear infinite}@keyframes flash{0%,34%{opacity:0}35%,42%{opacity:1}43%,100%{opacity:0}}.hashB{opacity:1;animation:hashB 10s linear infinite}@keyframes hashB{0%,37%{opacity:0}38%,100%{opacity:1}}.passB{opacity:1;animation:passB 10s linear infinite}@keyframes passB{0%,71%{opacity:0}72%,100%{opacity:1}}.pulse{animation:pulse 10s linear infinite}@keyframes pulse{0%,5%{stroke:var(--line)}7%,14%{stroke:var(--red)}16%,64%{stroke:var(--line)}66%,72%{stroke:var(--red)}74%,100%{stroke:var(--line)}}.bar2{animation:bar 10s linear infinite}@keyframes bar{0%,35%{fill:var(--line)}36%,100%{fill:var(--red)}}.pass{fill:var(--okbg);stroke:var(--ok);stroke-width:1.5}.stl{fill:var(--offbg);stroke:var(--off);stroke-width:1.5;stroke-dasharray:5 4}</style>
-<rect class="bg" width="860" height="260" rx="14"/>
-<text class="t" x="40" y="38">Une preuve peut expirer</text>
-<rect class="box" x="40" y="62" width="230" height="130" rx="10"/>
-<text class="b m" x="58" y="88">app.js</text>
-<rect x="58" y="102" width="150" height="8" rx="4" fill="var(--line)"/><rect class="bar2" x="58" y="118" width="110" height="8" rx="4" fill="var(--red)"/><rect x="58" y="134" width="170" height="8" rx="4" fill="var(--line)"/>
-<text class="s" x="58" y="172">état:</text>
-<text class="m hashA" x="99.35" y="172">a1b2c3</text><text class="m hashB" x="99.35" y="172" fill="var(--red)">f9e8d7</text>
-<g class="flash"><rect x="165.44" y="108" width="96.56" height="22" rx="11" fill="var(--red)"/><text x="213.72" y="123" text-anchor="middle" style="font-size:11px;fill:#fff;font-weight:650">modification</text></g>
-<text class="s" x="390" y="112" text-anchor="middle">vérification</text>
-<path class="ln pulse" d="M290 127 H482"/><path class="red" d="M490 127 l-10 -6 v12 z"/>
-<g class="passA"><rect class="pass" x="510" y="92" width="300" height="70" rx="12"/>
-<text class="b" x="660" y="122" text-anchor="middle" style="font-size:20px;fill:var(--ok)">PASS ✓</text>
-<text class="s m" x="660" y="146" text-anchor="middle">pour a1b2c3</text></g>
-<g class="stale"><rect class="stl" x="510" y="92" width="300" height="70" rx="12"/>
-<text class="b" x="660" y="122" text-anchor="middle" style="font-size:20px;fill:var(--off)">périmée</text>
-<text class="s m" x="660" y="146" text-anchor="middle">prise sur a1b2c3</text></g>
-<g class="passB"><rect class="pass" x="510" y="92" width="300" height="70" rx="12"/>
-<text class="b" x="660" y="122" text-anchor="middle" style="font-size:20px;fill:var(--ok)">PASS ✓</text>
-<text class="s m" x="660" y="146" text-anchor="middle">pour f9e8d7</text></g>
-<text class="c" x="40" y="238">Un octet change, et la vérification doit être relancée — même sans commit.</text>
+.bg{fill:var(--bg)}.ttl{font-size:20px;font-weight:700}.sub{font-size:12px;fill:var(--muted)}.cap{font-size:13px;fill:var(--muted)}
+.b{font-size:13.5px;font-weight:650}.l{font-size:11.5px;fill:var(--muted)}.m{font-family:var(--mono);font-size:11px}.c{font-family:var(--mono);font-size:11.5px;fill:var(--red);font-weight:600}
+.gl{font-size:11px;font-weight:700;letter-spacing:.06em;fill:var(--muted);text-transform:uppercase}
+.al{font-size:10.5px;fill:var(--muted);paint-order:stroke;stroke:var(--bg);stroke-width:4px;stroke-linejoin:round}
+.box{fill:var(--card);stroke:var(--line);stroke-width:1.4}.grp{fill:var(--group);stroke:var(--line);stroke-width:1.2;stroke-dasharray:5 4}
+.ok .box,.box.ok{fill:var(--okbg);stroke:var(--ok)}.wait .box,.box.wait{fill:var(--waitbg);stroke:var(--wait)}.off .box,.box.off{fill:var(--offbg);stroke:var(--off)}.bad .box,.box.bad{fill:var(--hl);stroke:var(--red)}
+.ln{fill:none;stroke:var(--line);stroke-width:1.6}.ln.red{stroke:var(--red)}.ln.okl{stroke:var(--ok)}.ln.waitl{stroke:var(--wait)}.ln.offl{stroke:var(--off)}.ln.dash{stroke-dasharray:5 4}
+.mk{fill:var(--line)}.mk.red{fill:var(--red)}.mk.okl{fill:var(--ok)}.mk.waitl{fill:var(--wait)}.mk.offl{fill:var(--off)}
+.tok{fill:var(--red);stroke:var(--bg);stroke-width:2}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}.tok{display:none}}.hl-e1{animation:hl-e1 10.45s linear infinite}@keyframes hl-e1{0%,0.00%{stroke:var(--line);stroke-width:1.4}0.00%,11.48%{stroke:var(--red);stroke-width:2.6}12.08%,100%{stroke:var(--line);stroke-width:1.4}}.hl-e2{animation:hl-e2 10.45s linear infinite}@keyframes hl-e2{0%,24.68%{stroke:var(--line);stroke-width:1.4}25.28%,36.76%{stroke:var(--red);stroke-width:2.6}37.36%,100%{stroke:var(--line);stroke-width:1.4}}.hl-e3{animation:hl-e3 10.45s linear infinite}@keyframes hl-e3{0%,50.68%{stroke:var(--line);stroke-width:1.4}51.28%,66.59%{stroke:var(--red);stroke-width:2.6}67.19%,100%{stroke:var(--line);stroke-width:1.4}}.hl-e4{animation:hl-e4 10.45s linear infinite}@keyframes hl-e4{0%,84.09%{stroke:var(--line);stroke-width:1.4}84.69%,100.00%{stroke:var(--red);stroke-width:2.6}100.00%,100%{stroke:var(--line);stroke-width:1.4}}.hl-files{animation:hl-files 10.45s linear infinite}@keyframes hl-files{0%,24.68%{stroke:var(--line);stroke-width:1.4}25.28%,36.76%{stroke:var(--red);stroke-width:2.6}37.36%,100%{stroke:var(--line);stroke-width:1.4}}.hl-rec{animation:hl-rec 10.45s linear infinite}@keyframes hl-rec{0%,0.00%{stroke:var(--line);stroke-width:1.4}0.00%,11.48%{stroke:var(--red);stroke-width:2.6}12.08%,100%{stroke:var(--line);stroke-width:1.4}}</style>
+<rect class="bg" width="980" height="580" rx="14"/>
+<text class="ttl" x="20" y="36">Une preuve est liée à un état</text><text class="sub" x="20" y="56">un état, ce sont cinq empreintes ; si toutes concordent, la trace compte</text>
+<rect class="grp" x="20" y="74" width="340" height="286" rx="12"/><text class="gl" x="32" y="91">État (instantané)</text>
+<g><rect class="box hl-files" x="32" y="98" width="316" height="46" rx="7"/><text class="b" x="44" y="117" style="font-size:12.5px">Fichiers du projet</text><text class="m" x="336" y="117" text-anchor="end">source.digest</text><text class="l" x="44" y="134">HEAD + sha256 des fichiers, bit x, sous-modules</text></g>
+<g><rect class="box" x="32" y="150" width="316" height="46" rx="7"/><text class="b" x="44" y="169" style="font-size:12.5px">Contrat</text><text class="m" x="336" y="169" text-anchor="end">contractDigest</text><text class="l" x="44" y="186">sha256(contract.json)</text></g>
+<g><rect class="box" x="32" y="202" width="316" height="46" rx="7"/><text class="b" x="44" y="221" style="font-size:12.5px">Réglages</text><text class="m" x="336" y="221" text-anchor="end">settingsDigest</text><text class="l" x="44" y="238">sha256(settings/workspace.json)</text></g>
+<g><rect class="box" x="32" y="254" width="316" height="46" rx="7"/><text class="b" x="44" y="273" style="font-size:12.5px">Matériaux</text><text class="m" x="336" y="273" text-anchor="end">materialsDigest</text><text class="l" x="44" y="290">sha256 des sources gardées</text></g>
+<g><rect class="box" x="32" y="306" width="316" height="46" rx="7"/><text class="b" x="44" y="325" style="font-size:12.5px">Code de Borshkit</text><text class="m" x="336" y="325" text-anchor="end">runtimeDigest</text><text class="l" x="44" y="342">sha256(core/*.mjs, bin/*.mjs)</text></g>
+<rect class="grp" x="384" y="74" width="266" height="286" rx="12"/><text class="gl" x="396" y="91">D’où viennent les traces</text>
+<g class=""><rect class="box" x="396" y="98" width="242" height="78" rx="9"/><text class="b" x="407" y="118">Vérification (auto)</text><text class="c" x="407" y="136">task verify</text><text class="l" x="407" y="151.5">instantané avant et après</text></g>
+<g class="" id="rev"><rect class="box hl-rev" x="396" y="186" width="242" height="78" rx="9"/><text class="b" x="407" y="206">Revue (model)</text><text class="c" x="407" y="224">job run … reviewer</text><text class="l" x="407" y="239.5">instantané au départ du relecteur</text></g>
+<g class=""><rect class="box" x="396" y="274" width="242" height="78" rx="9"/><text class="b" x="407" y="294">Toi (manual)</text><text class="c" x="407" y="312">task confirm</text><text class="l" x="407" y="327.5">instantané à ta réponse</text></g>
+<g class="" id="rec"><rect class="box hl-rec" x="674" y="98" width="286" height="140" rx="9"/><text class="b" x="685" y="118">Trace</text><text class="m" x="685" y="136">tasks/&lt;id&gt;/evidence/&lt;uuid&gt;.json</text><text class="m" x="685" y="150.5">{ kind, status, criteria,</text><text class="m" x="685" y="165">  state, freshness, origin,</text><text class="m" x="685" y="179.5">  artifactSha256, sequence }</text><text class="l" x="685" y="194">le log est protégé par son propre sha256</text></g>
+<g class=""><rect class="box" x="674" y="252" width="286" height="108" rx="9"/><text class="b" x="685" y="272">Comparaison</text><text class="c" x="685" y="290">task converge</text><text class="l" x="685" y="305.5">instantané actuel = state de la trace ?</text><text class="l" x="685" y="320.5">oui → la trace compte</text><text class="l" x="685" y="335.5">non → périmée, non comptée</text></g>
+<path class="ln red" d="M348 216 L384 216" marker-end="url(#ared)"/><text class="al" x="366" y="210" text-anchor="middle">state</text>
+<path class="ln red" d="M638 168 L674 168" marker-end="url(#ared)"/>
+<path class="ln " d="M817 238 L817 252" marker-end="url(#a)"/>
+<rect class="grp" x="20" y="384" width="940" height="150" rx="12"/><text class="gl" x="32" y="401">Ce que ça donne dans le temps</text>
+<text class="l" x="34" y="429">Vérification</text><text class="l" x="34" y="491">Revue</text>
+<g class="" id="e1"><rect class="box hl-e1" x="166" y="408" width="160" height="50" rx="9"/><text class="b" x="177" y="428">PASS</text><text class="m" x="177" y="446">state = A · CURRENT</text></g><g class="bad" id="e2"><rect class="box hl-e2" x="344" y="408" width="150" height="50" rx="9"/><text class="b" x="355" y="428">un fichier modifié</text><text class="m" x="355" y="446">A → B</text></g><g class="off" id="e3"><rect class="box hl-e3" x="512" y="408" width="178" height="50" rx="9"/><text class="b" x="523" y="428">trace périmée</text><text class="m" x="523" y="446">A ≠ B → STALE</text></g><g class="ok" id="e4"><rect class="box hl-e4" x="708" y="408" width="240" height="50" rx="9"/><text class="b" x="719" y="428">nouvelle vérif. : PASS</text><text class="m" x="719" y="446">state = B · CURRENT</text></g>
+<g class="" id="f1"><rect class="box hl-f1" x="166" y="470" width="160" height="50" rx="9"/><text class="b" x="177" y="490">le relecteur part</text><text class="m" x="177" y="508">seenState = B</text></g><g class="bad" id="f2"><rect class="box hl-f2" x="344" y="470" width="150" height="50" rx="9"/><text class="b" x="355" y="490">un fichier change</text><text class="m" x="355" y="508">B → C</text></g><g class="off" id="f3"><rect class="box hl-f3" x="512" y="470" width="436" height="50" rx="9"/><text class="b" x="523" y="490">la réponse arrive — périmée aussitôt</text><text class="m" x="523" y="508">freshness: STALE</text></g>
+<path class="ln " d="M326 433 L344 433" marker-end="url(#a)"/>
+<path class="ln " d="M494 433 L512 433" marker-end="url(#a)"/>
+<path class="ln " d="M690 433 L708 433" marker-end="url(#a)"/>
+<path class="ln " d="M326 495 L344 495" marker-end="url(#a)"/>
+<path class="ln " d="M494 495 L512 495" marker-end="url(#a)"/>
+<circle class="tok" r="7" cx="0" cy="0"><animateMotion dur="10.45s" repeatCount="indefinite" path="M246 433 L419 433 L601 433 L828 433" keyPoints="0.0000;0.0000;0.2973;0.2973;0.6100;0.6100;1.0000;1.0000" keyTimes="0.0000;0.1148;0.2528;0.3676;0.5128;0.6659;0.8469;1.0000" calcMode="linear"/></circle>
+<text class="cap" x="20" y="560">Un octet, le contrat, les réglages ou Borshkit lui-même changent : la trace ne compte plus.</text>
 </svg>

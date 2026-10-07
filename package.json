@@ -1,6 +1,6 @@
 {
   "name": "borshkit",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "description": "Borshkit — Modular AI Workspace: AI agents work, evidence bound to the exact file state decides acceptance, and whatever cannot be proven comes to you as a short manual checklist.",
   "type": "module",
   "private": true,

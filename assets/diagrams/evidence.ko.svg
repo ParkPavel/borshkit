@@ -1,32 +1,47 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="860" height="260" viewBox="0 0 860 260" role="img" aria-labelledby="t d" lang="ko">
-<title id="t">증거는 낡는다</title>
-<desc id="d">PASS a1b2c3 기준 → 수정 → 만료됨 → PASS f9e8d7 기준. 1바이트만 바뀌어도 검사를 다시 해야 합니다. 커밋 전 수정도 마찬가지입니다.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="580" viewBox="0 0 980 580" role="img" aria-labelledby="t d" lang="ko">
+<title id="t">증거는 상태에 묶입니다</title>
+<desc id="d">상태는 지문 다섯 개; 모두 같으면 기록이 유효. 1바이트, 계약, 설정, Borshkit 자체가 바뀌면 그 기록은 더 이상 인정되지 않습니다.</desc>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk " d="M0 0L10 5L0 10z"/></marker><marker id="ared" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk red" d="M0 0L10 5L0 10z"/></marker><marker id="aokl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk okl" d="M0 0L10 5L0 10z"/></marker><marker id="awaitl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk waitl" d="M0 0L10 5L0 10z"/></marker><marker id="aoffl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk offl" d="M0 0L10 5L0 10z"/></marker></defs>
 <style>
-:root{--bg:#fbf7f2;--ink:#2b1d1d;--muted:#6b5757;--red:#b3261e;--deep:#8c1c13;--line:#dccbc8;--card:#fffdfa;--ok:#2e7d32;--okbg:#e6f2e6;--off:#8f8282;--offbg:#efe8e6;--steam:#c9a9a6;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
-@media (prefers-color-scheme:dark){:root{--bg:#171213;--ink:#f4ecea;--muted:#bfaeac;--red:#e0574b;--deep:#a8261b;--line:#4a3a39;--card:#221a1a;--ok:#7bc47f;--okbg:#1f2e20;--off:#8d7f7e;--offbg:#2a2222;--steam:#6e5856}}
+:root{--bg:#fbf7f2;--ink:#2b1d1d;--muted:#6b5757;--red:#b3261e;--deep:#8c1c13;--line:#cdb9b5;--card:#fffdfa;--group:#f5ede7;--ok:#2e7d32;--okbg:#e6f2e6;--wait:#9a5b00;--waitbg:#fbefdc;--off:#7d6f6f;--offbg:#efe8e6;--steam:#c9a9a6;--hl:#fde8e5;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#171213;--ink:#f4ecea;--muted:#bfaeac;--red:#ef6b5f;--deep:#a8261b;--line:#5a4846;--card:#221a1a;--group:#1d1617;--ok:#7bc47f;--okbg:#1f2e20;--wait:#f0a64a;--waitbg:#33261a;--off:#9d8f8e;--offbg:#2a2222;--steam:#6e5856;--hl:#3a1f1d}}
 text{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","Apple SD Gothic Neo","Malgun Gothic","PingFang TC","Microsoft JhengHei","Noto Sans CJK TC",sans-serif;fill:var(--ink)}
-.bg{fill:var(--bg)}.t{font-size:19px;font-weight:700}.b{font-size:14px;font-weight:650}.s{font-size:11.5px;fill:var(--muted)}.c{font-size:13px;fill:var(--muted)}
-.m{font-family:var(--mono);font-size:12px}.box{fill:var(--card);stroke:var(--line);stroke-width:1.5}.ln{stroke:var(--line);stroke-width:2;fill:none}
-.red{fill:var(--red)}.ok{fill:var(--ok)}.off{fill:var(--off)}
-@media (prefers-reduced-motion:reduce){*{animation:none!important}}.passA{opacity:0;animation:passA 10s linear infinite}@keyframes passA{0%,14%{opacity:0}15%,35%{opacity:1}36%,100%{opacity:0}}.stale{opacity:0;animation:stale 10s linear infinite}@keyframes stale{0%,42%{opacity:0}43%,65%{opacity:1}66%,100%{opacity:0}}.hashA{opacity:0;animation:hashA 10s linear infinite}@keyframes hashA{0%,-1%{opacity:0}0%,37%{opacity:1}38%,100%{opacity:0}}.flash{opacity:0;animation:flash 10s linear infinite}@keyframes flash{0%,34%{opacity:0}35%,42%{opacity:1}43%,100%{opacity:0}}.hashB{opacity:1;animation:hashB 10s linear infinite}@keyframes hashB{0%,37%{opacity:0}38%,100%{opacity:1}}.passB{opacity:1;animation:passB 10s linear infinite}@keyframes passB{0%,71%{opacity:0}72%,100%{opacity:1}}.pulse{animation:pulse 10s linear infinite}@keyframes pulse{0%,5%{stroke:var(--line)}7%,14%{stroke:var(--red)}16%,64%{stroke:var(--line)}66%,72%{stroke:var(--red)}74%,100%{stroke:var(--line)}}.bar2{animation:bar 10s linear infinite}@keyframes bar{0%,35%{fill:var(--line)}36%,100%{fill:var(--red)}}.pass{fill:var(--okbg);stroke:var(--ok);stroke-width:1.5}.stl{fill:var(--offbg);stroke:var(--off);stroke-width:1.5;stroke-dasharray:5 4}</style>
-<rect class="bg" width="860" height="260" rx="14"/>
-<text class="t" x="40" y="38">증거는 낡는다</text>
-<rect class="box" x="40" y="62" width="230" height="130" rx="10"/>
-<text class="b m" x="58" y="88">app.js</text>
-<rect x="58" y="102" width="150" height="8" rx="4" fill="var(--line)"/><rect class="bar2" x="58" y="118" width="110" height="8" rx="4" fill="var(--red)"/><rect x="58" y="134" width="170" height="8" rx="4" fill="var(--line)"/>
-<text class="s" x="58" y="172">상태:</text>
-<text class="m hashA" x="95.67" y="172">a1b2c3</text><text class="m hashB" x="95.67" y="172" fill="var(--red)">f9e8d7</text>
-<g class="flash"><rect x="200" y="108" width="62" height="22" rx="11" fill="var(--red)"/><text x="231" y="123" text-anchor="middle" style="font-size:11px;fill:#fff;font-weight:650">수정</text></g>
-<text class="s" x="390" y="112" text-anchor="middle">검사</text>
-<path class="ln pulse" d="M290 127 H482"/><path class="red" d="M490 127 l-10 -6 v12 z"/>
-<g class="passA"><rect class="pass" x="510" y="92" width="300" height="70" rx="12"/>
-<text class="b" x="660" y="122" text-anchor="middle" style="font-size:20px;fill:var(--ok)">PASS ✓</text>
-<text class="s m" x="660" y="146" text-anchor="middle">a1b2c3 기준</text></g>
-<g class="stale"><rect class="stl" x="510" y="92" width="300" height="70" rx="12"/>
-<text class="b" x="660" y="122" text-anchor="middle" style="font-size:20px;fill:var(--off)">만료됨</text>
-<text class="s m" x="660" y="146" text-anchor="middle">a1b2c3 측정 시점</text></g>
-<g class="passB"><rect class="pass" x="510" y="92" width="300" height="70" rx="12"/>
-<text class="b" x="660" y="122" text-anchor="middle" style="font-size:20px;fill:var(--ok)">PASS ✓</text>
-<text class="s m" x="660" y="146" text-anchor="middle">f9e8d7 기준</text></g>
-<text class="c" x="40" y="238">1바이트만 바뀌어도 검사를 다시 해야 합니다. 커밋 전 수정도 마찬가지입니다.</text>
+.bg{fill:var(--bg)}.ttl{font-size:20px;font-weight:700}.sub{font-size:12px;fill:var(--muted)}.cap{font-size:13px;fill:var(--muted)}
+.b{font-size:13.5px;font-weight:650}.l{font-size:11.5px;fill:var(--muted)}.m{font-family:var(--mono);font-size:11px}.c{font-family:var(--mono);font-size:11.5px;fill:var(--red);font-weight:600}
+.gl{font-size:11px;font-weight:700;letter-spacing:.06em;fill:var(--muted);text-transform:uppercase}
+.al{font-size:10.5px;fill:var(--muted);paint-order:stroke;stroke:var(--bg);stroke-width:4px;stroke-linejoin:round}
+.box{fill:var(--card);stroke:var(--line);stroke-width:1.4}.grp{fill:var(--group);stroke:var(--line);stroke-width:1.2;stroke-dasharray:5 4}
+.ok .box,.box.ok{fill:var(--okbg);stroke:var(--ok)}.wait .box,.box.wait{fill:var(--waitbg);stroke:var(--wait)}.off .box,.box.off{fill:var(--offbg);stroke:var(--off)}.bad .box,.box.bad{fill:var(--hl);stroke:var(--red)}
+.ln{fill:none;stroke:var(--line);stroke-width:1.6}.ln.red{stroke:var(--red)}.ln.okl{stroke:var(--ok)}.ln.waitl{stroke:var(--wait)}.ln.offl{stroke:var(--off)}.ln.dash{stroke-dasharray:5 4}
+.mk{fill:var(--line)}.mk.red{fill:var(--red)}.mk.okl{fill:var(--ok)}.mk.waitl{fill:var(--wait)}.mk.offl{fill:var(--off)}
+.tok{fill:var(--red);stroke:var(--bg);stroke-width:2}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}.tok{display:none}}.hl-e1{animation:hl-e1 10.45s linear infinite}@keyframes hl-e1{0%,0.00%{stroke:var(--line);stroke-width:1.4}0.00%,11.48%{stroke:var(--red);stroke-width:2.6}12.08%,100%{stroke:var(--line);stroke-width:1.4}}.hl-e2{animation:hl-e2 10.45s linear infinite}@keyframes hl-e2{0%,24.68%{stroke:var(--line);stroke-width:1.4}25.28%,36.76%{stroke:var(--red);stroke-width:2.6}37.36%,100%{stroke:var(--line);stroke-width:1.4}}.hl-e3{animation:hl-e3 10.45s linear infinite}@keyframes hl-e3{0%,50.68%{stroke:var(--line);stroke-width:1.4}51.28%,66.59%{stroke:var(--red);stroke-width:2.6}67.19%,100%{stroke:var(--line);stroke-width:1.4}}.hl-e4{animation:hl-e4 10.45s linear infinite}@keyframes hl-e4{0%,84.09%{stroke:var(--line);stroke-width:1.4}84.69%,100.00%{stroke:var(--red);stroke-width:2.6}100.00%,100%{stroke:var(--line);stroke-width:1.4}}.hl-files{animation:hl-files 10.45s linear infinite}@keyframes hl-files{0%,24.68%{stroke:var(--line);stroke-width:1.4}25.28%,36.76%{stroke:var(--red);stroke-width:2.6}37.36%,100%{stroke:var(--line);stroke-width:1.4}}.hl-rec{animation:hl-rec 10.45s linear infinite}@keyframes hl-rec{0%,0.00%{stroke:var(--line);stroke-width:1.4}0.00%,11.48%{stroke:var(--red);stroke-width:2.6}12.08%,100%{stroke:var(--line);stroke-width:1.4}}</style>
+<rect class="bg" width="980" height="580" rx="14"/>
+<text class="ttl" x="20" y="36">증거는 상태에 묶입니다</text><text class="sub" x="20" y="56">상태는 지문 다섯 개; 모두 같으면 기록이 유효</text>
+<rect class="grp" x="20" y="74" width="340" height="286" rx="12"/><text class="gl" x="32" y="91">상태 (스냅숏)</text>
+<g><rect class="box hl-files" x="32" y="98" width="316" height="46" rx="7"/><text class="b" x="44" y="117" style="font-size:12.5px">프로젝트 파일</text><text class="m" x="336" y="117" text-anchor="end">source.digest</text><text class="l" x="44" y="134">HEAD + 파일 sha256, 실행 비트, 서브모듈</text></g>
+<g><rect class="box" x="32" y="150" width="316" height="46" rx="7"/><text class="b" x="44" y="169" style="font-size:12.5px">계약</text><text class="m" x="336" y="169" text-anchor="end">contractDigest</text><text class="l" x="44" y="186">sha256(contract.json)</text></g>
+<g><rect class="box" x="32" y="202" width="316" height="46" rx="7"/><text class="b" x="44" y="221" style="font-size:12.5px">설정</text><text class="m" x="336" y="221" text-anchor="end">settingsDigest</text><text class="l" x="44" y="238">sha256(settings/workspace.json)</text></g>
+<g><rect class="box" x="32" y="254" width="316" height="46" rx="7"/><text class="b" x="44" y="273" style="font-size:12.5px">자료</text><text class="m" x="336" y="273" text-anchor="end">materialsDigest</text><text class="l" x="44" y="290">작업이 저장한 출처의 sha256</text></g>
+<g><rect class="box" x="32" y="306" width="316" height="46" rx="7"/><text class="b" x="44" y="325" style="font-size:12.5px">Borshkit 코드</text><text class="m" x="336" y="325" text-anchor="end">runtimeDigest</text><text class="l" x="44" y="342">sha256(core/*.mjs, bin/*.mjs)</text></g>
+<rect class="grp" x="384" y="74" width="266" height="286" rx="12"/><text class="gl" x="396" y="91">기록이 오는 곳</text>
+<g class=""><rect class="box" x="396" y="98" width="242" height="78" rx="9"/><text class="b" x="407" y="118">검사 (auto)</text><text class="c" x="407" y="136">task verify</text><text class="l" x="407" y="151.5">검사 전후 스냅숏</text></g>
+<g class="" id="rev"><rect class="box hl-rev" x="396" y="186" width="242" height="78" rx="9"/><text class="b" x="407" y="206">리뷰 (model)</text><text class="c" x="407" y="224">job run … reviewer</text><text class="l" x="407" y="239.5">리뷰어가 시작할 때의 스냅숏</text></g>
+<g class=""><rect class="box" x="396" y="274" width="242" height="78" rx="9"/><text class="b" x="407" y="294">나 (manual)</text><text class="c" x="407" y="312">task confirm</text><text class="l" x="407" y="327.5">내가 답할 때의 스냅숏</text></g>
+<g class="" id="rec"><rect class="box hl-rec" x="674" y="98" width="286" height="140" rx="9"/><text class="b" x="685" y="118">기록</text><text class="m" x="685" y="136">tasks/&lt;id&gt;/evidence/&lt;uuid&gt;.json</text><text class="m" x="685" y="150.5">{ kind, status, criteria,</text><text class="m" x="685" y="165">  state, freshness, origin,</text><text class="m" x="685" y="179.5">  artifactSha256, sequence }</text><text class="l" x="685" y="194">검사 로그는 자체 sha256으로 보호</text></g>
+<g class=""><rect class="box" x="674" y="252" width="286" height="108" rx="9"/><text class="b" x="685" y="272">비교</text><text class="c" x="685" y="290">task converge</text><text class="l" x="685" y="305.5">지금 스냅숏 = 기록의 state?</text><text class="l" x="685" y="320.5">예 → 기록 유효</text><text class="l" x="685" y="335.5">아니요 → 만료, 반영 안 됨</text></g>
+<path class="ln red" d="M348 216 L384 216" marker-end="url(#ared)"/><text class="al" x="366" y="210" text-anchor="middle">state</text>
+<path class="ln red" d="M638 168 L674 168" marker-end="url(#ared)"/>
+<path class="ln " d="M817 238 L817 252" marker-end="url(#a)"/>
+<rect class="grp" x="20" y="384" width="940" height="150" rx="12"/><text class="gl" x="32" y="401">시간에 따라 보면</text>
+<text class="l" x="34" y="429">검사</text><text class="l" x="34" y="491">리뷰</text>
+<g class="" id="e1"><rect class="box hl-e1" x="166" y="408" width="160" height="50" rx="9"/><text class="b" x="177" y="428">PASS</text><text class="m" x="177" y="446">state = A · CURRENT</text></g><g class="bad" id="e2"><rect class="box hl-e2" x="344" y="408" width="150" height="50" rx="9"/><text class="b" x="355" y="428">파일 수정</text><text class="m" x="355" y="446">A → B</text></g><g class="off" id="e3"><rect class="box hl-e3" x="512" y="408" width="178" height="50" rx="9"/><text class="b" x="523" y="428">기록 만료</text><text class="m" x="523" y="446">A ≠ B → STALE</text></g><g class="ok" id="e4"><rect class="box hl-e4" x="708" y="408" width="240" height="50" rx="9"/><text class="b" x="719" y="428">새 검사: PASS</text><text class="m" x="719" y="446">state = B · CURRENT</text></g>
+<g class="" id="f1"><rect class="box hl-f1" x="166" y="470" width="160" height="50" rx="9"/><text class="b" x="177" y="490">리뷰어 시작</text><text class="m" x="177" y="508">seenState = B</text></g><g class="bad" id="f2"><rect class="box hl-f2" x="344" y="470" width="150" height="50" rx="9"/><text class="b" x="355" y="490">파일이 바뀜</text><text class="m" x="355" y="508">B → C</text></g><g class="off" id="f3"><rect class="box hl-f3" x="512" y="470" width="436" height="50" rx="9"/><text class="b" x="523" y="490">답이 도착 — 바로 만료</text><text class="m" x="523" y="508">freshness: STALE</text></g>
+<path class="ln " d="M326 433 L344 433" marker-end="url(#a)"/>
+<path class="ln " d="M494 433 L512 433" marker-end="url(#a)"/>
+<path class="ln " d="M690 433 L708 433" marker-end="url(#a)"/>
+<path class="ln " d="M326 495 L344 495" marker-end="url(#a)"/>
+<path class="ln " d="M494 495 L512 495" marker-end="url(#a)"/>
+<circle class="tok" r="7" cx="0" cy="0"><animateMotion dur="10.45s" repeatCount="indefinite" path="M246 433 L419 433 L601 433 L828 433" keyPoints="0.0000;0.0000;0.2973;0.2973;0.6100;0.6100;1.0000;1.0000" keyTimes="0.0000;0.1148;0.2528;0.3676;0.5128;0.6659;0.8469;1.0000" calcMode="linear"/></circle>
+<text class="cap" x="20" y="560">1바이트, 계약, 설정, Borshkit 자체가 바뀌면 그 기록은 더 이상 인정되지 않습니다.</text>
 </svg>

@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml"><img src="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml/badge.svg" alt="CI: Linux und Windows"></a>
-  <img src="https://img.shields.io/badge/version-0.11.0-b3261e" alt="Version 0.11.0">
+  <img src="https://img.shields.io/badge/version-0.11.1-b3261e" alt="Version 0.11.1">
   <img src="https://img.shields.io/badge/node-%E2%89%A522-2b1d1d" alt="Node.js 22 oder neuer">
   <img src="https://img.shields.io/badge/dependencies-0-2e7d32" alt="keine Abhängigkeiten">
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="Claude-Code-Plugin">
@@ -22,13 +22,13 @@
 
 Du sagst, was herauskommen soll. Die Agenten arbeiten. Borshkit zeigt, was Prüfungen **belegt** haben und was du dir selbst ansehen musst. Dem Wort eines Modells glaubt Borshkit nur, wo du das für diese Art von Kriterium erlaubt hast und eine Messung es stützt.
 
-> **Status: 0.11.0.** Alles, was hier beschrieben ist, funktioniert und ist unter Linux und Windows durch Tests abgedeckt. In den Tests laufen statt echter Modelle Fake-Ausführer. Was noch nicht live ausprobiert wurde, steht unter [Grenzen](#grenzen).
+> **Status: 0.11.1.** Alles, was hier beschrieben ist, funktioniert und ist unter Linux und Windows durch Tests abgedeckt. In den Tests laufen statt echter Modelle Fake-Ausführer. Was noch nicht live ausprobiert wurde, steht unter [Grenzen](#grenzen).
 >
 > **Hinweis zur Sprache:** Die Meldungen von Borshkit sind vorerst auf Russisch. Jeder Befehl und jedes Flag hat auch einen englischen Namen, und dieses README verwendet sie.
 
 ## Die Grundidee
 
-<p align="center"><img src="assets/diagrams/flow.de.svg" alt="Der Weg einer Aufgabe: Ziel → ein Agent arbeitet in einer Kopie des Projekts → Prüfungen → Abnahmeblatt → Abgenommen; was sich nicht automatisch prüfen lässt, geht an dich" width="100%"></p>
+<p align="center"><img src="assets/diagrams/flow.de.svg" alt="Weg einer Aufgabe: Ziel und Kriterien → Agent arbeitet in einer eigenen Projektkopie → Prüfungen → Review durch einen anderen Ausführer → Abnahmeblatt; Ergebnisse: Korrektur nötig, ungeprüft, wartet auf dich, abgenommen; danach Merge in main und Push" width="100%"></p>
 
 Ein Modell sagt „fertig“. Das ist noch keine Abnahme:
 - jeder Nachweis ist an den genauen Zustand der Dateien gebunden;
@@ -78,15 +78,19 @@ Alle Befehle: [Befehlsreferenz](docs/reference/commands.md) (russische und engli
 
 ## So funktioniert es
 
-<p align="center"><img src="assets/diagrams/evidence.de.svg" alt="Nachweise veralten: Eine Prüfung hat für den Zustand a1b2c3 bestanden, eine Datei hat sich geändert, der Nachweis ist veraltet, eine neue Prüfung hat für f9e8d7 bestanden" width="100%"></p>
+<p align="center"><img src="assets/diagrams/architecture.de.svg" alt="Aufbau: du, Claude Code und Codex rufen denselben Befehl borshkit auf; Kernmodule in core/; Dateien in borshkit/, .state/ und in einer separaten Aufgabenkopie auf eigenem Branch; Ausführer über Adapter" width="100%"></p>
+
+**Woraus es besteht.** Du, Claude Code und Codex rufen alle denselben Befehl `borshkit` auf. Der Kern sind die Module in `core/`. Der gesamte Zustand liegt als normale Dateien in `borshkit/` und `.state/`, und der Agent arbeitet in einer separaten Projektkopie auf eigenem Branch. Ausführer werden über Adapter angebunden. [Mehr](docs/concepts/space.md)
+
+<p align="center"><img src="assets/diagrams/evidence.de.svg" alt="Zustands-Fingerabdruck: Commit und Dateien, Vertrag, Einstellungen, Materialien und Borshkit-Code; ein Nachweis speichert diesen Fingerabdruck und veraltet bei jeder Abweichung" width="100%"></p>
 
 **Nachweise veralten.** Borshkit merkt sich den genauen Zustand, auf dem eine Prüfung bestanden hat: den Commit und einen Hash jeder Datei, nicht committete Änderungen eingeschlossen. Ändert sich auch nur ein Byte, muss die Prüfung neu laufen. [Mehr](docs/concepts/evidence.md)
 
-<p align="center"><img src="assets/diagrams/pool.de.svg" alt="Ausführer-Pool: Claude Code hat sein Limit erreicht, der Auftrag ging an Codex und wurde abgeschlossen; der Leitstand zeigt jede Übergabe" width="100%"></p>
+<p align="center"><img src="assets/diagrams/pool.de.svg" alt="Auswahl des Ausführers: Kandidaten durchlaufen die Filter Datenschutz, Fähigkeiten, „Reviewer ist nicht der Autor“ und Wechsellimit; bei Limit oder Fehler geht die Arbeit an den nächsten, ohne Kandidaten folgt ein kritischer Stopp mit Bericht, der auf dich wartet" width="100%"></p>
 
 **Ein Limit ist kein Stopp.** Ein Pool ist eine Warteschlange von Ausführern: Claude Code, Codex, kostenlose und lokale APIs. Erreicht einer ein Limit, geht der Auftrag an den nächsten, den der Datenschutzmodus erlaubt und der die Arbeit kann. Kritische Fragen warten auf dich und nur auf dich. [Mehr](docs/concepts/executors.md)
 
-<p align="center"><img src="assets/diagrams/kb.de.svg" alt="Wissen: Projektdateien werden zu Notizen mit Links, und du kannst sie mit SQL abfragen" width="100%"></p>
+<p align="center"><img src="assets/diagrams/kb.de.svg" alt="Wissen: Code, Tests, Dokumente, Aufgaben und Lektionen werden zu Notizen in knowledge/_generated/ und einem Index in .state/kb.sqlite; Arbeitskontext, SQL-Abfragen und der Obsidian-Export lesen daraus" width="100%"></p>
 
 **Wissen besteht aus Notizen, nicht aus einer Blackbox.** Das Projekt wird zu Notizen mit `[[links]]` für Obsidian, darüber liegt ein SQL-Index. Jeder Auftrag bekommt seinen eigenen Ausschnitt des Kontexts. Diese Dokumentation funktioniert genauso: Ihren [Dokumentationsgraphen](docs/graph/README.md) hat Borshkit selbst gebaut.
 

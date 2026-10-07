@@ -1,35 +1,52 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="860" height="280" viewBox="0 0 860 280" role="img" aria-labelledby="t d" lang="de">
-<title id="t">Wissen: Notizen + Links + SQL</title>
-<desc id="d">Dieselben Notizen: Graph in Obsidian, Links auf GitHub, Tabellen für SQL.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="640" viewBox="0 0 980 640" role="img" aria-labelledby="t d" lang="de">
+<title id="t">Wissen: Notizen → Graph und SQL → Kontext</title>
+<desc id="d">Notizen sind die Quelle der Wahrheit; SQL ist abgeleitet und neu baubar. Die Karte liest JS/TS und Markdown; Swift, Python und Go noch nicht. Die Abnahme nutzt die Karte nicht.</desc>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk " d="M0 0L10 5L0 10z"/></marker><marker id="ared" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk red" d="M0 0L10 5L0 10z"/></marker><marker id="aokl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk okl" d="M0 0L10 5L0 10z"/></marker><marker id="awaitl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk waitl" d="M0 0L10 5L0 10z"/></marker><marker id="aoffl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk offl" d="M0 0L10 5L0 10z"/></marker></defs>
 <style>
-:root{--bg:#fbf7f2;--ink:#2b1d1d;--muted:#6b5757;--red:#b3261e;--deep:#8c1c13;--line:#dccbc8;--card:#fffdfa;--ok:#2e7d32;--okbg:#e6f2e6;--off:#8f8282;--offbg:#efe8e6;--steam:#c9a9a6;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
-@media (prefers-color-scheme:dark){:root{--bg:#171213;--ink:#f4ecea;--muted:#bfaeac;--red:#e0574b;--deep:#a8261b;--line:#4a3a39;--card:#221a1a;--ok:#7bc47f;--okbg:#1f2e20;--off:#8d7f7e;--offbg:#2a2222;--steam:#6e5856}}
+:root{--bg:#fbf7f2;--ink:#2b1d1d;--muted:#6b5757;--red:#b3261e;--deep:#8c1c13;--line:#cdb9b5;--card:#fffdfa;--group:#f5ede7;--ok:#2e7d32;--okbg:#e6f2e6;--wait:#9a5b00;--waitbg:#fbefdc;--off:#7d6f6f;--offbg:#efe8e6;--steam:#c9a9a6;--hl:#fde8e5;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#171213;--ink:#f4ecea;--muted:#bfaeac;--red:#ef6b5f;--deep:#a8261b;--line:#5a4846;--card:#221a1a;--group:#1d1617;--ok:#7bc47f;--okbg:#1f2e20;--wait:#f0a64a;--waitbg:#33261a;--off:#9d8f8e;--offbg:#2a2222;--steam:#6e5856;--hl:#3a1f1d}}
 text{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","Apple SD Gothic Neo","Malgun Gothic","PingFang TC","Microsoft JhengHei","Noto Sans CJK TC",sans-serif;fill:var(--ink)}
-.bg{fill:var(--bg)}.t{font-size:19px;font-weight:700}.b{font-size:14px;font-weight:650}.s{font-size:11.5px;fill:var(--muted)}.c{font-size:13px;fill:var(--muted)}
-.m{font-family:var(--mono);font-size:12px}.box{fill:var(--card);stroke:var(--line);stroke-width:1.5}.ln{stroke:var(--line);stroke-width:2;fill:none}
-.red{fill:var(--red)}.ok{fill:var(--ok)}.off{fill:var(--off)}
-@media (prefers-reduced-motion:reduce){*{animation:none!important}}.nd{fill:var(--card);stroke:var(--red);stroke-width:2}.ed{stroke:var(--muted);stroke-width:1.6;fill:none}.el{font-size:10px;fill:var(--muted)}.panel{fill:var(--card);stroke:var(--line)}.kw{fill:var(--red);font-weight:700}.n0{animation:pop 10s ease-out infinite;animation-delay:0s;transform-box:fill-box;transform-origin:center}.n1{animation:pop 10s ease-out infinite;animation-delay:0.25s;transform-box:fill-box;transform-origin:center}.n2{animation:pop 10s ease-out infinite;animation-delay:0.5s;transform-box:fill-box;transform-origin:center}.n3{animation:pop 10s ease-out infinite;animation-delay:0.75s;transform-box:fill-box;transform-origin:center}.n4{animation:pop 10s ease-out infinite;animation-delay:1s;transform-box:fill-box;transform-origin:center}@keyframes pop{0%{transform:scale(0);opacity:0}6%{transform:scale(1.15);opacity:1}9%,92%{transform:scale(1);opacity:1}100%{transform:scale(1);opacity:0}}.e0{stroke-dasharray:200;stroke-dashoffset:0;animation:draw0 10s linear infinite}@keyframes draw0{0%,12%{stroke-dashoffset:200}22%,92%{stroke-dashoffset:0}100%{stroke-dashoffset:0;opacity:0}}.e1{stroke-dasharray:200;stroke-dashoffset:0;animation:draw1 10s linear infinite}@keyframes draw1{0%,16%{stroke-dashoffset:200}26%,92%{stroke-dashoffset:0}100%{stroke-dashoffset:0;opacity:0}}.e2{stroke-dasharray:200;stroke-dashoffset:0;animation:draw2 10s linear infinite}@keyframes draw2{0%,20%{stroke-dashoffset:200}30%,92%{stroke-dashoffset:0}100%{stroke-dashoffset:0;opacity:0}}.e3{stroke-dasharray:200;stroke-dashoffset:0;animation:draw3 10s linear infinite}@keyframes draw3{0%,24%{stroke-dashoffset:200}34%,92%{stroke-dashoffset:0}100%{stroke-dashoffset:0;opacity:0}}.e4{stroke-dasharray:200;stroke-dashoffset:0;animation:draw4 10s linear infinite}@keyframes draw4{0%,28%{stroke-dashoffset:200}38%,92%{stroke-dashoffset:0}100%{stroke-dashoffset:0;opacity:0}}.q{animation:q 10s linear infinite}@keyframes q{0%,42%{opacity:0}46%,94%{opacity:1}100%{opacity:0}}.row{opacity:1;animation:row 10s linear infinite}.row2{animation-delay:.5s}@keyframes row{0%,56%{opacity:0}60%,94%{opacity:1}100%{opacity:0}}</style>
-<rect class="bg" width="860" height="280" rx="14"/>
-<text class="t" x="40" y="38">Wissen: Notizen + Links + SQL</text>
-<text class="s" x="40" y="60">Projekt</text><text class="s" x="300" y="60">Graph (Obsidian)</text>
-<g><rect class="box" x="40" y="70" width="150" height="34" rx="8"/><text class="m" x="56" y="92">accept.mjs</text></g>
-<g><rect class="box" x="40" y="116" width="150" height="34" rx="8"/><text class="m" x="56" y="138">snapshot.mjs</text></g>
-<g><rect class="box" x="40" y="162" width="150" height="34" rx="8"/><text class="m" x="56" y="184">evidence.md</text></g>
-<path class="ln" d="M196 125 H290" stroke-dasharray="4 4"/>
-<path class="ed e0" d="M360 92 L470 70"/><text class="el" x="419" y="77">imports</text>
-<path class="ed e1" d="M440 168 L360 92"/><text class="el" x="404" y="126">documents</text>
-<path class="ed e2" d="M330 190 L360 92"/><text class="el" x="349" y="137">tested-by</text>
-<path class="ed e3" d="M470 70 L520 140"/><text class="el" x="499" y="101">imports</text>
-<path class="ed e4" d="M360 92 L520 140"/><text class="el" x="444" y="112">imports</text>
-<g class="n0"><circle class="nd" cx="360" cy="92" r="13"/><text class="s" x="360" y="122" text-anchor="middle">accept</text></g>
-<g class="n1"><circle class="nd" cx="470" cy="70" r="13"/><text class="s" x="470" y="100" text-anchor="middle">snapshot</text></g>
-<g class="n2"><circle class="nd" cx="440" cy="168" r="13"/><text class="s" x="440" y="198" text-anchor="middle">evidence</text></g>
-<g class="n3"><circle class="nd" cx="330" cy="190" r="13"/><text class="s" x="330" y="220" text-anchor="middle">accept.test</text></g>
-<g class="n4"><circle class="nd" cx="520" cy="140" r="13"/><text class="s" x="520" y="170" text-anchor="middle">io</text></g>
-<rect class="panel" x="590" y="64" width="230" height="160" rx="10"/>
-<text class="s" x="606" y="86">SQL</text>
-<g class="q"><text class="m" x="606" y="112"><tspan class="kw">SELECT</tspan> path</text><text class="m" x="606" y="130"><tspan class="kw">FROM</tspan> undocumented_</text><text class="m" x="606" y="148">modules;</text></g>
-<path d="M606 160 H804" stroke="var(--line)"/>
-<text class="m row" x="606" y="182">core/io.mjs</text><text class="m row row2" x="606" y="202">core/process.mjs</text>
-<text class="c" x="40" y="260">Dieselben Notizen: Graph in Obsidian, Links auf GitHub, Tabellen für SQL.</text>
+.bg{fill:var(--bg)}.ttl{font-size:20px;font-weight:700}.sub{font-size:12px;fill:var(--muted)}.cap{font-size:13px;fill:var(--muted)}
+.b{font-size:13.5px;font-weight:650}.l{font-size:11.5px;fill:var(--muted)}.m{font-family:var(--mono);font-size:11px}.c{font-family:var(--mono);font-size:11.5px;fill:var(--red);font-weight:600}
+.gl{font-size:11px;font-weight:700;letter-spacing:.06em;fill:var(--muted);text-transform:uppercase}
+.al{font-size:10.5px;fill:var(--muted);paint-order:stroke;stroke:var(--bg);stroke-width:4px;stroke-linejoin:round}
+.box{fill:var(--card);stroke:var(--line);stroke-width:1.4}.grp{fill:var(--group);stroke:var(--line);stroke-width:1.2;stroke-dasharray:5 4}
+.ok .box,.box.ok{fill:var(--okbg);stroke:var(--ok)}.wait .box,.box.wait{fill:var(--waitbg);stroke:var(--wait)}.off .box,.box.off{fill:var(--offbg);stroke:var(--off)}.bad .box,.box.bad{fill:var(--hl);stroke:var(--red)}
+.ln{fill:none;stroke:var(--line);stroke-width:1.6}.ln.red{stroke:var(--red)}.ln.okl{stroke:var(--ok)}.ln.waitl{stroke:var(--wait)}.ln.offl{stroke:var(--off)}.ln.dash{stroke-dasharray:5 4}
+.mk{fill:var(--line)}.mk.red{fill:var(--red)}.mk.okl{fill:var(--ok)}.mk.waitl{fill:var(--wait)}.mk.offl{fill:var(--off)}
+.tok{fill:var(--red);stroke:var(--bg);stroke-width:2}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}.tok{display:none}}.hl-s0{animation:hl-s0 10.71s linear infinite}@keyframes hl-s0{0%,0.00%{stroke:var(--line);stroke-width:1.4}0.00%,7.47%{stroke:var(--red);stroke-width:2.6}8.07%,100%{stroke:var(--line);stroke-width:1.4}}.hl-build{animation:hl-build 10.71s linear infinite}@keyframes hl-build{0%,23.80%{stroke:var(--line);stroke-width:1.4}24.40%,36.54%{stroke:var(--red);stroke-width:2.6}37.14%,100%{stroke:var(--line);stroke-width:1.4}}.hl-sql{animation:hl-sql 10.71s linear infinite}@keyframes hl-sql{0%,50.50%{stroke:var(--line);stroke-width:1.4}51.10%,63.24%{stroke:var(--red);stroke-width:2.6}63.84%,100%{stroke:var(--line);stroke-width:1.4}}.hl-u3{animation:hl-u3 10.71s linear infinite}@keyframes hl-u3{0%,84.45%{stroke:var(--line);stroke-width:1.4}85.05%,100.00%{stroke:var(--red);stroke-width:2.6}100.00%,100%{stroke:var(--line);stroke-width:1.4}}.hl-gen{animation:hl-gen 10.71s linear infinite}@keyframes hl-gen{0%,32.94%{stroke:var(--line);stroke-width:1.4}33.54%,38.54%{stroke:var(--red);stroke-width:2.6}39.14%,100%{stroke:var(--line);stroke-width:1.4}}</style>
+<rect class="bg" width="980" height="640" rx="14"/>
+<text class="ttl" x="20" y="36">Wissen: Notizen → Graph und SQL → Kontext</text><text class="sub" x="20" y="56">Notizen sind die Quelle der Wahrheit; SQL ist abgeleitet und neu baubar</text>
+<rect class="grp" x="20" y="74" width="290" height="410" rx="12"/><text class="gl" x="32" y="91">Quellen</text>
+<g class="" id="s0"><rect class="box hl-s0" x="32" y="98" width="266" height="68" rx="9"/><text class="b" x="43" y="118">JS/TS-Code</text><text class="m" x="43" y="136">import / export</text><text class="l" x="43" y="150.5">→ imports, tests (+ Rückrichtung)</text></g>
+<g class="" id="s1"><rect class="box hl-s1" x="32" y="174" width="266" height="68" rx="9"/><text class="b" x="43" y="194">Markdown im Projekt</text><text class="m" x="43" y="212">[text](path) · `path`</text><text class="l" x="43" y="226.5">→ documents, references</text></g>
+<g class="" id="s2"><rect class="box hl-s2" x="32" y="250" width="266" height="68" rx="9"/><text class="b" x="43" y="270">Borshkit-Frontmatter</text><text class="m" x="43" y="288">bk-type · related · documents</text><text class="l" x="43" y="302.5">→ typisierte Links, DECLARED</text></g>
+<g class="" id="s3"><rect class="box hl-s3" x="32" y="326" width="266" height="68" rx="9"/><text class="b" x="43" y="346">Deine Notizen</text><text class="m" x="43" y="364">[[wikilinks]]</text><text class="l" x="43" y="378.5">Borshkit liest sie, ändert sie nie</text></g>
+<g class="" id="s4"><rect class="box hl-s4" x="32" y="402" width="266" height="68" rx="9"/><text class="b" x="43" y="422">Aufgaben und Lektionen</text><text class="m" x="43" y="440">decision.json · lessons/</text><text class="l" x="43" y="454.5">Lektion veraltet mit ihrem Code</text></g>
+<g class="" id="build"><rect class="box hl-build" x="334" y="98" width="262" height="84" rx="9"/><text class="b" x="345" y="118">Aufbau</text><text class="c" x="345" y="136">knowledge build</text><text class="m" x="345" y="151.5">core/kb.mjs</text><text class="l" x="345" y="166">gleicher Zustand → gleiche Zeilen</text></g>
+<g class="" id="gen"><rect class="box hl-gen" x="334" y="204" width="262" height="104" rx="9"/><text class="b" x="345" y="224">knowledge/_generated/</text><text class="l" x="345" y="242">Notizen zu Code und Dokumenten</text><text class="l" x="345" y="257">werden ganz neu geschrieben</text><text class="m" x="345" y="272">bk-provenance: EXTRACTED</text><text class="m" x="345" y="286.5">index.md</text></g>
+<g class="" id="sql"><rect class="box hl-sql" x="334" y="326" width="262" height="158" rx="9"/><text class="b" x="345" y="346">.state/kb.sqlite</text><text class="l" x="345" y="364">aus den Notizen neu gebaut</text><text class="m" x="345" y="379">notes(id, type, kind, path…)</text><text class="m" x="345" y="393.5">links(src, dst, rel, provenance)</text><text class="m" x="345" y="408">fts</text><text class="m" x="345" y="422.5">orphans · stale · broken_links</text><text class="m" x="345" y="437">undocumented_modules</text></g>
+<path class="ln red" d="M465 182 L465 204" marker-end="url(#ared)"/>
+<path class="ln red" d="M465 308 L465 326" marker-end="url(#ared)"/>
+<path class="ln" d="M298 132 H316 M298 208 H316 M298 284 H316 M298 360 H316 M298 436 H316 M316 132 V436"/>
+<path class="ln red" d="M316 140 L334 140" marker-end="url(#ared)"/>
+<rect class="grp" x="620" y="74" width="340" height="410" rx="12"/><text class="gl" x="632" y="91">Wer es nutzt</text>
+<g class="" id="u1"><rect class="box hl-u1" x="632" y="98" width="316" height="86" rx="9"/><text class="b" x="643" y="118">Obsidian</text><text class="c" x="643" y="136">borshkit/ als Vault</text><text class="l" x="643" y="151.5">Graph aus [[Links]]</text></g>
+<g class="" id="u2"><rect class="box hl-u2" x="632" y="194" width="316" height="86" rx="9"/><text class="b" x="643" y="214">Abfragen</text><text class="c" x="643" y="232">knowledge sql &quot;SELECT …&quot;</text><text class="l" x="643" y="247.5">nur SELECT / WITH, Datenbank nur lesend</text></g>
+<g class="" id="u3"><rect class="box hl-u3" x="632" y="290" width="316" height="86" rx="9"/><text class="b" x="643" y="310">Kontext eines Auftrags</text><text class="c" x="643" y="328">knowledge context &lt;task&gt;</text><text class="l" x="643" y="343.5">Ausschnitt nach paths, ≤ 8000 Zeichen</text></g>
+<g class="" id="u4"><rect class="box hl-u4" x="632" y="386" width="316" height="86" rx="9"/><text class="b" x="643" y="406">Export</text><text class="c" x="643" y="424">knowledge export [--sql]</text><text class="l" x="643" y="439.5">Links für GitHub oder ein SQL-Skript</text></g>
+<path class="ln " d="M596 256 L608 256 L608 141 L632 141" marker-end="url(#a)"/>
+<path class="ln red" d="M596 405 H614 M614 237 V429"/>
+<path class="ln red" d="M614 237 L632 237" marker-end="url(#ared)"/>
+<path class="ln red" d="M614 333 L632 333" marker-end="url(#ared)"/>
+<path class="ln red" d="M614 429 L632 429" marker-end="url(#ared)"/>
+<rect class="grp" x="20" y="506" width="940" height="92" rx="12"/><text class="gl" x="32" y="523">Beispiel: Ein Pfeil beginnt bei der Notiz, die den Link enthält</text>
+<text class="m" x="110" y="552" text-anchor="middle">test/accept.test.mjs</text><text class="m" x="330" y="552" text-anchor="middle">core/accept.mjs</text><text class="m" x="550" y="552" text-anchor="middle">core/snapshot.mjs</text><text class="m" x="800" y="552" text-anchor="middle">docs/concepts/evidence.md</text><text class="m" x="330" y="588" text-anchor="middle">knowledge/lessons/&lt;task&gt;.md</text>
+<path class="ln red" d="M180 544 L270 544" marker-end="url(#ared)"/><text class="al" x="225" y="539" text-anchor="middle">tests</text>
+<path class="ln " d="M392 544 L482 544" marker-end="url(#a)"/><text class="al" x="437" y="539" text-anchor="middle">imports</text>
+<path class="ln " d="M712 544 L622 544" marker-end="url(#a)"/><text class="al" x="667" y="539" text-anchor="middle">documents</text>
+<path class="ln " d="M420 584 L480 584 L520 556" marker-end="url(#a)"/><text class="al" x="452.64786673888045" y="579" text-anchor="middle">about</text>
+<circle class="tok" r="7" cx="0" cy="0"><animateMotion dur="10.71s" repeatCount="indefinite" path="M165 132 L316 132 L316 140 L334 140 L465 140 L465 405 L614 405 L614 333 L790 333" keyPoints="0.0000;0.0000;0.1557;0.1639;0.1825;0.3175;0.3175;0.5907;0.5907;0.7443;0.8186;1.0000;1.0000" keyTimes="0.0000;0.0747;0.1577;0.1621;0.1720;0.2440;0.3654;0.5110;0.6324;0.7143;0.7538;0.8505;1.0000" calcMode="linear"/></circle>
+<text class="cap" x="20" y="624">Die Karte liest JS/TS und Markdown; Swift, Python und Go noch nicht. Die Abnahme nutzt die Karte nicht.</text>
 </svg>
