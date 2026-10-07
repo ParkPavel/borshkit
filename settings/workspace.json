@@ -6,7 +6,21 @@
   "autopilot": false,
   "silenceSeconds": 60,
   "trustedAgent": null,
-  "executors": {},
+  "executors": {
+    "claude": {
+      "kind": "claude-cli",
+      "command": "claude",
+      "provider": "anthropic",
+      "dataPolicy": "unknown",
+      "structuredOutput": "json_schema",
+      "modalities": {
+        "output": [
+          "text",
+          "code"
+        ]
+      }
+    }
+  },
   "pools": {},
   "acceptance": {
     "modelTrust": {}
