@@ -73,6 +73,7 @@ export function weakenings(before, after) {
     else if (DATA_RANK[e.dataPolicy] > DATA_RANK[old.dataPolicy] || JSON.stringify({ ...e, model: 0, effort: 0 }) !== JSON.stringify({ ...old, model: 0, effort: 0 })) out.push(`исполнитель «${id}» изменён`);
   }
   for (const [name, pool] of Object.entries(after.pools ?? {})) {
+    if (before.pools?.[name]?.qualificationRequired && !pool.qualificationRequired) out.push(`пул «${name}»: отключена проверка пригодности роли`);
     const old = before.pools?.[name]?.members ?? [];
     const added = pool.members.filter(m => !old.includes(m));
     if (added.length) out.push(`пул «${name}»: добавлены ${added.join(', ')}`);

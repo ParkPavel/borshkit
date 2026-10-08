@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml"><img src="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml/badge.svg" alt="CI: Linux와 Windows"></a>
-  <img src="https://img.shields.io/badge/version-0.11.1-b3261e" alt="버전 0.11.1">
+  <img src="https://img.shields.io/badge/version-0.12.0-b3261e" alt="버전 0.12.0">
   <a href="https://github.com/ParkPavel/borshkit/releases"><img src="https://img.shields.io/github/downloads/ParkPavel/borshkit/total?label=%EB%8B%A4%EC%9A%B4%EB%A1%9C%EB%93%9C&color=b3261e" alt="릴리스 아카이브 다운로드 수"></a>
   <img src="https://img.shields.io/badge/node-%E2%89%A522-2b1d1d" alt="Node.js 22 이상">
   <img src="https://img.shields.io/badge/dependencies-0-2e7d32" alt="의존성 0개">
@@ -23,7 +23,17 @@
 
 무엇이 나와야 하는지 말하면 일은 에이전트가 합니다. Borshkit은 검사로 **증명된** 것과 직접 확인해야 할 것을 나눠 보여 줍니다. 모델의 말은 그런 종류의 기준에 대해 사용자가 직접 허용했고 측정으로 뒷받침될 때만 받아들입니다.
 
-> **상태: 0.11.1.** 아래 내용은 모두 동작하며, Linux와 Windows에서 테스트로 검증했습니다. 테스트에서는 실제 모델 대신 가짜 실행자를 씁니다. 아직 실제 환경에서 써 보지 않은 것은 [한계](#한계)에 정리해 두었습니다.
+> **이 브랜치의 버전: 0.12.0, 릴리스 준비 중.** 테스트는 가짜 실행자를 사용하며 CI는 Linux와 Windows를 대상으로 합니다. 실제 모델의 품질과 향후 기능이 검증되었다고 주장하지 않습니다. [한계](#한계).
+
+## 보이는 팀
+
+<p align="center"><img src="assets/diagrams/team.ko.svg" alt="작업 → 역할 → 실행자 → 모델/API → 결과 → 독립 검토; 제안, 적용, 실행, 검증, 인수는 별개" width="100%"></p>
+
+`borshkit team`은 모델, 연결 확인의 유효성, 역할 평가, 할당된 풀과 알려진 자원을 보여 줍니다. `borshkit team plan <작업>`은 후보를 설명하고 독립 검토용 모델 계열을 남겨 둡니다. `team propose`는 설정 제안을 저장합니다. 적용과 실행은 별도 동작이며 오래된 데이터는 적용을 막습니다. 무료 API 이용 조건은 계정에서 확인해야 하며 알 수 없는 잔량은 그대로 표시합니다.
+
+새 `design-prompter` 역할은 시각 디자인 브리프를 작성합니다. 모델은 브랜드가 아니라 역할 평가로 선택합니다. [명령과 형식](docs/reference/team-resources.md) · [아키텍처와 다음 단계](docs/concepts/team-workspace.md) · [감사](docs/discussions/modernization-2026-10-08.md) (러시아어 문서).
+
+설정 마법사, 휴대폰의 안전한 승인, Gemini/IDE 전용 어댑터와 백그라운드 서비스는 아직 계획 단계입니다. 주요 입력은 Codex와 Claude Code의 사용 가능한 도구이며 음성은 해당 환경이 텍스트로 바꿉니다. `status --watch`는 CLI가 실행 중일 때만 동작합니다. 자동 운용은 기본적으로 꺼져 있습니다.
 >
 > **언어 안내:** Borshkit의 메시지는 지금은 러시아어로만 나옵니다. 모든 명령과 플래그에는 영어 이름도 있으며, 이 README는 영어 이름을 씁니다.
 
@@ -108,7 +118,7 @@ borshkit merge theme && borshkit push             # 메인 버전에 병합하�
 | **목표 기반 인수** | `auto` / `model` / `manual` 기준, 인수 시트, 측정으로 확인한 모델 신뢰 목표 |
 | **작업 공간** | `borshkit/` 폴더는 자체 히스토리가 있는 Obsidian 볼트. `.gitignore` 규칙은 자동으로 추가하고 검사 |
 | **실행자** | Claude Code, Codex(GPT Image 포함), 모든 OpenAI 호환 API, 직접 만든 프로그램. 대체 실행자로 넘기는 풀 |
-| **역할 17개** | 아키텍트, 개발자, 리뷰어, 테스터, 리서처, 디자이너, README 일러스트레이터… |
+| **역할 18개** | 아키텍트, 개발자, 리뷰어, 테스터, 리서처, 디자이너, 디자인 프롬프트 작성자, README 일러스트레이터… |
 | **오토파일럿** | 일상적인 질문은 1분 뒤 기본 답으로 처리. 중대한 질문에서는 보고서와 맥락 인계를 남기고 멈춤 |
 | **상황판** | 누가 작업을 받았는지, 누가 일하는 중인지, 무엇이 사용자를 기다리는지. 터미널, `STATUS.md`, Claude Code 상태 줄에서 확인 |
 | **리서치** | 출처는 사본으로 저장. `citations` 검사가 모든 인용을 한 단어씩 대조 |

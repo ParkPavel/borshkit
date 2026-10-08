@@ -152,13 +152,13 @@ function architecture(lang) {
     ['g1', 100, t.g1, 'space · config · privacy · experiment · hooks', t.g1d],
     ['g2', 186, t.g2, 'contract · snapshot · accept · builtins', t.g2d],
     ['g4', 272, t.g4, 'kb · materials · gitshell · eval', t.g4d],
-    ['g3', 358, t.g3, 'jobs · roles · adapters · executors · questions', t.g3d],
+    ['g3', 358, t.g3, 'jobs · roles · team · resources', t.g3d],
   ];
-  for (const [id, y, title, mods, d] of g) parts.push(block({ x: B.x + 12, y, w: B.w - 24, h: 76, rows: [['t', title], ['m', mods], ['l', d]], id }));
+  for (const [id, y, title, mods, d] of g) parts.push(block({ x: B.x + 12, y, w: B.w - 24, h: 76, rows: [['t', title], ['m', mods], ...(id === 'g3' ? [['m', 'adapters · executors · questions']] : []), ['l', d]], id }));
   // Files
   parts.push(group({ x: C.x, y: 74, w: C.w, h: 380, label: t.files }));
   parts.push(block({ x: C.x + 10, y: 100, w: C.w - 20, h: 156, id: 'space', rows: [['t', 'borshkit/'], ['l', t.spaceL],
-    ['m', 'settings/workspace.json'], ['m', 'tasks/<id>/ contract · evidence'], ['m', '  logs · acceptance.md'], ['m', 'jobs/ · questions/ · STATUS.md'], ['m', 'knowledge/ · materials/'], ['m', '.state/ kb.sqlite · locks/']] }));
+    ['m', 'settings/workspace.json'], ['m', 'tasks/<id>/ contract · evidence'], ['m', '  logs · acceptance.md'], ['m', 'jobs/ · questions/ · STATUS.md'], ['m', 'TEAM.md · .state/resources.json'], ['m', 'knowledge/ · materials/'], ['m', '.state/ kb.sqlite · locks/']] }));
   parts.push(block({ x: C.x + 10, y: 268, w: C.w - 20, h: 74, id: 'project', rows: [['t', t.project], ['m', '.gitignore: /borshkit/'], ['l', t.projectL]] }));
   parts.push(block({ x: C.x + 10, y: 364, w: C.w - 20, h: 80, id: 'copy', rows: [['t', t.copy], ['m', '../<project>.borshkit-worktrees/<id>'], ['l', t.copyL]] }));
   // Executors
@@ -360,7 +360,34 @@ function kb(lang) {
   return svg(lang, { w: W, h: H, title: t.title, desc: `${t.sub}. ${t.caption}`, css, body: parts.join('\n') });
 }
 
-export const DIAGRAMS = { banner, architecture, flow, evidence, pool, kb };
+// Team planning is a distinct phase; applying pools does not launch agents.
+function team(lang) {
+  const texts = {
+    ru: ['Видимая команда', 'Оценки ролей, ресурсы и независимость проверяются до предложения', ['Задача', 'Роль', 'Исполнитель', 'Модель / API', 'Результат', 'Ревью'], ['Предложено', 'Применено', 'Запущено', 'Проверено', 'Принято'], 'Неизвестный остаток виден. Устаревшие данные требуют нового плана.', 'Подключение ≠ оценка роли. Выполненная работа ≠ приёмка.'],
+    en: ['A visible team', 'Role assessments, resources and independence are checked before a proposal', ['Task', 'Role', 'Executor', 'Model / API', 'Result', 'Review'], ['Proposed', 'Applied', 'Launched', 'Verified', 'Accepted'], 'Unknown balances stay visible. Stale data requires a new plan.', 'Connection ≠ role assessment. Completed work ≠ acceptance.'],
+    de: ['Ein sichtbares Team', 'Rollenbewertung, Ressourcen und Unabhängigkeit werden vor dem Vorschlag geprüft', ['Aufgabe', 'Rolle', 'Ausführer', 'Modell / API', 'Ergebnis', 'Review'], ['Vorgeschlagen', 'Angewendet', 'Gestartet', 'Geprüft', 'Abgenommen'], 'Unbekannte Restwerte sind sichtbar. Veraltete Daten brauchen einen neuen Plan.', 'Verbindung ≠ Rollenbewertung. Erledigte Arbeit ≠ Abnahme.'],
+    ko: ['보이는 팀', '제안 전에 역할 평가, 자원과 독립성을 확인합니다', ['작업', '역할', '실행자', '모델 / API', '결과', '검토'], ['제안', '적용', '실행', '검증', '인수'], '알 수 없는 잔량을 표시합니다. 오래된 데이터는 새 계획이 필요합니다.', '연결 ≠ 역할 평가. 작업 완료 ≠ 인수.'],
+    'zh-TW': ['看得見的團隊', '提案前檢查角色評估、資源與獨立性', ['任務', '角色', '執行者', '模型 / API', '結果', '審查'], ['已提案', '已套用', '已啟動', '已驗證', '已驗收'], '未知餘額明確顯示。過期資料需要重新規劃。', '連線 ≠ 角色評估。工作完成 ≠ 驗收。'],
+    fr: ['Une équipe visible', 'Les évaluations, les ressources et l’indépendance sont vérifiées avant la proposition', ['Tâche', 'Rôle', 'Exécutant', 'Modèle / API', 'Résultat', 'Revue'], ['Proposé', 'Appliqué', 'Lancé', 'Vérifié', 'Accepté'], 'Les soldes inconnus restent visibles. Les données périmées exigent un nouveau plan.', 'Connexion ≠ évaluation du rôle. Travail terminé ≠ acceptation.'],
+  };
+  const [title, sub, flowLabels, states, caption, distinction] = texts[lang];
+  const parts = [`<text class="ttl" x="20" y="36">${esc(title)}</text><text class="sub" x="20" y="56">${esc(sub)}</text>`];
+  const files = ['contract.json', 'roles/<role>', 'executors', 'model · endpoint', 'files · usage', 'other provider'];
+  flowLabels.forEach((label, i) => {
+    const x = 20 + i * 160;
+    parts.push(block({ x, y: 90, w: 144, h: 72, rows: [['t', label], ['m', files[i]]] }));
+    if (i < 5) parts.push(arrow([[x + 144, 126], [x + 160, 126]], { color: 'red' }));
+  });
+  const commands = ['team propose', 'settings apply', 'job run', 'task verify', 'task converge'];
+  states.forEach((label, i) => {
+    const x = 20 + i * 192;
+    parts.push(block({ x, y: 208, w: 176, h: 76, rows: [['t', label], ['c', commands[i]]], cls: i === 4 ? 'ok' : '' }));
+    if (i < 4) parts.push(arrow([[x + 176, 246], [x + 192, 246]]));
+  });
+  parts.push(`<text class="cap" x="20" y="324">${esc(caption)}</text><text class="cap" x="20" y="350">${esc(distinction)}</text>`);
+  return svg(lang, { w: 1000, h: 378, title, desc: `${sub}. ${caption}. ${distinction}`, body: parts.join('\n') });
+}
+export const DIAGRAMS = { banner, architecture, flow, evidence, pool, kb, team };
 export async function writeDiagrams() {
   const dir = path.join(ROOT, 'assets', 'diagrams'), written = [];
   await fs.mkdir(dir, { recursive: true });

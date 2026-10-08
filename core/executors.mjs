@@ -1,6 +1,7 @@
 import path from 'node:path';
 import { assert, atomicJSON, exists, readJSON } from './io.mjs';
 import { runCommand } from './process.mjs';
+import { executorFingerprint, recordResources, resourcesFromHeaders } from './resources.mjs';
 
 // Executors (spec §4): who does the work. The manifest is declared by a person
 // (through a settings proposal) and checked by a probe; the free-API catalog is
@@ -29,6 +30,17 @@ export function validateExecutor(id, e) {
   assert(e.apiKeyEnv === undefined || NAME.test(e.apiKeyEnv), `Исполнитель ${id}: apiKeyEnv — ИМЯ переменной окружения, не сам ключ`);
   assert(e.envAllow === undefined || (Array.isArray(e.envAllow) && e.envAllow.every(n => NAME.test(n))), `Исполнитель ${id}: envAllow — имена переменных`);
   assert(e.model === undefined || /^[a-zA-Z0-9._:/@-]{1,120}$/.test(e.model), `Исполнитель ${id}: недопустимое имя модели`);
+  assert(e.quotaGroup === undefined || EXECUTOR_ID.test(e.quotaGroup), `Исполнитель ${id}: недопустимая группа общего лимита`);
+  assert(e.service === undefined || EXECUTOR_ID.test(e.service), `Исполнитель ${id}: недопустимое имя сервиса`);
+  if (e.qualifications !== undefined) {
+    assert(e.qualifications && typeof e.qualifications === 'object' && !Array.isArray(e.qualifications), 'qualifications — объект оценок ролей');
+    for (const [role, q] of Object.entries(e.qualifications)) {
+      assert(/^[a-z0-9-]{1,40}$/.test(role) && e.model && q && ['PASS', 'FAIL'].includes(q.result), `Оценка ${id}/${role}: нужна явная модель и результат PASS или FAIL`);
+      assert(Number.isFinite(Date.parse(q.at)) && Date.parse(q.expiresAt) > Date.parse(q.at), `Оценка ${id}/${role}: нужны at и expiresAt`);
+      assert(typeof q.evidence === 'string' && !path.isAbsolute(q.evidence) && !q.evidence.split(/[\\/]/).some(p => p === '..' || p.startsWith('.')) && /\.(md|json|txt)$/.test(q.evidence), `Оценка ${id}/${role}: материал — относительный путь к md/json/txt без скрытых папок`);
+      assert(/^[a-f0-9]{64}$/.test(q.evidenceSha) && /^[a-f0-9]{64}$/.test(q.fingerprint) && /^[a-f0-9]{64}$/.test(q.roleDigest), `Оценка ${id}/${role}: нужны SHA-256 материала, конфигурации и роли`);
+    }
+  }
   return e;
 }
 export function validatePool(name, pool, executors) {
@@ -36,6 +48,8 @@ export function validatePool(name, pool, executors) {
   assert(pool && Array.isArray(pool.members) && pool.members.length && pool.members.every(m => m in executors), `Пул ${name}: members — имена объявленных исполнителей`);
   assert(pool.maxSwitches === undefined || (Number.isInteger(pool.maxSwitches) && pool.maxSwitches >= 0 && pool.maxSwitches <= 20), `Пул ${name}: maxSwitches — 0..20`);
   assert(pool.waitSeconds === undefined || (Number.isInteger(pool.waitSeconds) && pool.waitSeconds >= 0 && pool.waitSeconds <= 3600), `Пул ${name}: waitSeconds — 0..3600`);
+  assert(pool.qualificationRequired === undefined || typeof pool.qualificationRequired === 'boolean', `Пул ${name}: qualificationRequired — boolean`);
+  assert(pool.role === undefined || /^[a-z0-9-]{1,40}$/.test(pool.role), `Пул ${name}: недопустимая роль`);
   return pool;
 }
 /** Decision D2: in the strict mode only executors that keep data (local or contractually no-train). */
@@ -83,19 +97,22 @@ export async function readProbes(space) { return (await exists(probesFile(space)
 export async function probeExecutor(space, id, { fetchImpl = globalThis.fetch, env = process.env } = {}) {
   const e = space.settings.executors?.[id];
   assert(e, `Исполнитель ${id} не объявлен`);
-  const probe = { at: new Date().toISOString(), ok: true, missing: [], version: null };
+  const now = new Date();
+  const probe = { at: now.toISOString(), expiresAt: new Date(now.getTime() + 3600000).toISOString(), fingerprint: executorFingerprint(e), ok: true, missing: [], version: null };
   try {
     if (e.kind === 'claude-cli' || e.kind === 'codex-cli') {
       const help = (await runCommand(e.command, e.kind === 'codex-cli' ? ['exec', '--help'] : ['--help'], { timeout: 30000 })).stdout;
       probe.version = (await runCommand(e.command, ['--version'], { timeout: 30000 })).stdout.trim() || null;
       for (const flag of REQUIRED_FLAGS[e.kind]) if (!help.includes(flag)) probe.missing.push(`флаг ${flag}`);
     } else if (e.kind === 'command') {
-      await runCommand(e.command, ['--version'], { timeout: 30000 }).then(r => { probe.version = r.stdout.trim() || null; }, () => {});
+      probe.version = (await runCommand(e.command, ['--version'], { timeout: 30000 })).stdout.trim() || null;
     } else {
       const headers = e.apiKeyEnv && env[e.apiKeyEnv] ? { authorization: `Bearer ${env[e.apiKeyEnv]}` } : {};
       if (e.apiKeyEnv && !env[e.apiKeyEnv]) probe.missing.push(`переменная ${e.apiKeyEnv} не задана`);
       const response = await fetchImpl(new URL('models', e.baseUrl.endsWith('/') ? e.baseUrl : `${e.baseUrl}/`).href, { headers });
       probe.rateLimit = { limit: response.headers.get('x-ratelimit-limit-requests'), remaining: response.headers.get('x-ratelimit-remaining-requests') };
+      const resources = resourcesFromHeaders(response.headers, 'models', now);
+      if (resources) await recordResources(space, id, resources, { source: 'HTTP_HEADERS', executor: e, now });
       if (!response.ok) probe.missing.push(`сервер ответил ${response.status}`);
       else {
         const ids = ((await response.json()).data ?? []).map(m => m.id);

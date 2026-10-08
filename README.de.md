@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml"><img src="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml/badge.svg" alt="CI: Linux und Windows"></a>
-  <img src="https://img.shields.io/badge/version-0.11.1-b3261e" alt="Version 0.11.1">
+  <img src="https://img.shields.io/badge/version-0.12.0-b3261e" alt="Version 0.12.0">
   <a href="https://github.com/ParkPavel/borshkit/releases"><img src="https://img.shields.io/github/downloads/ParkPavel/borshkit/total?label=Downloads&color=b3261e" alt="Downloads des Release-Archivs"></a>
   <img src="https://img.shields.io/badge/node-%E2%89%A522-2b1d1d" alt="Node.js 22 oder neuer">
   <img src="https://img.shields.io/badge/dependencies-0-2e7d32" alt="keine Abhängigkeiten">
@@ -23,7 +23,17 @@
 
 Du sagst, was herauskommen soll. Die Agenten arbeiten. Borshkit zeigt, was Prüfungen **belegt** haben und was du dir selbst ansehen musst. Dem Wort eines Modells glaubt Borshkit nur, wo du das für diese Art von Kriterium erlaubt hast und eine Messung es stützt.
 
-> **Status: 0.11.1.** Alles, was hier beschrieben ist, funktioniert und ist unter Linux und Windows durch Tests abgedeckt. In den Tests laufen statt echter Modelle Fake-Ausführer. Was noch nicht live ausprobiert wurde, steht unter [Grenzen](#grenzen).
+> **Version in diesem Branch: 0.12.0, Release in Vorbereitung.** Tests verwenden Fake-Ausführer; CI ist für Linux und Windows eingerichtet. Die Qualität echter Modelle und zukünftige Funktionen gelten nicht als nachgewiesen. [Grenzen](#grenzen).
+
+## Ein sichtbares Team
+
+<p align="center"><img src="assets/diagrams/team.de.svg" alt="Aufgabe → Rolle → Ausführer → Modell/API → Ergebnis → unabhängiges Review; Vorschlag, Anwendung, Start, Prüfung und Abnahme sind getrennt" width="100%"></p>
+
+`borshkit team` zeigt Modelle, Aktualität der Verbindung, Rollenbewertungen, zugewiesene Pools und bekannte Ressourcen. `borshkit team plan <aufgabe>` erklärt Kandidaten und reserviert eine Modellfamilie für unabhängiges Review. `team propose` speichert einen Vorschlag; Anwendung und Arbeitsstart sind getrennte Aktionen. Veraltete Daten verhindern die Anwendung. Kostenloser API-Zugang muss im Konto geprüft werden; unbekannte Restwerte bleiben sichtbar.
+
+Die neue Rolle `design-prompter` erstellt ein Briefing für visuelles Design. Die Modellwahl beruht auf der Rollenbewertung. [Befehle und Formate](docs/reference/team-resources.md) · [Architektur und nächste Etappen](docs/concepts/team-workspace.md) · [Audit](docs/discussions/modernization-2026-10-08.md) (russische Dokumentation).
+
+Einrichtungsassistent, sichere Bestätigung vom Telefon, native Gemini/IDE-Adapter und Hintergrunddienst sind noch geplant. Codex und Claude Code sind die wichtigsten Zugänge über ihre verfügbaren Werkzeuge; die Umgebung transkribiert Sprache. `status --watch` läuft nur mit aktivem CLI. Autopilot ist standardmäßig aus.
 >
 > **Hinweis zur Sprache:** Die Meldungen von Borshkit sind vorerst auf Russisch. Jeder Befehl und jedes Flag hat auch einen englischen Namen, und dieses README verwendet sie.
 
@@ -108,7 +118,7 @@ Alle Befehle: [Befehlsreferenz](docs/reference/commands.md) (russische und engli
 | **Abnahme nach Zielen** | Kriterien `auto` / `model` / `manual`, ein Abnahmeblatt, Vertrauensziele für Modelle, durch Messung bestätigt |
 | **Arbeitsbereich** | der Ordner `borshkit/` ist ein Obsidian-Vault mit eigener Historie; die `.gitignore`-Regel wird automatisch eingetragen und geprüft |
 | **Ausführer** | Claude Code, Codex (mit GPT Image), jede OpenAI-kompatible API, deine eigenen Programme; Pools mit Fallback |
-| **17 Rollen** | Architekt, Entwickler, Reviewer, Tester, Rechercheur, Designer, README-Illustrator… |
+| **18 Rollen** | Architekt, Entwickler, Reviewer, Tester, Rechercheur, Designer, Design-Prompt-Autor, README-Illustrator… |
 | **Autopilot** | Routinefragen bekommen nach einer Minute ihre Standardantwort; bei kritischen hält er an, mit Bericht und Übergabe des Kontexts |
 | **Leitstand** | wer den Auftrag bekommen hat, wer arbeitet, was auf dich wartet: im Terminal, in `STATUS.md` und in der Statuszeile von Claude Code |
 | **Recherche** | Quellen werden als Kopien gespeichert; die Prüfung `citations` gleicht jedes Zitat Wort für Wort ab |

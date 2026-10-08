@@ -1,21 +1,23 @@
 #!/usr/bin/env node
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { ROOT, assert, readJSON } from '../core/io.mjs';
+import { ROOT, assert, contained, readJSON, sha } from '../core/io.mjs';
 import { DEFAULT_FOLDER, initSpace, openSpace, saveSpace, trusted } from '../core/space.mjs';
 import { checkTask, newTask } from '../core/contract.mjs';
 import { STATUS_WORDS, confirmItem, converge, recordReview, signOff, verifyAll, verifyCheck } from '../core/accept.mjs';
 import { doctor, formatStatus, spaceStatus } from '../core/status.mjs';
 import { addMaterial, listMaterials, refreshMaterial } from '../core/materials.mjs';
-import { acceptManualEdit, applyProposal, proposeSettings, revertSettings } from '../core/config.mjs';
+import { acceptManualEdit, applyProposal, checkProposal, proposeSettings, revertSettings } from '../core/config.mjs';
 import { endExperiment, recordKey, startExperiment } from '../core/experiment.mjs';
 import { PRIVACY_WORDS, STRICTNESS } from '../core/privacy.mjs';
 import readline from 'node:readline/promises';
-import { probeExecutor, readProbes, FAILURE_WORDS } from '../core/executors.mjs';
+import { probeExecutor, readProbes, validateExecutor, FAILURE_WORDS } from '../core/executors.mjs';
+import { formatPlan, formatTeam, planTeam, proposeTeam, writeTeamFiles } from '../core/team.mjs';
+import { executorFingerprint, recordResources } from '../core/resources.mjs';
 import { runJob, resumeJob } from '../core/jobs.mjs';
 import { answer, getQuestion, listQuestions, resolveDue } from '../core/questions.mjs';
 import { cards, formatCards, listJobs, statusLine, writeStatusFiles } from '../core/dispatch.mjs';
-import { listPacks, listRoles, loadPack } from '../core/roles.mjs';
+import { listPacks, listRoles, loadPack, loadRole, roleFingerprint } from '../core/roles.mjs';
 import { buildKnowledge, exportForGithub, knowledgeSQL, lessonFromTask, queryKnowledge, searchKnowledge, taskContext } from '../core/kb.mjs';
 import { attributionCheck, contributorsFromGit, contributorsReport, readmeAssetsCheck, writeContributors } from '../core/attribution.mjs';
 import { runCommand } from '../core/process.mjs';
@@ -26,15 +28,15 @@ import { evaluate, measureTrust, proposeTrust } from '../core/eval.mjs';
 const COMMANDS = { начать: 'init', статус: 'status', задача: 'task', сохранить: 'save', доктор: 'doctor', помощь: 'help', материал: 'material', приватность: 'privacy', настройки: 'settings', эксперимент: 'experiment',
   исполнители: 'executors', исполнитель: 'executor', работа: 'job', вопрос: 'question', вопросы: 'question', роли: 'roles', знания: 'knowledge', атрибуция: 'attribution',
   оценка: 'eval', hook: 'hook', история: 'history', 'что-изменилось': 'changes', 'кто-что': 'who', вернуть: 'restore', 'сохранить-проект': 'save-project', собрать: 'merge', отправить: 'push',
-  навыки: 'skills', библиотека: 'library' };
+  навыки: 'skills', библиотека: 'library', команда: 'team', ресурсы: 'resources' };
 const WHICH = { проект: 'project', пространство: 'space', project: 'project', space: 'space' };
 const SUB = { добавить: 'add', список: 'list', обновить: 'refresh', показать: 'show', предложить: 'propose', применить: 'apply', принять: 'accept', вернуть: 'revert', начать: 'start', ключ: 'key', завершить: 'end',
-  проверить: 'probe', запустить: 'run', продолжить: 'resume', ответить: 'answer', собрать: 'build', найти: 'search', контекст: 'context', урок: 'lesson', экспорт: 'export', контрибьюторы: 'contributors', картинки: 'assets' };
+  проверить: 'probe', запустить: 'run', продолжить: 'resume', ответить: 'answer', собрать: 'build', найти: 'search', контекст: 'context', урок: 'lesson', экспорт: 'export', контрибьюторы: 'contributors', картинки: 'assets', план: 'plan', записать: 'record', оценить: 'qualify', отпечаток: 'fingerprint' };
 const MODES = { умеренный: 'moderate', строгий: 'strict', эксперимент: 'experiment' };
 const TASK = { новая: 'new', анализ: 'check', проверить: 'verify', отзыв: 'review', подтвердить: 'confirm', итог: 'converge', принять: 'accept', обновить: 'update' };
 const FLAGS = { цель: 'goal', вид: 'kind', папка: 'folder', проект: 'project', 'только-локально': 'local-only', исполнитель: 'executor', результат: 'result',
   текст: 'text', название: 'title', да: 'yes', 'ключи-отозваны': 'revoked', от: 'from', причина: 'reason', через: 'via', манифест: 'manifest', readme: 'readme',
-  роль: 'role', пул: 'pool', клоны: 'clones', к: 'to', скрытые: 'hidden', порог: 'threshold', сколько: 'limit', удалённый: 'remote', линза: 'lens', файл: 'file', следить: 'watch', строка: 'line', команда: 'command', семейство: 'provider', данные: 'data', модель: 'model', навыки: 'skills', 'в-папке': 'in-place' };
+  роль: 'role', роли: 'roles', срок: 'until', пул: 'pool', клоны: 'clones', к: 'to', скрытые: 'hidden', порог: 'threshold', сколько: 'limit', удалённый: 'remote', линза: 'lens', файл: 'file', следить: 'watch', строка: 'line', команда: 'command', семейство: 'provider', данные: 'data', модель: 'model', навыки: 'skills', 'в-папке': 'in-place' };
 const LONE = ['json', 'local-only', 'yes', 'revoked', 'help', 'watch', 'line', 'in-place'];
 // Ready-made manifests for the subscription CLIs; the data policy stays "unknown"
 // until the person states it, so the strict mode will not use them by accident.
@@ -84,6 +86,14 @@ const HELP = `Borshkit — Modular AI Workspace
   borshkit исполнители                  кто может работать и что показала проверка
   borshkit исполнитель добавить claude|codex [--данные no-train|trains|local] | <имя> --файл манифест.json
   borshkit исполнитель проверить <имя>  сверить установленную программу или API с тем, что нужно
+  borshkit исполнитель отпечаток <имя>
+  borshkit исполнитель оценить <имя> --роль <роль> --файл assessments/role.md --результат PASS|FAIL --срок <ISO-дата>
+      предложить запись оценки роли; модель должна быть явно закреплена
+  borshkit команда [показать]           модели, подключение, оценки ролей и ресурсы; TEAM.md
+  borshkit команда план|предложить <задача> [--роли architect,implementer,reviewer]
+      объяснимое распределение; предложение настроек не запускает работы
+  borshkit ресурсы записать <исполнитель> --файл ресурсы.json
+      актуальное наблюдение остатка; секреты не сохраняются
   borshkit роли                         роли команды, их навыки и что им нужно от исполнителя
   borshkit навыки [пакет]               пакеты навыков (Ponytail, Emil Kowalski, ECC) и что в них
   borshkit библиотека [категория]       проверенные ссылки: компоненты, анимация, дизайн-системы, доступность …
@@ -238,8 +248,7 @@ async function settings([rawSub, ...rest], flags) {
       `Применить: borshkit настройки применить ${p.id}`].join('\n'));
   }
   if (sub === 'apply') {
-    const proposal = await readJSON(path.join(space.dir, 'settings', 'proposals', `${rest[0]}.json`)).catch(() => null);
-    assert(proposal, `Предложения ${rest[0]} нет`);
+    const proposal = await checkProposal(space, rest[0]);
     const weak = proposal.weakens?.length > 0;
     const confirmed = weak && await confirmPerson(`Предложение ${proposal.id} от ${proposal.from} ослабляет защиту:\n  ${proposal.weakens.join('\n  ')}`, 'да, ослабить');
     assert(!weak || confirmed, PERSON_ONLY);
@@ -409,6 +418,7 @@ export async function main(argv = process.argv.slice(2)) {
     else lines.push('Проект без Git: история проекта не ведётся. История пространства — ведётся.');
     lines.push(`Начни отсюда: ${path.join(r.dir, 'START-HERE.md')}`);
     const { space, ...report } = r;
+    await writeTeamFiles(space);
     return print(flags, report, lines.join('\n'));
   }
   if (command === 'status') {
@@ -416,6 +426,7 @@ export async function main(argv = process.argv.slice(2)) {
     if (flags.line) return console.log(await statusLine(space));
     if (flags.watch) {
       for (;;) {
+        space.settings = (await open(flags)).settings;
         await resolveDue(space);
         await writeStatusFiles(space);
         process.stdout.write('\x1b[2J\x1b[H' + `${await statusLine(space)}\n\n${formatCards(await cards(space))}\n\n(Ctrl+C — выйти)\n`);
@@ -432,11 +443,42 @@ export async function main(argv = process.argv.slice(2)) {
     return print(flags, list, list.length ? list.map(e => `${e.probe ? (e.probe.ok ? '✅' : '❌') : '⚪'} ${e.id} · ${e.kind} · ${e.provider} · данные: ${e.dataPolicy} · выход: ${e.modalities.output.join(', ')}${e.probe && !e.probe.ok ? ` · ${e.probe.missing.join('; ')}` : ''}`).join('\n')
       + `${Object.keys(space.settings.pools ?? {}).length ? `\nПулы: ${Object.entries(space.settings.pools).map(([n, p]) => `${n} = ${p.members.join(' → ')}`).join('; ')}` : ''}` : 'Исполнителей пока нет. Добавь: borshkit исполнитель добавить claude');
   }
+  if (command === 'team' || command === 'resources') {
+    const space = await open(flags), sub = SUB[positional[1]] ?? positional[1] ?? 'show';
+    if (command === 'resources' && sub === 'record') {
+      assert(typeof flags.file === 'string', 'Укажи --файл с наблюдением ресурсов');
+      const r = await recordResources(space, positional[2], await readJSON(path.resolve(flags.file)));
+      await writeTeamFiles(space);
+      return print(flags, r, 'Наблюдение записано. Настройки не изменены, работы не запущены.');
+    }
+    if (sub === 'show' || sub === 'list') {
+      const catalog = await writeTeamFiles(space);
+      return print(flags, catalog, formatTeam(catalog));
+    }
+    assert(command === 'team' && ['plan', 'propose'].includes(sub), 'Действие — показать, план, предложить или ресурсы записать');
+    assert(positional[2], 'Укажи задачу');
+    const options = { taskId: positional[2], ...(typeof flags.roles === 'string' ? { roles: flags.roles.split(',').map(s => s.trim()) } : {}) };
+    if (sub === 'plan') { const p = await planTeam(space, options); return print(flags, p, formatPlan(p)); }
+    const r = await proposeTeam(space, options, { from: typeof flags.from === 'string' ? flags.from : 'человек' });
+    return print(flags, r, `${formatPlan(r.plan)}\n\nПредложение ${r.proposal.id} до ${r.proposal.expiresAt}. Применить: borshkit настройки применить ${r.proposal.id}\nПосле применения запуск каждой роли выполняется отдельно через --пул team-<роль>.`);
+  }
   if (command === 'executor') {
     const [rawSub, id] = positional.slice(1), sub = SUB[rawSub] ?? rawSub;
     const space = await open(flags);
     assert(id, 'Укажи имя исполнителя');
-    if (sub === 'probe') { const p = await probeExecutor(space, id); return print(flags, p, p.ok ? `✅ ${id} готов${p.version ? ` (${p.version})` : ''}` : `❌ ${id}: ${p.missing.join('; ')}`); }
+    if (sub === 'probe') { const p = await probeExecutor(space, id); return print(flags, p, p.ok ? `✅ ${id}: подключение проверено до ${p.expiresAt}${p.version ? ` (${p.version})` : ''}; качество роли не оценивалось` : `❌ ${id}: ${p.missing.join('; ')}`); }
+    if (sub === 'fingerprint') { assert(space.settings.executors[id], 'Исполнитель не объявлен'); return console.log(executorFingerprint(space.settings.executors[id])); }
+    if (sub === 'qualify') {
+      const e = space.settings.executors[id];
+      assert(e && typeof flags.role === 'string' && typeof flags.file === 'string' && typeof flags.until === 'string', 'Нужны исполнитель, --роль, --файл и --срок');
+      assert((await listRoles()).some(r => r.id === flags.role), 'Неизвестная роль');
+      const evidence = path.relative(space.project, path.resolve(flags.file)).replaceAll('\\', '/');
+      const q = { result: flags.result, at: new Date().toISOString(), expiresAt: flags.until, evidence, evidenceSha: '0'.repeat(64), fingerprint: executorFingerprint(e), roleDigest: await roleFingerprint(await loadRole(flags.role)) };
+      validateExecutor(id, { ...e, qualifications: { ...e.qualifications, [flags.role]: q } });
+      q.evidenceSha = sha(await fs.readFile(await contained(space.project, path.resolve(flags.file))));
+      const p = await proposeSettings(space, { executors: { [id]: { qualifications: { [flags.role]: q } } } }, { reason: `заявленная оценка ${id}/${flags.role}` });
+      return print(flags, p, `Оценка предложена (${p.id}); живой benchmark не запускался. Применить: borshkit настройки применить ${p.id}`);
+    }
     if (sub === 'add') {
       const manifest = typeof flags.file === 'string' ? await readJSON(path.resolve(flags.file)) : { ...PRESETS[id] };
       assert(manifest && manifest.kind, `Готовые исполнители: ${Object.keys(PRESETS).join(', ')}; для остальных — --файл манифест.json`);

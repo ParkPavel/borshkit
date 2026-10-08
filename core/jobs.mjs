@@ -13,6 +13,8 @@ import { proposeSettings } from './config.mjs';
 import { ID, covered } from './contract.mjs';
 import { answer, ask, criticalStop, getQuestion, resolveDue } from './questions.mjs';
 import { writeStatusFiles } from './dispatch.mjs';
+import { qualification } from './team.mjs';
+import { executorFingerprint, fresh, readResources, recordResources, resourcesFor } from './resources.mjs';
 
 // Jobs (spec §4.3, §10.3, §10.4): one role, one task, executors tried in order.
 // A limit hands the work to the next allowed executor in the pool; silence
@@ -102,6 +104,8 @@ async function runJobUnlocked(space, { taskId, role: roleId, executor = null, po
   assert(executor || pool, 'Укажи исполнителя (--исполнитель) или пул (--пул)');
   assert(!executor || executors[executor], `Исполнитель «${executor}» не объявлен. Список: borshkit исполнители`);
   assert(!pool || pools[pool], `Пула «${pool}» нет`);
+  assert(!pool || !pools[pool].role || pools[pool].role === roleId, 'Пул предназначен для другой роли');
+  assert(!pool || !pools[pool].qualificationRequired || !lens && !skills.length, 'Оценка пула относится к базовой роли; дополнительные навыки и линза требуют отдельной оценки');
   if (role.output === 'image') assert(typeof imagePath === 'string' && imagePath, 'Укажи файл изображения: --файл assets/banner.png');
   assert(role.authority !== 'workspace-write' || space.projectIsGit || inPlace,
     'Проект без Git: отдельной копии для агента нет, он будет менять файлы прямо в папке проекта. Если согласен, запусти с --в-папке (подтверждаешь в терминале); правки вне границ задачи покажет сверка.');
@@ -131,14 +135,22 @@ async function runJobUnlocked(space, { taskId, role: roleId, executor = null, po
     materials.push({ id, title: record.title, origin: record.origin.value, text: materialText(record, bytes) });
   }
   let outcome = null, switches = 0;
+  const retried = new Set();
   for (let i = 0; i < candidates.length; i++) {
     const id = candidates[i], e = executors[id];
-    const attempt = { executor: id, provider: e.provider, startedAt: new Date().toISOString(), outcome: 'running' };
+    const attempt = { executor: id, provider: e.provider, model: e.model ?? null, kind: e.kind, fingerprint: executorFingerprint(e), endpoint: e.kind === 'openai-compat' ? role.output === 'image' ? 'images/generations' : 'chat/completions' : null, startedAt: new Date().toISOString(), launchedAt: null, outcome: 'running' };
     const skip = async (failure, reason) => { Object.assign(attempt, { outcome: 'skipped', failure, reason, endedAt: new Date().toISOString() }); job.attempts.push(attempt); await save(true); };
     const allowed = privacyAllows(space.settings.privacy, e);
     if (!allowed.ok) { await skip('PRIVACY', allowed.reason); continue; }
     const can = capable(role, e, probes[id]);
     if (!can.ok) { await skip('CAPABILITY', can.missing.join('; ')); continue; }
+    if (pool && pools[pool].qualificationRequired) {
+      const probe = (await readProbes(space))[id], q = await qualification(space, id, roleId);
+      const resources = resourcesFor(space, id, await readResources(space), { endpoint: attempt.endpoint });
+      if (!probe?.ok || probe.fingerprint !== executorFingerprint(e) || !fresh(probe) || q.status !== 'PASS' || resources.metrics.some(m => m.remaining === 0)) {
+        await skip('CAPABILITY', 'Данные пригодности, подключения или ресурсов изменились — пересчитай команду'); continue;
+      }
+    }
     if (authors.includes(e.provider)) { await skip('SAME_PROVIDER', `то же семейство моделей (${e.provider}), что у автора`); continue; }
     if (switches > maxSwitches) { await skip('MAX_SWITCHES', 'превышено число переключений пула'); continue; }
 
@@ -158,7 +170,7 @@ async function runJobUnlocked(space, { taskId, role: roleId, executor = null, po
     const handle = await startExecutor({ executor: e, prompt: role.output === 'image' && e.kind === 'openai-compat' ? `${role.prompt}\n\n${t.contract.goal}` : prompt,
       schema: SCHEMAS[role.output], cwd: work.path, writable, timeoutMs: role.timeoutMs ?? 1800000, fetchImpl, env,
       image: role.output === 'image' && e.kind === 'openai-compat', scratch: path.join(space.state, 'jobs', job.id),
-      onEvent: ({ kind, toolRunning }) => { job.lastEventAt = new Date().toISOString(); job.toolRunning = toolRunning; job.activity = toolRunning ? 'выполняет инструмент' : kind === 'result' ? 'отвечает' : 'думает'; void save(); } });
+      onEvent: ({ kind, toolRunning }) => { if (['spawn', 'response'].includes(kind)) attempt.launchedAt ??= new Date().toISOString(); job.lastEventAt = new Date().toISOString(); job.toolRunning = toolRunning; job.activity = toolRunning ? 'выполняет инструмент' : kind === 'result' ? 'отвечает' : 'думает'; void save(); } });
 
     // Silence watch: a routine question, answered by a person or, in autopilot, by its default.
     let question = null, stoppedFor = null;
@@ -182,6 +194,7 @@ async function runJobUnlocked(space, { taskId, role: roleId, executor = null, po
       } catch { /* the watch must never take the job down */ }
     }, tickMs);
     let result = await handle.done;
+    if (result.resources) await recordResources(space, id, result.resources, { source: 'HTTP_HEADERS', executor: e });
     clearInterval(watch);
     if (question && (await getQuestion(space, question.id)).status === 'open') await answer(space, question.id, 'wait', { by: 'Borshkit' }).catch(() => {});
     if (stoppedFor === 'stop') result = { ok: false, failure: 'STOPPED', error: 'остановлено по твоему ответу' };
@@ -204,7 +217,8 @@ async function runJobUnlocked(space, { taskId, role: roleId, executor = null, po
       await addAuthor(space, taskId, { jobId: job.id, executor: id, provider: e.provider, role: roleId, commit: partial, partial: true, at: new Date().toISOString() });
       attempt.partialCommit = partial;
     }
-    if (result.failure === 'QUOTA' && result.retryAfter && result.retryAfter <= waitSeconds && !attempt.retried) {
+    if (result.failure === 'QUOTA' && result.retryAfter && result.retryAfter <= waitSeconds && !retried.has(id)) {
+      retried.add(id);
       job.status = 'WAITING_LIMIT'; job.activity = `ждёт лимит ${result.retryAfter} с`; await save(true);
       await sleep(result.retryAfter * 1000);
       i--; switches++; job.attempts.at(-1).retried = true; continue;

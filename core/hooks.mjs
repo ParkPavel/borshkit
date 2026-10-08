@@ -44,6 +44,7 @@ export async function runHook(name, input) {
     const lines = [await statusLine(space),
       ...questions.map(q => `${q.kind === 'critical' ? 'Критический вопрос' : 'Вопрос'} ${q.id}: ${q.text}`),
       'Это проект с пространством Borshkit (папка borshkit/). Начни с borshkit/START-HERE.md и borshkit/STATUS.md.',
+      'Команда и ресурсы: borshkit команда; актуальные оценки ролей и план: borshkit команда план <задача>. Предложение, применение и запуск — отдельные действия.',
       'Не правь borshkit/settings и доказательства задач — пользуйся командами borshkit. «Готово» — не приёмка: принимает Borshkit по доказательствам и человек.'];
     return { hookSpecificOutput: { hookEventName: 'SessionStart', additionalContext: lines.join('\n') } };
   }

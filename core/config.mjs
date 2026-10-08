@@ -1,6 +1,8 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { assert, atomicJSON, atomicWrite, exists, git, readJSON } from './io.mjs';
+import { acquireLock, assert, atomicJSON, atomicWrite, contained, exists, git, readJSON, sha } from './io.mjs';
+import { stableJSON } from './resources.mjs';
+import { loadRole, roleFingerprint } from './roles.mjs';
 import { journal, saveSpace, settingsMirror, validateSettings } from './space.mjs';
 import { weakenings } from './privacy.mjs';
 
@@ -23,21 +25,50 @@ const merge = (base, patch) => Object.fromEntries(Object.entries({ ...base, ...p
   [k, v && typeof v === 'object' && !Array.isArray(v) && base[k] && typeof base[k] === 'object' ? merge(base[k], v) : v]).filter(([, v]) => v !== undefined));
 
 /** A proposed change: kept as a file in the space, explained, applied later. */
-export async function proposeSettings(space, patch, { from = PERSON, reason = '' } = {}) {
+export async function proposeSettings(space, patch, { from = PERSON, reason = '', inputs = [], roleInputs = [], expiresAt = null } = {}) {
+  const release = await acquireLock(path.join(space.state, 'settings.lock'), { waitMs: 30000 });
+  try {
+    await assertSettingsIntact(space);
+    const current = await readJSON(space.settingsFile);
+    assert(stableJSON(current) === stableJSON(space.settings), 'Настройки изменились — открой пространство заново');
+    assert(patch && typeof patch === 'object' && !Array.isArray(patch), 'Предложение — объект с изменяемыми полями');
+    assert(from === PERSON || from === space.settings.trustedAgent, from && space.settings.trustedAgent
+      ? `Предлагать изменения настроек может только доверенный агент (${space.settings.trustedAgent}) или ты`
+      : 'Доверенный агент не выбран — предлагать изменения настроек можешь только ты');
+    const before = space.settings, after = validateSettings(merge(before, patch));
+    assert(after.folder === before.folder, 'Папку пространства так не поменять: создай новое пространство');
+    const list = changes(before, after);
+    assert(list.length, 'Предложение ничего не меняет');
+    await fs.mkdir(proposalsDir(space), { recursive: true });
+    const id = `p${String((await fs.readdir(proposalsDir(space))).filter(f => f.endsWith('.json')).length + 1).padStart(3, '0')}`;
+    assert(expiresAt === null || Date.parse(expiresAt) > Date.now(), 'Срок предложения уже истёк');
+    const proposal = { id, from, reason, createdAt: new Date().toISOString(), baseDigest: sha(stableJSON(before)), inputs, roleInputs, expiresAt, changes: list, weakens: weakenings(before, after), after, status: 'open' };
+    await atomicJSON(path.join(proposalsDir(space), `${id}.json`), proposal);
+    await journal(space, `${from === PERSON ? 'Ты предложил' : `${from} предложил`} изменить настройки (${id}): ${list.map(c => c.key).join(', ')}.`);
+    return proposal;
+  } finally { await release(); }
+}
+/** Refuse stale proposals before asking for a person's confirmation. */
+export async function checkProposal(space, id) {
   await assertSettingsIntact(space);
-  assert(patch && typeof patch === 'object' && !Array.isArray(patch), 'Предложение — объект с изменяемыми полями');
-  assert(from === PERSON || from === space.settings.trustedAgent, from && space.settings.trustedAgent
-    ? `Предлагать изменения настроек может только доверенный агент (${space.settings.trustedAgent}) или ты`
-    : 'Доверенный агент не выбран — предлагать изменения настроек можешь только ты');
-  const before = space.settings, after = validateSettings(merge(before, patch));
-  assert(after.folder === before.folder, 'Папку пространства так не поменять: создай новое пространство');
-  const list = changes(before, after);
-  assert(list.length, 'Предложение ничего не меняет');
-  await fs.mkdir(proposalsDir(space), { recursive: true });
-  const id = `p${String((await fs.readdir(proposalsDir(space))).filter(f => f.endsWith('.json')).length + 1).padStart(3, '0')}`;
-  const proposal = { id, from, reason, createdAt: new Date().toISOString(), changes: list, weakens: weakenings(before, after), after, status: 'open' };
-  await atomicJSON(path.join(proposalsDir(space), `${id}.json`), proposal);
-  await journal(space, `${from === PERSON ? 'Ты предложил' : `${from} предложил`} изменить настройки (${id}): ${list.map(c => c.key).join(', ')}.`);
+  assert(/^p\d{3,}$/.test(id ?? ''), 'Укажи номер предложения, например p001');
+  const file = path.join(proposalsDir(space), `${id}.json`);
+  assert(await exists(file), `Предложения ${id} нет`);
+  const proposal = await readJSON(file);
+  assert(proposal.status === 'open', `Предложение ${id} уже закрыто или применено`);
+  const current = await readJSON(space.settingsFile);
+  assert(proposal.baseDigest === sha(stableJSON(current)), 'Предложение устарело: настройки изменились или нет отпечатка исходного состояния. Создай новое предложение');
+  assert(!proposal.expiresAt || Date.parse(proposal.expiresAt) > Date.now(), 'Предложение устарело: срок данных истёк');
+  for (const input of proposal.inputs ?? []) {
+    assert(['project', 'space'].includes(input.root) && typeof input.path === 'string' && !path.isAbsolute(input.path), 'Недопустимая зависимость предложения');
+    const root = input.root === 'project' ? space.project : space.dir;
+    const target = await contained(root, path.resolve(root, input.path));
+    const digest = await fs.readFile(target).then(sha, e => { if (e.code === 'ENOENT') return null; throw e; });
+    assert(digest === input.digest, `Предложение устарело: изменилось ${input.path}`);
+  }
+  for (const input of proposal.roleInputs ?? []) assert(input.digest === await roleFingerprint(await loadRole(input.role)), `Предложение устарело: изменилась роль ${input.role}`);
+  space.settings = validateSettings(current);
+  validateSettings(proposal.after);
   return proposal;
 }
 /**
@@ -46,20 +77,19 @@ export async function proposeSettings(space, patch, { from = PERSON, reason = ''
  * a real terminal.
  */
 export async function applyProposal(space, id, { confirmedByPerson = false } = {}) {
-  await assertSettingsIntact(space);
-  assert(/^p\d{3,}$/.test(id ?? ''), 'Укажи номер предложения, например p001');
-  const file = path.join(proposalsDir(space), `${id}.json`);
-  assert(await exists(file), `Предложения ${id} нет`);
-  const proposal = await readJSON(file);
-  assert(proposal.status === 'open', `Предложение ${id} уже ${proposal.status === 'applied' ? 'применено' : 'закрыто'}`);
-  const after = validateSettings(proposal.after);
-  const weak = weakenings(space.settings, after);
-  assert(!weak.length || confirmedByPerson, `Это ослабляет защиту — нужно твоё подтверждение в терминале:\n  ${weak.join('\n  ')}`);
-  await writeSettings(space, after);
-  await atomicJSON(file, { ...proposal, status: 'applied', appliedAt: new Date().toISOString(), confirmedByPerson });
-  await journal(space, `Применены настройки ${id}${weak.length ? ' (ослабление подтверждено тобой)' : ''}.`);
-  await saveSpace(space, `Настройки: предложение ${id}`, proposal.from === PERSON ? {} : { author: proposal.from, email: `${proposal.from}@borshkit` });
-  return { ...proposal, status: 'applied', weakens: weak };
+  const release = await acquireLock(path.join(space.state, 'settings.lock'), { waitMs: 30000 });
+  try {
+    const proposal = await checkProposal(space, id);
+    const file = path.join(proposalsDir(space), `${id}.json`);
+    const after = validateSettings(proposal.after);
+    const weak = weakenings(space.settings, after);
+    assert(!weak.length || confirmedByPerson, `Это ослабляет защиту — нужно твоё подтверждение в терминале:\n  ${weak.join('\n  ')}`);
+    await writeSettings(space, after);
+    await atomicJSON(file, { ...proposal, status: 'applied', appliedAt: new Date().toISOString(), confirmedByPerson });
+    await journal(space, `Применены настройки ${id}${weak.length ? ' (ослабление подтверждено тобой)' : ''}.`);
+    await saveSpace(space, `Настройки: предложение ${id}`, proposal.from === PERSON ? {} : { author: proposal.from, email: `${proposal.from}@borshkit` });
+    return { ...proposal, status: 'applied', weakens: weak };
+  } finally { await release(); }
 }
 async function writeSettings(space, settings) {
   await atomicJSON(space.settingsFile, settings);

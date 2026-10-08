@@ -4,6 +4,7 @@ import { spawn } from 'node:child_process';
 import { commandSpec } from './process.mjs';
 import { childEnv } from './privacy.mjs';
 import { classifyFailure } from './executors.mjs';
+import { resetTime, resourcesFromHeaders } from './resources.mjs';
 
 // One interface for every executor: start(...) returns { done, stop }. `done`
 // resolves to { ok, result, usage, error, failure }. Every sign of life calls
@@ -15,9 +16,10 @@ function stopTree(child) {
   try { process.platform === 'win32' ? spawn('taskkill.exe', ['/PID', String(child.pid), '/T', '/F'], { windowsHide: true }) : process.kill(-child.pid, 'SIGKILL'); }
   catch { try { child.kill('SIGKILL'); } catch { /* already gone */ } }
 }
-async function spawnLines({ command, args, cwd, env, input, onLine, timeoutMs }) {
+async function spawnLines({ command, args, cwd, env, input, onLine, onStart, timeoutMs }) {
   const spec = await commandSpec(command);
   const child = spawn(spec.executable, [...spec.prefix, ...args], { cwd, env, windowsHide: true, shell: false, detached: process.platform !== 'win32', stdio: ['pipe', 'pipe', 'pipe'] });
+  child.once('spawn', () => onStart());
   let buffer = '', stderr = '', stoppedBy = null;
   const timer = setTimeout(() => { stoppedBy = 'TIMEOUT'; stopTree(child); }, timeoutMs);
   const done = new Promise(resolve => {
@@ -83,7 +85,7 @@ async function startCli({ executor: e, prompt, schema, cwd, writable, onEvent, t
     }
     onEvent({ kind: ev?.type ?? 'output', toolRunning });
   };
-  const run = await spawnLines({ command: e.command, args, cwd, env: childEnv(process.env, e.envAllow ?? []), input: prompt, onLine, timeoutMs });
+  const run = await spawnLines({ command: e.command, args, cwd, env: childEnv(process.env, e.envAllow ?? []), input: prompt, onLine, onStart: () => onEvent({ kind: 'spawn', toolRunning: false }), timeoutMs });
   const done = run.done.then(({ code, stderr, stoppedBy }) => {
     if (stoppedBy) return { ok: false, failure: stoppedBy, error: stoppedBy === 'TIMEOUT' ? 'превышено время' : 'остановлен', usage };
     // A structured answer counts only from a process that also says it succeeded.
@@ -102,6 +104,7 @@ async function startApi({ executor: e, prompt, schema, onEvent, timeoutMs, fetch
   const timer = setTimeout(() => { stoppedBy = 'TIMEOUT'; controller.abort(); }, timeoutMs);
   const base = e.baseUrl.endsWith('/') ? e.baseUrl : `${e.baseUrl}/`;
   const headers = { 'content-type': 'application/json', ...(e.apiKeyEnv && env[e.apiKeyEnv] ? { authorization: `Bearer ${env[e.apiKeyEnv]}` } : {}) };
+  let resources = null;
   const done = (async () => {
     try {
       onEvent({ kind: 'request', toolRunning: true });
@@ -110,23 +113,25 @@ async function startApi({ executor: e, prompt, schema, onEvent, timeoutMs, fetch
         : { model: e.model, messages: [{ role: 'user', content: prompt }],
           ...(e.structuredOutput === 'json_schema' ? { response_format: { type: 'json_schema', json_schema: { name: 'result', schema, strict: false } } } : e.structuredOutput === 'json_mode' ? { response_format: { type: 'json_object' } } : {}) };
       const response = await fetchImpl(new URL(image ? 'images/generations' : 'chat/completions', base).href, { method: 'POST', headers, body: JSON.stringify(body), signal: controller.signal });
+      resources = resourcesFromHeaders(response.headers, image ? 'images/generations' : 'chat/completions');
       onEvent({ kind: 'response', toolRunning: false });
       const text = await response.text();
       if (!response.ok) {
         const message = `HTTP ${response.status}: ${text.slice(0, 500)}`;
-        return { ok: false, failure: response.status === 429 ? 'QUOTA' : classifyFailure(message), error: message, retryAfter: Number(response.headers.get('retry-after')) || null };
+        const reset = resetTime(response.headers.get('retry-after'));
+        return { ok: false, failure: response.status === 429 ? 'QUOTA' : classifyFailure(message), error: message, resources, retryAfter: reset ? Math.max(0, Math.ceil((Date.parse(reset) - Date.now()) / 1000)) : null };
       }
       const data = JSON.parse(text);
       if (image) {
         const item = data.data?.[0];
         if (!item?.b64_json) return { ok: false, failure: 'INVALID', error: 'в ответе нет изображения' };
-        return { ok: true, result: { imageBase64: item.b64_json }, usage: data.usage ?? null };
+        return { ok: true, result: { imageBase64: item.b64_json }, usage: data.usage ?? null, resources };
       }
       const content = data.choices?.[0]?.message?.content;
-      try { return { ok: true, result: JSON.parse(content), usage: data.usage ?? null }; }
+      try { return { ok: true, result: JSON.parse(content), usage: data.usage ?? null, resources }; }
       catch { return { ok: false, failure: 'INVALID', error: 'ответ не по схеме', usage: data.usage ?? null }; }
     } catch (err) {
-      return { ok: false, failure: stoppedBy ?? classifyFailure(err.message), error: stoppedBy === 'TIMEOUT' ? 'превышено время' : err.message };
+      return { ok: false, failure: stoppedBy ?? classifyFailure(err.message), error: stoppedBy === 'TIMEOUT' ? 'превышено время' : err.message, resources };
     } finally { clearTimeout(timer); }
   })();
   return { done, stop: reason => { stoppedBy = reason; controller.abort(); } };
