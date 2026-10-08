@@ -85,13 +85,15 @@ test('silence raises a routine question; autopilot switches after the threshold,
   assert.equal(answered.answeredBy, 'автопилот');
   assert.equal(answered.answer, 'switch');
   // While a tool runs, the default is to wait; a person stops it.
-  const running = runJob(s, { taskId: 'quiet', role: 'reviewer', executor: 'busy', silenceMs: 300, tickMs: 50 });
+  // Poll faster than journal/status writes to exercise overlapping ticks.
+  const running = runJob(s, { taskId: 'quiet', role: 'reviewer', executor: 'busy', silenceMs: 300, tickMs: 1 });
   let q;
   for (let i = 0; i < 100 && !q; i++) { await new Promise(r => setTimeout(r, 50)); q = (await listQuestions(s, { open: true })).find(x => x.defaultOption === 'wait'); }
   assert.ok(q, 'вопрос о молчании должен появиться');
   await answer(s, q.id, 'stop');
   const stopped = await running;
   assert.equal(stopped.status, 'STOPPED');
+  assert.equal((await listQuestions(s)).filter(x => x.jobId === stopped.id).length, 1, 'одна остановка — один вопрос, ответ не теряется');
 });
 
 test('a writer works in its own worktree; the project stays untouched; checks run in the worktree', async t => {

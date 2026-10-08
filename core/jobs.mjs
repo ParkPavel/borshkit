@@ -173,8 +173,11 @@ async function runJobUnlocked(space, { taskId, role: roleId, executor = null, po
       onEvent: ({ kind, toolRunning }) => { if (['spawn', 'response'].includes(kind)) attempt.launchedAt ??= new Date().toISOString(); job.lastEventAt = new Date().toISOString(); job.toolRunning = toolRunning; job.activity = toolRunning ? 'выполняет инструмент' : kind === 'result' ? 'отвечает' : 'думает'; void save(); } });
 
     // Silence watch: a routine question, answered by a person or, in autopilot, by its default.
-    let question = null, stoppedFor = null;
-    const watch = setInterval(async () => {
+    let question = null, stoppedFor = null, watchBusy = false, watchClosed = false, pendingWatch = null;
+    // A slow filesystem must not run two polls at once: both could create
+    // questions and lose the person's answer when overwriting `question`.
+    const poll = async () => {
+      watchBusy = true;
       try {
         if (!question && Date.now() - new Date(job.lastEventAt) > silenceMs) {
           const def = job.toolRunning ? 'wait' : 'switch';
@@ -192,10 +195,16 @@ async function runJobUnlocked(space, { taskId, role: roleId, executor = null, po
           }
         }
       } catch { /* the watch must never take the job down */ }
+      finally { watchBusy = false; }
+    };
+    const watch = setInterval(() => {
+      if (!watchClosed && !watchBusy) pendingWatch = poll();
     }, tickMs);
     let result = await handle.done;
-    if (result.resources) await recordResources(space, id, result.resources, { source: 'HTTP_HEADERS', executor: e });
+    watchClosed = true;
     clearInterval(watch);
+    await pendingWatch;
+    if (result.resources) await recordResources(space, id, result.resources, { source: 'HTTP_HEADERS', executor: e });
     if (question && (await getQuestion(space, question.id)).status === 'open') await answer(space, question.id, 'wait', { by: 'Borshkit' }).catch(() => {});
     if (stoppedFor === 'stop') result = { ok: false, failure: 'STOPPED', error: 'остановлено по твоему ответу' };
     if (result.ok && !(role.output === 'image' && e.kind === 'openai-compat')) {
