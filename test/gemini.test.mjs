@@ -23,11 +23,10 @@ test('Gemini CLI uses deny-all policy and refuses a silently substituted model',
   // A local fixture sees the actual adapter argv, without a provider call.
   const code=String.raw`const fs=require('fs');const args=process.argv.slice(1);if(!args.includes('--sandbox')||!args.includes('--policy')||!fs.readFileSync(args[args.indexOf('--policy')+1],'utf8').includes('decision = "deny"'))process.exit(2);fs.writeSync(1,JSON.stringify({type:'init',model:'fixture-model'})+'\n');fs.writeSync(1,JSON.stringify({type:'message',role:'assistant',content:${JSON.stringify(JSON.stringify(answer))}})+'\n');fs.writeSync(1,JSON.stringify({type:'result',status:'success',stats:{input_tokens:3,output_tokens:4}})+'\n');`;
   const wrapper=path.join(dir,'fixture.cjs');await (await import('node:fs/promises')).writeFile(wrapper,code);
-  // Node's flags cannot be prefixed in a native manifest; use a script command.
-  const shim=path.join(dir,process.platform==='win32'?'gemini.cmd':'gemini');
-  const fs=await import('node:fs/promises');await fs.writeFile(shim,process.platform==='win32'?`@"${process.execPath}" "${wrapper}" %*\r\n`:`#!/bin/sh\nexec '${process.execPath.replaceAll("'","'\\''")}' '${wrapper.replaceAll("'","'\\''")}' "$@"\n`,{mode:0o755});
-  const h=await startExecutor({...opts,executor:{kind:'gemini-cli',command:shim,model:'fixture-model'},cwd:dir,scratch:path.join(dir,'scratch')});
+  // A direct Node entry point works without a shell on every supported OS.
+  const fs=await import('node:fs/promises');
+  const h=await startExecutor({...opts,executor:{kind:'gemini-cli',command:wrapper,model:'fixture-model'},cwd:dir,scratch:path.join(dir,'scratch')});
   const result=await h.done;assert.equal(result.ok,true,JSON.stringify(result));
   await fs.writeFile(wrapper,code.replace("model:'fixture-model'","model:'different-model'"));
-  const bad=await startExecutor({...opts,executor:{kind:'gemini-cli',command:shim,model:'fixture-model'},cwd:dir,scratch:path.join(dir,'scratch')});assert.equal((await bad.done).ok,false);
+  const bad=await startExecutor({...opts,executor:{kind:'gemini-cli',command:wrapper,model:'fixture-model'},cwd:dir,scratch:path.join(dir,'scratch')});assert.equal((await bad.done).ok,false);
 });

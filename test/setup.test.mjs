@@ -33,7 +33,7 @@ test('setup is readable without a terminal and does not change settings or start
 test('command discovery reads PATH files without running them and requires executable files on Unix', async t => {
   const dir = await tempDir(t), marker = path.join(dir, 'executed');
   await fs.writeFile(path.join(dir, 'codex'), `#!/bin/sh\ntouch '${marker}'\n`, { mode: 0o755 });
-  const found = await discoverSetupCommands({ env: { PATH: dir }, platform: 'linux' });
+  const found = await discoverSetupCommands({ env: { PATH: dir } });
   assert.equal(found.find(e => e.id === 'codex').status, 'FOUND_NOT_CHECKED');
   assert.equal(found.find(e => e.id === 'claude').status, 'NOT_FOUND');
   assert.equal(await exists(marker), false);
