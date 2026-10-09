@@ -1,0 +1,1 @@
+{"schemaVersion":1,"id":"coordinator","title":"Координатор команды","stage":"plan","authority":"read-only","output":"findings","requires":{"structuredOutput":true,"output":["text"]},"crossProvider":false,"packs":[],"timeoutMs":900000}

@@ -1,47 +1,54 @@
 #!/usr/bin/env node
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { ROOT, assert, readJSON } from '../core/io.mjs';
+import { ROOT, assert, contained, readJSON, sha } from '../core/io.mjs';
 import { DEFAULT_FOLDER, initSpace, openSpace, saveSpace, trusted } from '../core/space.mjs';
 import { checkTask, newTask } from '../core/contract.mjs';
 import { STATUS_WORDS, confirmItem, converge, recordReview, signOff, verifyAll, verifyCheck } from '../core/accept.mjs';
 import { doctor, formatStatus, spaceStatus } from '../core/status.mjs';
 import { addMaterial, listMaterials, refreshMaterial } from '../core/materials.mjs';
-import { acceptManualEdit, applyProposal, proposeSettings, revertSettings } from '../core/config.mjs';
+import { acceptManualEdit, applyProposal, checkProposal, proposeSettings, revertSettings } from '../core/config.mjs';
 import { endExperiment, recordKey, startExperiment } from '../core/experiment.mjs';
 import { PRIVACY_WORDS, STRICTNESS } from '../core/privacy.mjs';
 import readline from 'node:readline/promises';
-import { probeExecutor, readProbes, FAILURE_WORDS } from '../core/executors.mjs';
+import { PRESETS, probeExecutor, readProbes, validateExecutor, FAILURE_WORDS } from '../core/executors.mjs';
+import { DEFAULT_SETUP_ROLES, SETUP_HOSTS, formatSetup, proposeSetup, readSetup, updateSetup, writeSetupFiles } from '../core/setup.mjs';
+import { formatPlan, formatTeam, planTeam, proposeTeam, writeTeamFiles } from '../core/team.mjs';
+import { executorFingerprint, recordResources } from '../core/resources.mjs';
 import { runJob, resumeJob } from '../core/jobs.mjs';
 import { answer, getQuestion, listQuestions, resolveDue } from '../core/questions.mjs';
 import { cards, formatCards, listJobs, statusLine, writeStatusFiles } from '../core/dispatch.mjs';
-import { listPacks, listRoles, loadPack } from '../core/roles.mjs';
+import { listPacks, listRoles, loadPack, loadRole, roleFingerprint } from '../core/roles.mjs';
 import { buildKnowledge, exportForGithub, knowledgeSQL, lessonFromTask, queryKnowledge, searchKnowledge, taskContext } from '../core/kb.mjs';
 import { attributionCheck, contributorsFromGit, contributorsReport, readmeAssetsCheck, writeContributors } from '../core/attribution.mjs';
 import { runCommand } from '../core/process.mjs';
 import { explainGit, history, mergeTask, updateTask, pushProject, restoreFile, saveProject, whatChanged, whoDid } from '../core/gitshell.mjs';
 import { runHook } from '../core/hooks.mjs';
 import { evaluate, measureTrust, proposeTrust } from '../core/eval.mjs';
+import { runAssessment, proposeAssessment } from '../core/assessments.mjs';
+import { consolidate, executionStatus, reconcileExecution, recoverExecution, taskDependencies } from '../core/operations.mjs';
+import { approvalDevices, applyApprovedAction, createApprovalChallenge, enrollApprovalDevice, revokeApprovalDevice } from '../core/approvals.mjs';
+import { startApprovalServer } from '../core/approval-server.mjs';
+import { monitorPulse, monitorStatus, runMonitor, startMonitor, stopMonitor } from '../core/monitor.mjs';
+import { exportPortable, importPortable } from '../core/portable.mjs';
+import { exportInstructions } from '../core/integrations.mjs';
 
 const COMMANDS = { начать: 'init', статус: 'status', задача: 'task', сохранить: 'save', доктор: 'doctor', помощь: 'help', материал: 'material', приватность: 'privacy', настройки: 'settings', эксперимент: 'experiment',
   исполнители: 'executors', исполнитель: 'executor', работа: 'job', вопрос: 'question', вопросы: 'question', роли: 'roles', знания: 'knowledge', атрибуция: 'attribution',
   оценка: 'eval', hook: 'hook', история: 'history', 'что-изменилось': 'changes', 'кто-что': 'who', вернуть: 'restore', 'сохранить-проект': 'save-project', собрать: 'merge', отправить: 'push',
-  навыки: 'skills', библиотека: 'library' };
+  навыки: 'skills', библиотека: 'library', команда: 'team', ресурсы: 'resources', мастер: 'setup', стенд: 'assessment', бюджет: 'budget', координация: 'coordination', подтверждение: 'approval', монитор: 'monitor', перенос:'portable', интеграция:'integration' };
 const WHICH = { проект: 'project', пространство: 'space', project: 'project', space: 'space' };
 const SUB = { добавить: 'add', список: 'list', обновить: 'refresh', показать: 'show', предложить: 'propose', применить: 'apply', принять: 'accept', вернуть: 'revert', начать: 'start', ключ: 'key', завершить: 'end',
-  проверить: 'probe', запустить: 'run', продолжить: 'resume', ответить: 'answer', собрать: 'build', найти: 'search', контекст: 'context', урок: 'lesson', экспорт: 'export', контрибьюторы: 'contributors', картинки: 'assets' };
+  проверить: 'probe', запустить: 'run', продолжить: 'resume', ответить: 'answer', собрать: 'build', найти: 'search', контекст: 'context', урок: 'lesson', экспорт: 'export', контрибьюторы: 'contributors', картинки: 'assets', план: 'plan', записать: 'record', оценить: 'qualify', отпечаток: 'fingerprint' };
 const MODES = { умеренный: 'moderate', строгий: 'strict', эксперимент: 'experiment' };
 const TASK = { новая: 'new', анализ: 'check', проверить: 'verify', отзыв: 'review', подтвердить: 'confirm', итог: 'converge', принять: 'accept', обновить: 'update' };
 const FLAGS = { цель: 'goal', вид: 'kind', папка: 'folder', проект: 'project', 'только-локально': 'local-only', исполнитель: 'executor', результат: 'result',
   текст: 'text', название: 'title', да: 'yes', 'ключи-отозваны': 'revoked', от: 'from', причина: 'reason', через: 'via', манифест: 'manifest', readme: 'readme',
-  роль: 'role', пул: 'pool', клоны: 'clones', к: 'to', скрытые: 'hidden', порог: 'threshold', сколько: 'limit', удалённый: 'remote', линза: 'lens', файл: 'file', следить: 'watch', строка: 'line', команда: 'command', семейство: 'provider', данные: 'data', модель: 'model', навыки: 'skills', 'в-папке': 'in-place' };
-const LONE = ['json', 'local-only', 'yes', 'revoked', 'help', 'watch', 'line', 'in-place'];
-// Ready-made manifests for the subscription CLIs; the data policy stays "unknown"
-// until the person states it, so the strict mode will not use them by accident.
-const PRESETS = {
-  claude: { kind: 'claude-cli', command: 'claude', provider: 'anthropic', dataPolicy: 'unknown', structuredOutput: 'json_schema', modalities: { output: ['text', 'code'] } },
-  codex: { kind: 'codex-cli', command: 'codex', provider: 'openai', dataPolicy: 'unknown', structuredOutput: 'json_schema', modalities: { output: ['text', 'code', 'image'] } },
-};
+  роль: 'role', роли: 'roles', срок: 'until', пул: 'pool', клоны: 'clones', к: 'to', скрытые: 'hidden', порог: 'threshold', сколько: 'limit', удалённый: 'remote', линза: 'lens', файл: 'file', следить: 'watch', строка: 'line', команда: 'command', семейство: 'provider', данные: 'data', модель: 'model', навыки: 'skills', 'в-папке': 'in-place', диалог: 'interactive', мастер: 'wizard' };
+const LONE = ['json', 'local-only', 'yes', 'revoked', 'help', 'watch', 'line', 'in-place', 'interactive', 'wizard', 'trusted-proxy', 'suggest'];
+Object.assign(FLAGS, { 'вход-токены': 'input-tokens', 'выход-токены': 'output-tokens' });
+const executionEstimate = flags => flags['input-tokens'] === undefined && flags['output-tokens'] === undefined ? null :
+  { inputTokens: Number(flags['input-tokens']), outputTokens: Number(flags['output-tokens']) };
 const YES = ['да', 'yes', 'ok', 'y'], NO = ['нет', 'no', 'n'];
 
 export function parse(argv) {
@@ -59,8 +66,25 @@ export function parse(argv) {
 
 const HELP = `Borshkit — Modular AI Workspace
 
-  borshkit начать [--проект путь] [--папка имя] [--только-локально]
+  borshkit начать [--проект путь] [--папка имя] [--только-локально] [--мастер]
       создать пространство в корне проекта и спрятать его от истории проекта
+  borshkit мастер [--диалог]             настройка команды; SETUP.md, выбор сохраняется отдельно
+  borshkit мастер вход codex-app|codex-cli|claude-app|claude-cli|vscode|gemini-cli|other
+  borshkit мастер безопасность строгий|умеренный
+  borshkit мастер среда claude|codex|gemini --модель <id> [--данные no-train|local|unknown]
+  borshkit мастер среда <имя> --файл <манифест.json>
+  borshkit мастер роли architect,implementer,tester,reviewer
+  borshkit мастер предложить | заново    предложение без применения или новый подбор
+  borshkit стенд запустить <исполнитель> --файл набор.json [--вход-токены N --выход-токены N]
+  borshkit стенд предложить --файл отчёт.json     оценка роли из результата стенда
+  borshkit бюджет [показать] | предложить --файл правила.json | сверить <резерв> --файл расход.json
+  borshkit координация зависимости <задача> | итог <задача …>
+  borshkit подтверждение devices | enroll <имя> --file устройство.json | revoke <имя>
+  borshkit подтверждение challenge --file действие.json | apply --file подпись.json
+  borshkit подтверждение serve --origin https://… [--cert файл --key файл | --trusted-proxy]
+  borshkit монитор status | once | start | stop | run [--task задача --roles роли --suggest --cycles 120 --interval 30000]
+  borshkit integration export --host codex|claude|gemini|copilot|roo|cline
+  borshkit portable export --file список-файлов.json --out набор.json | import --file набор.json
   borshkit статус                       что происходит и что ждёт тебя
   borshkit доктор                       проверить окружение и пространство
   borshkit сохранить "что изменилось"   точка возврата в истории пространства
@@ -82,8 +106,16 @@ const HELP = `Borshkit — Modular AI Workspace
   borshkit эксперимент начать | ключ <ИМЯ_ПЕРЕМЕННОЙ> | завершить [--ключи-отозваны]
 
   borshkit исполнители                  кто может работать и что показала проверка
-  borshkit исполнитель добавить claude|codex [--данные no-train|trains|local] | <имя> --файл манифест.json
+  borshkit исполнитель добавить claude|codex|gemini [--данные no-train|trains|local] | <имя> --файл манифест.json
   borshkit исполнитель проверить <имя>  сверить установленную программу или API с тем, что нужно
+  borshkit исполнитель отпечаток <имя>
+  borshkit исполнитель оценить <имя> --роль <роль> --файл assessments/role.md --результат PASS|FAIL --срок <ISO-дата>
+      предложить запись оценки роли; модель должна быть явно закреплена
+  borshkit команда [показать]           модели, подключение, оценки ролей и ресурсы; TEAM.md
+  borshkit команда план|предложить <задача> [--роли architect,implementer,reviewer]
+      объяснимое распределение; предложение настроек не запускает работы
+  borshkit ресурсы записать <исполнитель> --файл ресурсы.json
+      актуальное наблюдение остатка; секреты не сохраняются
   borshkit роли                         роли команды, их навыки и что им нужно от исполнителя
   borshkit навыки [пакет]               пакеты навыков (Ponytail, Emil Kowalski, ECC) и что в них
   borshkit библиотека [категория]       проверенные ссылки: компоненты, анимация, дизайн-системы, доступность …
@@ -128,6 +160,64 @@ async function confirmPerson(question, phrase) {
 }
 const PERSON_ONLY = 'Это может подтвердить только человек в терминале. Запусти команду сам.';
 const open = flags => openSpace(process.cwd(), { folder: flags.folder ?? DEFAULT_FOLDER });
+
+async function setupDialog(space) {
+  assert(process.stdin.isTTY && process.stdout.isTTY, 'Для диалога нужен терминал. Из приложения используй «borshkit мастер» и пошаговые команды.');
+  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+  const ask = async (text, fallback) => (await rl.question(`${text}${fallback ? ` [${fallback}]` : ''}\n> `)).trim() || fallback;
+  try {
+    const draft = await readSetup(space);
+    console.log('Мастер сохранит выбор. Применение настроек и запуск работ выполняются отдельно. Ctrl+C — выйти; завершённые шаги сохранятся.');
+    await updateSetup(space, { host: await ask(`Среда: ${Object.keys(SETUP_HOSTS).join(', ')}`, draft.host ?? 'codex-cli') });
+    const privacy = await ask('Безопасность: строгий (только local/no-train) или умеренный', draft.privacy ?? 'strict');
+    await updateSetup(space, { privacy: MODES[privacy] ?? privacy });
+    const ids = (await ask('Исполнители: claude, codex, gemini через запятую; для API используй мастер среда --файл',
+      Object.keys(draft.executors).filter(id => Object.hasOwn(PRESETS, id)).join(',') || 'codex')).split(',').map(s => s.trim());
+    assert(ids.length && ids.every(id => Object.hasOwn(PRESETS, id)), 'В диалоге выбери claude, codex и/или gemini; остальные подключаются через манифест');
+    await updateSetup(space, { executors: Object.fromEntries(ids.filter(id => draft.executors[id]).map(id => [id, draft.executors[id]])) }, { replaceExecutors: true });
+    for (const id of new Set(ids)) {
+      const current = draft.executors[id] ?? space.settings.executors[id] ?? PRESETS[id];
+      const model = await ask(`${id}: точный ID модели из твоей среды`, current.model);
+      assert(model, 'Модель обязательна; оставлять её на скрытом автоматическом выборе нельзя');
+      const dataPolicy = await ask(`${id}: политика твоего аккаунта — unknown, no-train, local или trains`, current.dataPolicy);
+      await updateSetup(space, { executors: { [id]: { ...current, model, dataPolicy } } });
+    }
+    const roles = (await ask('Обязанности команды — имена ролей через запятую', (draft.roles.length ? draft.roles : DEFAULT_SETUP_ROLES).join(',')))
+      .split(',').map(s => s.trim());
+    await updateSetup(space, { roles });
+    console.log(formatSetup(await writeSetupFiles(space)));
+    if (YES.includes((await ask('Сохранить предложение настроек? Оно не будет применено', 'нет')).toLowerCase())) {
+      const p = await proposeSetup(space);
+      console.log(p ? `Предложено ${p.id}. Следующий шаг: borshkit настройки применить ${p.id}` : 'Выбранные настройки уже действуют. Дальше — проверки подключения и оценки ролей.');
+    }
+  } finally { rl.close(); await writeSetupFiles(space); }
+}
+
+async function setupCommand(space, positional, flags) {
+  const rawSub = positional[0], sub = SUB[rawSub] ?? rawSub ?? 'show';
+  if (flags.interactive) { assert(!flags.json, 'Диалог не используется с --json; выбери пошаговые команды'); await setupDialog(space); }
+  else if (sub === 'вход' || sub === 'host') await updateSetup(space, { host: positional[1] });
+  else if (sub === 'безопасность' || sub === 'privacy') await updateSetup(space, { privacy: MODES[positional[1]] ?? positional[1] });
+  else if (sub === 'среда' || sub === 'executor') {
+    const id = positional[1];
+    assert(id, 'Укажи имя исполнителя');
+    const draft = await readSetup(space);
+    const base = typeof flags.file === 'string' ? await readJSON(path.resolve(flags.file)) :
+      draft.executors[id] ?? space.settings.executors[id] ?? (Object.hasOwn(PRESETS, id) ? PRESETS[id] : null);
+    assert(base, 'Выбери claude, codex, gemini, существующего исполнителя или укажи --файл манифест.json');
+    const manifest = { ...base };
+    for (const [flag, key] of [['model', 'model'], ['command', 'command'], ['data', 'dataPolicy'], ['provider', 'provider']])
+      if (typeof flags[flag] === 'string') manifest[key] = flags[flag];
+    await updateSetup(space, { executors: { [id]: manifest } });
+  } else if (sub === 'роли' || sub === 'roles') {
+    assert(typeof positional[1] === 'string', 'Укажи имена ролей через запятую');
+    await updateSetup(space, { roles: positional[1].split(',').map(s => s.trim()) });
+  } else if (sub === 'заново' || sub === 'reset') await updateSetup(space, {}, { reset: true });
+  else if (sub === 'propose') await proposeSetup(space);
+  else assert(['show', 'list'].includes(sub), 'Шаг мастера: вход, безопасность, среда, роли, предложить или заново');
+  const report = await writeSetupFiles(space);
+  return print(flags, report, formatSetup(report));
+}
 
 async function task(positional, flags) {
   const [rawSub, taskId, ...rest] = positional;
@@ -238,8 +328,7 @@ async function settings([rawSub, ...rest], flags) {
       `Применить: borshkit настройки применить ${p.id}`].join('\n'));
   }
   if (sub === 'apply') {
-    const proposal = await readJSON(path.join(space.dir, 'settings', 'proposals', `${rest[0]}.json`)).catch(() => null);
-    assert(proposal, `Предложения ${rest[0]} нет`);
+    const proposal = await checkProposal(space, rest[0]);
     const weak = proposal.weakens?.length > 0;
     const confirmed = weak && await confirmPerson(`Предложение ${proposal.id} от ${proposal.from} ослабляет защиту:\n  ${proposal.weakens.join('\n  ')}`, 'да, ослабить');
     assert(!weak || confirmed, PERSON_ONLY);
@@ -372,8 +461,9 @@ async function job([rawSub, ...rest], flags) {
     const inPlace = flags['in-place'] === true && await confirmPerson('Проект без Git: агент будет менять файлы прямо в папке проекта, без отдельной копии и без отката через Git. Продолжить?', 'да, в папке');
     assert(flags['in-place'] !== true || inPlace, PERSON_ONLY);
     j = await runJob(space, { taskId: rest[0], role: flags.role, ...opts, inPlace, lens: typeof flags.lens === 'string' ? flags.lens : null,
-      skills: typeof flags.skills === 'string' ? flags.skills.split(',').map(x => x.trim()).filter(Boolean) : [], imagePath: typeof flags.file === 'string' ? flags.file : null });
-  } else if (sub === 'resume') j = await resumeJob(space, rest[0], opts);
+      skills: typeof flags.skills === 'string' ? flags.skills.split(',').map(x => x.trim()).filter(Boolean) : [], imagePath: typeof flags.file === 'string' ? flags.file : null,
+      estimate: executionEstimate(flags) });
+  } else if (sub === 'resume') j = await resumeJob(space, rest[0], { ...opts, estimate: executionEstimate(flags) });
   else throw new Error('Действие — запустить, список или продолжить');
   const words = { COMPLETED: '🟢 готово', FAILED: '🔴 ошибка', STOPPED: '⏹ остановлено', WAITING_HUMAN: '⛔ ждёт тебя' };
   print(flags, j, `${words[j.status] ?? j.status} · работа ${j.id} · исполнитель: ${j.executor ?? '—'}${j.attempts.some(a => a.outcome !== 'ok') ? `\nПопытки: ${j.attempts.map(a => `${a.executor} — ${a.outcome === 'ok' ? 'ок' : FAILURE_WORDS[a.failure] ?? a.outcome}`).join(' → ')}` : ''}${j.status === 'WAITING_HUMAN' ? `\nОтчёт: ${path.join(space.tasks, j.taskId, 'stop-report.md')}` : ''}${j.status === 'COMPLETED' ? `\nДальше: borshkit задача итог ${j.taskId}` : ''}`);
@@ -409,13 +499,95 @@ export async function main(argv = process.argv.slice(2)) {
     else lines.push('Проект без Git: история проекта не ведётся. История пространства — ведётся.');
     lines.push(`Начни отсюда: ${path.join(r.dir, 'START-HERE.md')}`);
     const { space, ...report } = r;
+    await writeTeamFiles(space);
+    const setup = await writeSetupFiles(space);
+    lines.push('Настрой команду: borshkit мастер. Понятный план шагов: SETUP.md.');
+    if (flags.wizard) {
+      if (process.stdin.isTTY && process.stdout.isTTY && !flags.json) await setupDialog(space);
+      else lines.push(formatSetup(setup));
+    }
     return print(flags, report, lines.join('\n'));
+  }
+  if (command === 'setup') return setupCommand(await open(flags), positional.slice(1), flags);
+  if (command === 'integration') {
+    assert(positional[1]==='export','Интеграция: export --host <среда>');
+    const r=await exportInstructions(await open(flags),flags.host);return print(flags,r,`${r.file}\n${r.note}`);
+  }
+  if (command === 'portable') {
+    const space=await open(flags);assert(typeof flags.file==='string' && ['export','import'].includes(positional[1]),'Перенос: export --file список.json --out набор.json или import --file набор.json');
+    assert(positional[1]!=='export' || typeof flags.out==='string','Экспорт требует --out для файла набора');
+    const r=positional[1]==='export'?await exportPortable(space,await readJSON(path.resolve(flags.file)),path.resolve(flags.out)):await importPortable(space,path.resolve(flags.file));
+    return print(flags,r,JSON.stringify(r,null,2));
+  }
+  if (command === 'monitor') {
+    const space=await open(flags), sub=SUB[positional[1]]??positional[1]??'status';
+    const options={taskId:typeof flags.task==='string'?flags.task:undefined,roles:typeof flags.roles==='string'?flags.roles.split(','):undefined,suggest:flags.suggest===true,
+      intervalMs:Number(flags.interval??30000),maxCycles:Number(flags.cycles??120)};
+    assert(['status','once','start','stop','run'].includes(sub),'Монитор: status, once, start, stop или run');
+    const r=sub==='once'?await monitorPulse(space,options):sub==='start'?await startMonitor(space,options):sub==='stop'?await stopMonitor(space):sub==='run'?await runMonitor(space,options):await monitorStatus(space);
+    return print(flags,r,JSON.stringify(r,null,2));
+  }
+  if (command === 'approval') {
+    const space = await open(flags), sub = positional[1] ?? 'devices', options = { store: typeof flags.store === 'string' ? path.resolve(flags.store) : undefined };
+    if (sub === 'devices') { const r = await approvalDevices(space, options); return print(flags, r, r.map(d => `${d.id}: ${d.revoked ? 'отозвано' : d.origin} · ${d.fingerprint}`).join('\n') || 'Нет доверенных устройств.'); }
+    if (['enroll','revoke'].includes(sub)) {
+      assert(await confirmPerson(`${sub === 'enroll' ? 'Сопрячь' : 'Отозвать'} устройство ${positional[2]}? Сверь публичный файл и origin вне агентской сессии.`, 'да, устройство'), PERSON_ONLY);
+      const r = sub === 'enroll' ? await enrollApprovalDevice(space, positional[2], await readJSON(path.resolve(flags.file)), { ...options, confirmedByPerson:true }) : await revokeApprovalDevice(space, positional[2], { ...options, confirmedByPerson:true });
+      return print(flags, r, `Устройство ${r.id}: ${sub === 'enroll' ? 'сопряжено' : 'отозвано'}.`);
+    }
+    if (sub === 'serve') {
+      const server = await startApprovalServer(space, { ...options, origin: flags.origin, port: Number(flags.port ?? 8787), cert: flags.cert, key: flags.key, trustedProxy: flags['trusted-proxy'] === true });
+      console.log(`Подтверждения: ${flags.origin}. Сервис запущен явно; Ctrl+C — остановить.`);
+      for (const sig of ['SIGINT','SIGTERM']) process.once(sig, () => server.close());
+      return;
+    }
+    assert(typeof flags.file === 'string' && ['challenge','apply'].includes(sub), 'Действие: devices, enroll, revoke, serve, challenge или apply --file');
+    const data = await readJSON(path.resolve(flags.file)), r = sub === 'challenge' ? await createApprovalChallenge(space, data, options) : await applyApprovedAction(space, data, options);
+    return print(flags, r, JSON.stringify(r, null, 2));
+  }
+  if (['assessment', 'budget', 'coordination'].includes(command)) {
+    const space = await open(flags), sub = SUB[positional[1]] ?? positional[1] ?? 'show';
+    if (command === 'assessment') {
+      assert(typeof flags.file === 'string', 'Нужен --файл набора заданий или отчёта');
+      if (sub === 'run') {
+        const r = await runAssessment(space, positional[2], await readJSON(path.resolve(flags.file)), { estimate: executionEstimate(flags) });
+        return print(flags, r, `${r.result}: ${r.executorId}/${r.role} · ${r.model}\nОтчёт: ${r.file}\nПредложить оценку: borshkit стенд предложить --файл ${r.file}`);
+      }
+      assert(sub === 'propose', 'Действие стенда — запустить или предложить');
+      const r = await proposeAssessment(space, flags.file);
+      return print(flags, r, `Оценка предложена: ${r.id}. Применение отдельно; приёмка задач не меняется.`);
+    }
+    if (command === 'budget') {
+      if (sub === 'propose') {
+        assert(typeof flags.file === 'string', 'Нужен --файл правил execution');
+        const p = await proposeSettings(space, { execution: await readJSON(path.resolve(flags.file)) }, { reason: 'пределы параллельной работы, бюджет и объявленные тарифы' });
+        return print(flags, p, `Правила предложены: ${p.id}; применение отдельно.`);
+      }
+      if (['сверить', 'reconcile'].includes(sub)) {
+        assert(typeof flags.file === 'string', 'Нужен --файл {tokens, usd, source}');
+        assert(await confirmPerson('Снять неопределённость расхода по проверенному источнику? Это снова разрешит бюджетные вызовы.', 'да, сверить'), PERSON_ONLY);
+        const r = await reconcileExecution(space, positional[2], await readJSON(path.resolve(flags.file)), { confirmedByPerson: true });
+        return print(flags, r, 'Расход записан как заявленная сверка, не как подтверждённый счёт провайдера.');
+      }
+      if (['восстановить', 'recover'].includes(sub)) await recoverExecution(space);
+      else assert(['show', 'list'].includes(sub), 'Действие — показать, предложить, сверить или восстановить');
+      const r = await executionStatus(space);
+      return print(flags, r, `Активных вызовов: ${r.activeRuns}; задач: ${r.activeTasks.length}\nУчтено и зарезервировано: ${r.tokens} токенов; $${r.usd}\nНеопределённых расходов: ${r.unknown.length}. Бюджет ограничивает оценки и наблюдаемый расход; тарифы задаются с источником и сроком.`);
+    }
+    if (['зависимости', 'dependencies'].includes(sub)) {
+      const r = await taskDependencies(space, positional[2]);
+      return print(flags, r, r.length ? r.map(d => `${d.taskId}: ${d.status}`).join('\n') : 'Зависимостей нет.');
+    }
+    assert(['итог', 'consolidate'].includes(sub), 'Действие — зависимости или итог <задачи>');
+    const r = await consolidate(space, positional.slice(2));
+    return print(flags, r, `${r.status}\n${r.rows.map(x=>`${x.taskId}: ${x.status}`).join('\n')}\n${r.note}\nОтчёт: ${r.file}`);
   }
   if (command === 'status') {
     const space = await open(flags);
     if (flags.line) return console.log(await statusLine(space));
     if (flags.watch) {
       for (;;) {
+        space.settings = (await open(flags)).settings;
         await resolveDue(space);
         await writeStatusFiles(space);
         process.stdout.write('\x1b[2J\x1b[H' + `${await statusLine(space)}\n\n${formatCards(await cards(space))}\n\n(Ctrl+C — выйти)\n`);
@@ -432,11 +604,42 @@ export async function main(argv = process.argv.slice(2)) {
     return print(flags, list, list.length ? list.map(e => `${e.probe ? (e.probe.ok ? '✅' : '❌') : '⚪'} ${e.id} · ${e.kind} · ${e.provider} · данные: ${e.dataPolicy} · выход: ${e.modalities.output.join(', ')}${e.probe && !e.probe.ok ? ` · ${e.probe.missing.join('; ')}` : ''}`).join('\n')
       + `${Object.keys(space.settings.pools ?? {}).length ? `\nПулы: ${Object.entries(space.settings.pools).map(([n, p]) => `${n} = ${p.members.join(' → ')}`).join('; ')}` : ''}` : 'Исполнителей пока нет. Добавь: borshkit исполнитель добавить claude');
   }
+  if (command === 'team' || command === 'resources') {
+    const space = await open(flags), sub = SUB[positional[1]] ?? positional[1] ?? 'show';
+    if (command === 'resources' && sub === 'record') {
+      assert(typeof flags.file === 'string', 'Укажи --файл с наблюдением ресурсов');
+      const r = await recordResources(space, positional[2], await readJSON(path.resolve(flags.file)));
+      await writeTeamFiles(space);
+      return print(flags, r, 'Наблюдение записано. Настройки не изменены, работы не запущены.');
+    }
+    if (sub === 'show' || sub === 'list') {
+      const catalog = await writeTeamFiles(space);
+      return print(flags, catalog, formatTeam(catalog));
+    }
+    assert(command === 'team' && ['plan', 'propose'].includes(sub), 'Действие — показать, план, предложить или ресурсы записать');
+    assert(positional[2], 'Укажи задачу');
+    const options = { taskId: positional[2], estimate: executionEstimate(flags), ...(typeof flags.roles === 'string' ? { roles: flags.roles.split(',').map(s => s.trim()) } : {}) };
+    if (sub === 'plan') { const p = await planTeam(space, options); return print(flags, p, formatPlan(p)); }
+    const r = await proposeTeam(space, options, { from: typeof flags.from === 'string' ? flags.from : 'человек' });
+    return print(flags, r, `${formatPlan(r.plan)}\n\nПредложение ${r.proposal.id} до ${r.proposal.expiresAt}. Применить: borshkit настройки применить ${r.proposal.id}\nПосле применения запуск каждой роли выполняется отдельно через --пул team-<роль>.`);
+  }
   if (command === 'executor') {
     const [rawSub, id] = positional.slice(1), sub = SUB[rawSub] ?? rawSub;
     const space = await open(flags);
     assert(id, 'Укажи имя исполнителя');
-    if (sub === 'probe') { const p = await probeExecutor(space, id); return print(flags, p, p.ok ? `✅ ${id} готов${p.version ? ` (${p.version})` : ''}` : `❌ ${id}: ${p.missing.join('; ')}`); }
+    if (sub === 'probe') { const p = await probeExecutor(space, id); return print(flags, p, p.ok ? `✅ ${id}: подключение проверено до ${p.expiresAt}${p.version ? ` (${p.version})` : ''}; качество роли не оценивалось` : `❌ ${id}: ${p.missing.join('; ')}`); }
+    if (sub === 'fingerprint') { assert(space.settings.executors[id], 'Исполнитель не объявлен'); return console.log(executorFingerprint(space.settings.executors[id])); }
+    if (sub === 'qualify') {
+      const e = space.settings.executors[id];
+      assert(e && typeof flags.role === 'string' && typeof flags.file === 'string' && typeof flags.until === 'string', 'Нужны исполнитель, --роль, --файл и --срок');
+      assert((await listRoles()).some(r => r.id === flags.role), 'Неизвестная роль');
+      const evidence = path.relative(space.project, path.resolve(flags.file)).replaceAll('\\', '/');
+      const q = { result: flags.result, at: new Date().toISOString(), expiresAt: flags.until, evidence, evidenceSha: '0'.repeat(64), fingerprint: executorFingerprint(e), roleDigest: await roleFingerprint(await loadRole(flags.role)) };
+      validateExecutor(id, { ...e, qualifications: { ...e.qualifications, [flags.role]: q } });
+      q.evidenceSha = sha(await fs.readFile(await contained(space.project, path.resolve(flags.file))));
+      const p = await proposeSettings(space, { executors: { [id]: { qualifications: { [flags.role]: q } } } }, { reason: `заявленная оценка ${id}/${flags.role}` });
+      return print(flags, p, `Оценка предложена (${p.id}); живой benchmark не запускался. Применить: borshkit настройки применить ${p.id}`);
+    }
     if (sub === 'add') {
       const manifest = typeof flags.file === 'string' ? await readJSON(path.resolve(flags.file)) : { ...PRESETS[id] };
       assert(manifest && manifest.kind, `Готовые исполнители: ${Object.keys(PRESETS).join(', ')}; для остальных — --файл манифест.json`);

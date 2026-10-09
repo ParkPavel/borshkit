@@ -1,0 +1,1 @@
+{"schemaVersion":1,"id":"platform-engineer","title":"Инженер среды и поставки","stage":"work","authority":"workspace-write","output":"files","requires":{"structuredOutput":true,"output":["text","code"]},"crossProvider":false,"packs":[],"timeoutMs":1800000}

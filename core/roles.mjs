@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { ROOT, assert, exists, readJSON } from './io.mjs';
+import { ROOT, assert, exists, readJSON, sha } from './io.mjs';
+import { stableJSON } from './resources.mjs';
 
 // Roles (spec §8): a role is a file, not an agent — purpose, authority, the
 // capabilities it needs, packs, and the shape of its answer.
@@ -64,6 +65,10 @@ export async function loadRole(id) {
   const role = await readJSON(file);
   assert(role.id === id && OUTPUTS.includes(role.output) && ['read-only', 'workspace-write'].includes(role.authority), `Роль ${id} описана неверно`);
   return { ...role, prompt: await fs.readFile(path.join(ROOT, 'roles', `${id}.md`), 'utf8') };
+}
+export async function roleFingerprint(role) {
+  const skills = await Promise.all(role.packs.map(loadSkill));
+  return sha(stableJSON({ role, skills, schema: SCHEMAS[role.output] }));
 }
 
 const cut = (text, max) => text.length > max ? `${text.slice(0, max)}\n…(обрезано, всего ${text.length} символов)` : text;

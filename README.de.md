@@ -3,8 +3,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml"><img src="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml/badge.svg" alt="CI: Linux und Windows"></a>
-  <img src="https://img.shields.io/badge/version-0.11.1-b3261e" alt="Version 0.11.1">
+  <a href="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml"><img src="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml/badge.svg" alt="CI: Linux, Windows und macOS"></a>
+  <img src="https://img.shields.io/badge/version-0.12.0-b3261e" alt="Version 0.12.0">
   <a href="https://github.com/ParkPavel/borshkit/releases"><img src="https://img.shields.io/github/downloads/ParkPavel/borshkit/total?label=Downloads&color=b3261e" alt="Downloads des Release-Archivs"></a>
   <img src="https://img.shields.io/badge/node-%E2%89%A522-2b1d1d" alt="Node.js 22 oder neuer">
   <img src="https://img.shields.io/badge/dependencies-0-2e7d32" alt="keine Abhängigkeiten">
@@ -23,7 +23,25 @@
 
 Du sagst, was herauskommen soll. Die Agenten arbeiten. Borshkit zeigt, was Prüfungen **belegt** haben und was du dir selbst ansehen musst. Dem Wort eines Modells glaubt Borshkit nur, wo du das für diese Art von Kriterium erlaubt hast und eine Messung es stützt.
 
-> **Status: 0.11.1.** Alles, was hier beschrieben ist, funktioniert und ist unter Linux und Windows durch Tests abgedeckt. In den Tests laufen statt echter Modelle Fake-Ausführer. Was noch nicht live ausprobiert wurde, steht unter [Grenzen](#grenzen).
+> **Paketversion: 0.12.0.** Tests verwenden Fake-Ausführer; CI ist für Linux, Windows und macOS eingerichtet. Die Qualität echter Modelle und zukünftige Funktionen gelten nicht als nachgewiesen. [Grenzen](#grenzen).
+
+## Ein sichtbares Team
+
+<p align="center"><img src="assets/diagrams/team.de.svg" alt="Aufgabe → Rolle → Ausführer → Modell/API → Ergebnis → unabhängiges Review; Vorschlag, Anwendung, Start, Prüfung und Abnahme sind getrennt" width="100%"></p>
+
+`borshkit team` zeigt Modelle, Aktualität der Verbindung, Rollenbewertungen, zugewiesene Pools und bekannte Ressourcen. `borshkit team plan <aufgabe>` erklärt Kandidaten und reserviert eine Modellfamilie für unabhängiges Review. `team propose` speichert einen Vorschlag; Anwendung und Arbeitsstart sind getrennte Aktionen. Veraltete Daten verhindern die Anwendung. Kostenloser API-Zugang muss im Konto geprüft werden; unbekannte Restwerte bleiben sichtbar.
+
+Die neue Rolle `design-prompter` erstellt ein Briefing für visuelles Design. Die Modellwahl beruht auf der Rollenbewertung. [Befehle und Formate](docs/reference/team-resources.md) · [Architektur und nächste Etappen](docs/concepts/team-workspace.md) · [Audit](docs/discussions/modernization-2026-10-08.md) (russische Dokumentation).
+
+`borshkit setup` speichert Umgebung, Datenschutz, konkrete Modelle und Rollen. `--interactive` öffnet den Terminaldialog; Schrittbefehle funktionieren aus der App. [Anleitung](docs/guide/setup.md) (Russisch). Kompatibilität und Rollenqualität sind getrennt; ein Vorschlag wendet keine Einstellungen an und startet keine Arbeit.
+
+<p align="center"><img src="assets/diagrams/setup.de.svg" alt="Einrichtung: Umgebung, Datenschutz, Modelle, Aufgaben und Vorschlag; Anwendung, Bewertung, Zuordnung und Start sind getrennt" width="100%"></p>
+
+Passkey-Bestätigung für Einstellungen und kritische Fragen ist nach vertrauenswürdiger Kopplung implementiert. Dazu kommen `assessment`, gemeinsames Budget/WIP, Abhängigkeiten und Checkpoints, explizites `monitor start/stop`, Gemini CLI/API, ein lokales VSIX und Dateiübertragung mit erneuter Prüfung. Copilot/Roo/Cline erhalten exportierte Anweisungen; native Ausführungsadapter werden nicht behauptet. Autopilot bleibt aus.
+
+[Betrieb und Sicherheitsgrenzen](docs/guide/team-operations.md) · [Implementierungsprüfung](docs/discussions/modernization-2026-10-09.md) (Russisch). Lokale Tests ersetzen keine Prüfung echter Modelle, des Telefonbrowsers, von VS Code oder des exakten CI-Commits.
+
+<p align="center"><img src="assets/diagrams/operations.de.svg" alt="Team: Bewertung, Budget, Vorschlag, Passkey und separater Start; Monitor schlägt vor, Übertragung verlangt neue Prüfungen" width="100%"></p>
 >
 > **Hinweis zur Sprache:** Die Meldungen von Borshkit sind vorerst auf Russisch. Jeder Befehl und jedes Flag hat auch einen englischen Namen, und dieses README verwendet sie.
 
@@ -108,7 +126,7 @@ Alle Befehle: [Befehlsreferenz](docs/reference/commands.md) (russische und engli
 | **Abnahme nach Zielen** | Kriterien `auto` / `model` / `manual`, ein Abnahmeblatt, Vertrauensziele für Modelle, durch Messung bestätigt |
 | **Arbeitsbereich** | der Ordner `borshkit/` ist ein Obsidian-Vault mit eigener Historie; die `.gitignore`-Regel wird automatisch eingetragen und geprüft |
 | **Ausführer** | Claude Code, Codex (mit GPT Image), jede OpenAI-kompatible API, deine eigenen Programme; Pools mit Fallback |
-| **17 Rollen** | Architekt, Entwickler, Reviewer, Tester, Rechercheur, Designer, README-Illustrator… |
+| **21 Rollen** | Architekt, Entwickler, Reviewer, Tester, Rechercheur, Designer, Design-Prompt-Autor, README-Illustrator… |
 | **Autopilot** | Routinefragen bekommen nach einer Minute ihre Standardantwort; bei kritischen hält er an, mit Bericht und Übergabe des Kontexts |
 | **Leitstand** | wer den Auftrag bekommen hat, wer arbeitet, was auf dich wartet: im Terminal, in `STATUS.md` und in der Statuszeile von Claude Code |
 | **Recherche** | Quellen werden als Kopien gespeichert; die Prüfung `citations` gleicht jedes Zitat Wort für Wort ab |
@@ -174,7 +192,7 @@ Die Dokumentation ist vorerst auf Russisch:
 ## Entwicklung
 
 ```sh
-npm run verify   # statische Prüfungen und alle Tests; die CI führt sie unter Linux und Windows aus
+npm run verify   # statische Prüfungen und alle Tests; die CI führt sie unter Linux, Windows und macOS aus
 ```
 
 ## Autor

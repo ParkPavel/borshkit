@@ -3,8 +3,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml"><img src="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml/badge.svg" alt="CI：Linux 與 Windows"></a>
-  <img src="https://img.shields.io/badge/version-0.11.1-b3261e" alt="版本 0.11.1">
+  <a href="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml"><img src="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml/badge.svg" alt="CI：Linux、Windows 與 macOS"></a>
+  <img src="https://img.shields.io/badge/version-0.12.0-b3261e" alt="版本 0.12.0">
   <a href="https://github.com/ParkPavel/borshkit/releases"><img src="https://img.shields.io/github/downloads/ParkPavel/borshkit/total?label=%E4%B8%8B%E8%BC%89&color=b3261e" alt="發布封存檔下載次數"></a>
   <img src="https://img.shields.io/badge/node-%E2%89%A522-2b1d1d" alt="Node.js 22 或更新版本">
   <img src="https://img.shields.io/badge/dependencies-0-2e7d32" alt="零相依套件">
@@ -23,7 +23,25 @@
 
 你說明想要的結果，代理負責動手。Borshkit 會告訴你哪些已經由檢查**證明**，哪些需要你自己看一下。只有在你允許該類準則採信模型、而且有實際量測支持時，Borshkit 才會採信模型的話。
 
-> **狀態：0.11.1。** 以下所有功能都能運作，並在 Linux 和 Windows 上有測試涵蓋。測試用假的執行者代替真正的模型。還沒實際試過的部分列在[限制](#限制)。
+> **套件版本：0.12.0。** 測試使用假的執行者；CI 以 Linux、Windows 和 macOS 為目標。不宣稱真實模型品質或未來功能已經驗證。[限制](#限制)。
+
+## 看得見的團隊
+
+<p align="center"><img src="assets/diagrams/team.zh-TW.svg" alt="任務 → 角色 → 執行者 → 模型/API → 結果 → 獨立審查；提案、套用、啟動、驗證與驗收是不同階段" width="100%"></p>
+
+`borshkit team` 顯示模型、連線檢查的新鮮度、角色評估、已分配的池及已知資源。`borshkit team plan <任務>` 說明候選者並保留獨立審查用的模型家族。`team propose` 儲存設定提案；套用與啟動工作分開執行。過期資料會阻止套用。免費 API 資格須在帳號中確認；未知餘額明確標示。
+
+新增的 `design-prompter` 角色撰寫視覺設計需求。模型依角色評估選擇，而非品牌。[指令與格式](docs/reference/team-resources.md) · [架構與後續階段](docs/concepts/team-workspace.md) · [稽核](docs/discussions/modernization-2026-10-08.md)（俄文文件）。
+
+`borshkit setup` 儲存環境、隱私、明確模型及角色選擇。終端機使用 `--interactive`；應用程式可使用逐步指令。[指南](docs/guide/setup.md)（俄文）。相容性與角色品質分開；提案不會套用設定或啟動工作。
+
+<p align="center"><img src="assets/diagrams/setup.zh-TW.svg" alt="設定：環境、隱私、模型、職責、提案；套用、評估、指派及啟動分開" width="100%"></p>
+
+可信任的初次配對後，可使用手機 passkey 確認設定與重要問題。已加入 `assessment`、共用預算/WIP、任務依賴及檢查點、明確的 `monitor start/stop`、Gemini CLI/API、本機 VSIX，以及需要重新驗證的檔案移轉。Copilot/Roo/Cline 使用匯出的指示；不宣稱提供原生執行轉接器。自動駕駛保持關閉。
+
+[操作及安全限制](docs/guide/team-operations.md) · [實作檢查](docs/discussions/modernization-2026-10-09.md)（俄文）。本機測試不能取代真實模型、手機瀏覽器、VS Code 及確切提交版本的 CI 驗證。
+
+<p align="center"><img src="assets/diagrams/operations.zh-TW.svg" alt="團隊：評估、預算、提案、passkey 與獨立啟動；監控提出建議，移轉需重新驗證" width="100%"></p>
 >
 > **語言說明：** Borshkit 的訊息目前是俄文。每個指令和旗標也都有英文名稱，本 README 使用的就是英文名稱。
 
@@ -108,7 +126,7 @@ borshkit merge theme && borshkit push             # 合併進主版本並推送�
 | **依目標驗收** | `auto` / `model` / `manual` 準則、驗收清單，以及經過量測確認的模型信任目標 |
 | **工作區** | `borshkit/` 資料夾是一個有自己版本歷史的 Obsidian vault；`.gitignore` 規則會自動加入並檢查 |
 | **執行者** | Claude Code、Codex（含 GPT Image）、任何相容 OpenAI 的 API、你自己的程式；可自動遞補的執行者池 |
-| **17 種角色** | 架構師、開發者、審查者、測試人員、研究員、設計師、README 插畫師…… |
+| **21 種角色** | 架構師、開發者、審查者、測試人員、研究員、設計師、設計提示詞作者、README 插畫師…… |
 | **自動駕駛** | 例行問題在一分鐘後套用預設答案；關鍵問題會停下來，附上報告並交接脈絡 |
 | **調度台** | 工作交給了誰、誰正在做、什麼在等你：顯示在終端機、`STATUS.md` 和 Claude Code 狀態列 |
 | **研究** | 來源以副本保存；`citations` 檢查會逐字核對每一段引文 |

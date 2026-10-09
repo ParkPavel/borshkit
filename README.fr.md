@@ -3,8 +3,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml"><img src="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml/badge.svg" alt="CI : Linux et Windows"></a>
-  <img src="https://img.shields.io/badge/version-0.11.1-b3261e" alt="version 0.11.1">
+  <a href="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml"><img src="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml/badge.svg" alt="CI : Linux, Windows et macOS"></a>
+  <img src="https://img.shields.io/badge/version-0.12.0-b3261e" alt="version 0.12.0">
   <a href="https://github.com/ParkPavel/borshkit/releases"><img src="https://img.shields.io/github/downloads/ParkPavel/borshkit/total?label=t%C3%A9l%C3%A9chargements&color=b3261e" alt="téléchargements de l’archive des versions"></a>
   <img src="https://img.shields.io/badge/node-%E2%89%A522-2b1d1d" alt="Node.js 22 ou plus récent">
   <img src="https://img.shields.io/badge/dependencies-0-2e7d32" alt="zéro dépendance">
@@ -23,7 +23,25 @@
 
 Tu dis ce que tu veux obtenir. Les agents font le travail. Borshkit montre ce qui est **prouvé** par des vérifications et ce que tu dois regarder toi-même. Borshkit ne croit un modèle sur parole que là où tu l’as autorisé pour ce type de critère et qu’une mesure le confirme.
 
-> **Statut : 0.11.1.** Tout ce qui suit fonctionne et est couvert par des tests sous Linux et Windows. Les tests utilisent de faux exécutants à la place de vrais modèles. Ce qui n’a pas encore été essayé en conditions réelles est listé dans [Limites](#limites).
+> **Version du paquet : 0.12.0.** Les tests utilisent de faux exécutants ; la CI cible Linux, Windows et macOS. La qualité des modèles réels et les fonctions futures ne sont pas présentées comme validées. [Limites](#limites).
+
+## Une équipe visible
+
+<p align="center"><img src="assets/diagrams/team.fr.svg" alt="Tâche → rôle → exécutant → modèle/API → résultat → revue indépendante ; proposition, application, lancement, vérification et acceptation sont séparés" width="100%"></p>
+
+`borshkit team` affiche les modèles, la fraîcheur des vérifications, les évaluations par rôle, les pools attribués et les ressources connues. `borshkit team plan <tâche>` explique les candidats et réserve une famille de modèles pour la revue indépendante. `team propose` enregistre une proposition ; application et lancement sont distincts. Des données périmées bloquent l’application. La gratuité des API doit être vérifiée dans le compte ; les soldes inconnus restent explicites.
+
+Le nouveau rôle `design-prompter` rédige un brief de design visuel. Le modèle est choisi selon une évaluation du rôle. [Commandes et formats](docs/reference/team-resources.md) · [Architecture et prochaines étapes](docs/concepts/team-workspace.md) · [Audit](docs/discussions/modernization-2026-10-08.md) (documentation russe).
+
+`borshkit setup` enregistre l’environnement, la confidentialité, les modèles explicites et les rôles. `--interactive` ouvre le dialogue du terminal ; les commandes par étape fonctionnent depuis l’application. [Guide](docs/guide/setup.md) (russe). Compatibilité et qualité du rôle sont distinctes ; une proposition n’applique pas les réglages et ne lance pas le travail.
+
+<p align="center"><img src="assets/diagrams/setup.fr.svg" alt="Configuration : environnement, confidentialité, modèles, responsabilités et proposition ; application, évaluation, affectation et lancement séparés" width="100%"></p>
+
+La confirmation par passkey des réglages et questions critiques est implémentée après un appairage de confiance. La branche ajoute `assessment`, budget/WIP communs, dépendances et checkpoints, `monitor start/stop` explicite, Gemini CLI/API, un VSIX local et le transfert de fichiers avec de nouvelles vérifications. Copilot/Roo/Cline reçoivent des instructions exportées ; aucun exécuteur natif n’est annoncé. L’autopilote reste désactivé.
+
+[Exploitation et limites de sécurité](docs/guide/team-operations.md) · [Contrôle de l’implémentation](docs/discussions/modernization-2026-10-09.md) (russe). Les tests locaux ne remplacent pas les validations du modèle réel, du navigateur du téléphone, de VS Code et du commit CI exact.
+
+<p align="center"><img src="assets/diagrams/operations.fr.svg" alt="Équipe : évaluation, budget, proposition, passkey et lancement séparé ; le moniteur propose, le transfert demande de nouvelles vérifications" width="100%"></p>
 >
 > **Note sur la langue :** pour l’instant, les messages de Borshkit sont en russe. Chaque commande et chaque option a aussi un nom anglais, et ce README utilise ces noms-là.
 
@@ -108,7 +126,7 @@ Toutes les commandes : [référence des commandes](docs/reference/commands.md) 
 | **Recette par objectifs** | critères `auto` / `model` / `manual`, une feuille de recette, des objectifs de confiance envers les modèles, confirmés par la mesure |
 | **Espace de travail** | le dossier `borshkit/` est un coffre Obsidian avec son propre historique ; la règle `.gitignore` est ajoutée et vérifiée automatiquement |
 | **Exécutants** | Claude Code, Codex (avec GPT Image), toute API compatible OpenAI, tes propres programmes ; des pools avec bascule |
-| **17 rôles** | architecte, développeur, relecteurs, testeur, chercheur, designers, illustrateur de README… |
+| **21 rôles** | architecte, développeur, relecteurs, testeur, chercheur, designers, auteur de prompts de design, illustrateur de README… |
 | **Pilote automatique** | les questions de routine reçoivent leur réponse par défaut au bout d’une minute ; les questions critiques arrêtent tout, avec un rapport et une passation du contexte |
 | **Tableau de bord** | qui a reçu le travail, qui travaille, ce qui t’attend : dans le terminal, dans `STATUS.md` et dans la ligne d’état de Claude Code |
 | **Recherche** | les sources sont conservées en copie ; la vérification `citations` contrôle chaque citation mot pour mot |
@@ -174,7 +192,7 @@ La documentation est en russe pour l’instant :
 ## Développement
 
 ```sh
-npm run verify   # vérifications statiques et tous les tests ; la CI les lance sous Linux et Windows
+npm run verify   # vérifications statiques et tous les tests ; la CI les lance sous Linux, Windows et macOS
 ```
 
 ## Auteur

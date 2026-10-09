@@ -1,0 +1,8 @@
+{
+  "name": "Borshkit Node 22",
+  "build": {"dockerfile":"../Dockerfile","context":".."},
+  "overrideCommand": true,
+  "remoteUser": "node",
+  "customizations": {"vscode":{"extensions":[],"settings":{"terminal.integrated.defaultProfile.linux":"bash"}}},
+  "postCreateCommand": "node --version && git --version"
+}

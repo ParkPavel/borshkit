@@ -5,6 +5,10 @@ documents: ["../../bin/borshkit.mjs"]
 ---
 # Все команды
 
+Мастер: `borshkit мастер [--диалог]`, `мастер вход <среда>`, `мастер безопасность строгий|умеренный`, `мастер среда <исполнитель> --модель <id> --данные <политика>` или `--файл <манифест.json>`, `мастер роли <имена-через-запятую>`, `мастер предложить`, `мастер заново`. Английские имена: `setup host|privacy|executor|roles|propose|reset`, `--interactive`. Выбор и предложение доступны без TTY; применение ослабления требует человека в терминале. [Руководство](../guide/setup.md).
+
+Команда и ресурсы: `borshkit команда`, `команда план|предложить <задача> --роли architect,implementer,reviewer`, `ресурсы записать <исполнитель> --файл resources.json`, `исполнитель отпечаток <имя>`, `исполнитель оценить <имя> --роль <роль> --файл assessments/role.md --результат PASS|FAIL --срок <ISO-дата>`. Английские имена: `team show|plan|propose`, `resources record`, `executor fingerprint|qualify`. Форматы и ограничения — [Команда и ресурсы](team-resources.md).
+
 У каждой команды есть русское и английское имя. Флаги тоже: `--цель` = `--goal`. Сообщения Borshkit пока только на русском. `--json` у любой команды даёт ответ для программ. `borshkit помощь` (`help`) печатает краткую справку.
 
 Команда `borsch` — то же самое, что `borshkit`.
@@ -98,6 +102,22 @@ documents: ["../../bin/borshkit.mjs"]
 | `оценка запустить --скрытые скрытые.json` | `eval run` | ложные PASS, вмешательства, расход |
 | `оценка доверие <метка> [--семейство openai] [--порог 0.05]` | `eval trust` | можно ли верить PASS модели этого семейства по этой метке |
 | `hook session-start\|pre-tool` | `hook` | вызывается плагином Claude Code |
+
+## Команда, согласие и перенос (0.12.0)
+
+\| Команда \| Что делает \|
+\|---\|---\|
+\| `assessment run <executor> --file suite.json` / `propose --file report.json` \| явный стенд и отдельное предложение квалификации \|
+\| `budget show` / `propose --file policy.json` / `reconcile <id> --file usage.json` / `recover` \| общий расход, пределы, сверка владельцем и UNKNOWN после обрыва \|
+\| `coordination dependencies <task>` / `consolidate <tasks…>` \| проверенные зависимости и снимок консолидации \|
+\| `approval devices` / `enroll <id> --file descriptor.json` / `revoke <id>` \| доверенное сопряжение и отзыв владельцем \|
+\| `approval serve --origin https://… --trusted-proxy` \| явный локальный сервис за доверенным TLS proxy \|
+\| `approval challenge --file action.json` / `apply --file assertion.json` \| подписанное точное действие без TTY после сопряжения \|
+\| `monitor status\|start\|stop\|run\|once` \| управляемый процесс, наблюдения и необязательные предложения \|
+\| `integration export --host codex\|claude\|gemini\|copilot\|roo\|cline` \| инструкции среды без перезаписи пользовательского файла \|
+\| `portable export --file paths.json --out capsule.json` / `import --file capsule.json` \| явные исходники с SHA; настройки как предложение, новые проверки обязательны \|
+
+Подробные схемы, команды и ограничения: [операционное руководство](../guide/team-operations.md). Русские имена: `стенд`, `бюджет`, `координация`, `подтверждение`, `монитор`, `интеграция`, `перенос`.
 
 ## Связи
 

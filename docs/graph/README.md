@@ -6,7 +6,7 @@ related: ["../README.md", "../concepts/knowledge.md"]
 
 Эту страницу Borshkit написал сам: собрал свою базу знаний по этому репозиторию и выгрузил её. Команда — `node scripts/docs-graph.mjs`.
 
-Всего в графе: модулей 31, тестов 17, документов 82, связей 876.
+Всего в графе: модулей 46, тестов 26, документов 92, связей 1281.
 
 - [`borshkit.sql`](borshkit.sql) — весь граф одним SQL-скриптом. Загрузить: `sqlite3 graph.db < borshkit.sql`, потом спрашивать, например, `SELECT * FROM undocumented_modules;`.
 - Ниже — карта документов: стрелка значит «ссылается на». GitHub рисует её сам (Mermaid).
@@ -27,20 +27,26 @@ flowchart LR
   n11["Исследования: источники и цитаты"]
   n12["Роли и навыки"]
   n13["Пространство и Git простыми словами"]
-  n14["Ответ на независимый аудит 0.10.1"]
-  n15["Черновик обсуждения: резервная копия истории пространства"]
-  n16["Быстрый старт: первая задача"]
-  n17["Рецепт: из чего сварен Borshkit"]
-  n18["Все команды"]
-  n19["Формат задачи (contract.json)"]
-  n20["Библиотека: навыки и проверенные ссылки"]
+  n14["Borshkit как профессиональная команда"]
+  n15["Ответ на независимый аудит 0.10.1"]
+  n16["Аудит и программа модернизации — 2026-10-08"]
+  n17["Контроль модернизации — 2026-10-09"]
+  n18["Черновик обсуждения: резервная копия истории пространства"]
+  n19["Быстрый старт: первая задача"]
+  n20["Мастер настройки команды"]
+  n21["Работа команды, телефон и перенос"]
+  n22["Рецепт: из чего сварен Borshkit"]
+  n23["Все команды"]
+  n24["Формат задачи (contract.json)"]
+  n25["Команда, оценки ролей и ресурсы"]
+  n26["Библиотека: навыки и проверенные ссылки"]
   n0 --> n9
-  n0 --> n17
-  n0 --> n20
+  n0 --> n22
+  n0 --> n26
   n1 --> n0
   n1 --> n2
   n1 --> n9
-  n1 --> n17
+  n1 --> n22
   n2 --> n0
   n2 --> n1
   n2 --> n3
@@ -48,10 +54,17 @@ flowchart LR
   n2 --> n6
   n2 --> n7
   n2 --> n13
+  n2 --> n14
   n2 --> n16
   n2 --> n17
-  n2 --> n18
+  n2 --> n19
   n2 --> n20
+  n2 --> n21
+  n2 --> n22
+  n2 --> n23
+  n2 --> n25
+  n2 --> n26
+  n3 --> n21
   n4 --> n5
   n4 --> n6
   n4 --> n7
@@ -68,11 +81,17 @@ flowchart LR
   n4 --> n18
   n4 --> n19
   n4 --> n20
+  n4 --> n21
+  n4 --> n22
+  n4 --> n23
+  n4 --> n24
+  n4 --> n25
+  n4 --> n26
   n5 --> n6
   n5 --> n11
   n5 --> n12
-  n5 --> n14
-  n5 --> n19
+  n5 --> n15
+  n5 --> n24
   n6 --> n5
   n6 --> n8
   n7 --> n10
@@ -86,8 +105,8 @@ flowchart LR
   n8 --> n11
   n8 --> n12
   n8 --> n13
-  n8 --> n16
   n8 --> n19
+  n8 --> n24
   n9 --> n8
   n9 --> n13
   n10 --> n3
@@ -98,31 +117,68 @@ flowchart LR
   n12 --> n5
   n12 --> n7
   n12 --> n10
-  n12 --> n17
-  n12 --> n20
+  n12 --> n22
+  n12 --> n26
   n13 --> n7
   n13 --> n9
   n13 --> n10
-  n13 --> n15
-  n14 --> n0
-  n14 --> n3
-  n14 --> n5
-  n14 --> n6
-  n14 --> n10
-  n15 --> n13
-  n16 --> n5
-  n16 --> n7
-  n16 --> n8
-  n16 --> n18
+  n13 --> n18
+  n14 --> n4
+  n14 --> n7
+  n14 --> n12
+  n14 --> n16
+  n14 --> n17
+  n14 --> n20
+  n14 --> n21
+  n14 --> n25
+  n15 --> n0
+  n15 --> n3
+  n15 --> n5
+  n15 --> n6
+  n15 --> n10
+  n16 --> n14
+  n16 --> n15
+  n16 --> n17
+  n16 --> n20
+  n16 --> n21
+  n16 --> n25
+  n17 --> n14
+  n17 --> n16
   n17 --> n20
-  n18 --> n8
-  n18 --> n16
-  n18 --> n19
+  n17 --> n21
+  n18 --> n13
   n19 --> n5
-  n19 --> n11
-  n19 --> n18
-  n20 --> n12
-  n20 --> n17
+  n19 --> n7
+  n19 --> n8
+  n19 --> n20
+  n19 --> n23
+  n20 --> n14
+  n20 --> n16
+  n20 --> n19
+  n20 --> n21
+  n20 --> n23
+  n20 --> n25
+  n21 --> n14
+  n21 --> n17
+  n21 --> n20
+  n21 --> n23
+  n21 --> n25
+  n22 --> n26
+  n23 --> n8
+  n23 --> n19
+  n23 --> n20
+  n23 --> n21
+  n23 --> n24
+  n23 --> n25
+  n24 --> n5
+  n24 --> n11
+  n24 --> n23
+  n25 --> n14
+  n25 --> n19
+  n25 --> n21
+  n25 --> n23
+  n26 --> n12
+  n26 --> n22
 ```
 
 ## Документы и код, который они описывают
@@ -143,14 +199,21 @@ flowchart LR
 | [Исследования: источники и цитаты](../concepts/research.md) | понятие | `core/citations.mjs`, `core/materials.mjs` |
 | [Роли и навыки](../concepts/roles-and-skills.md) | понятие | `core/roles.mjs` |
 | [Пространство и Git простыми словами](../concepts/space.md) | понятие | `core/gitshell.mjs`, `core/hooks.mjs`, `core/space.mjs`, `core/status.mjs` |
+| [Borshkit как профессиональная команда](../concepts/team-workspace.md) | понятие | `core/resources.mjs`, `core/team.mjs` |
 | [Ответ на независимый аудит 0.10.1](../discussions/audit-2026-10-07.md) | — | `core/accept.mjs`, `core/adapters.mjs`, `core/eval.mjs`, `core/gitshell.mjs`, `core/jobs.mjs`, `core/snapshot.mjs` |
+| [Аудит и программа модернизации — 2026-10-08](../discussions/modernization-2026-10-08.md) | справка | — |
+| [Контроль модернизации — 2026-10-09](../discussions/modernization-2026-10-09.md) | справка | — |
 | [Черновик обсуждения: резервная копия истории пространства](../discussions/space-history-backup.md) | — | — |
 | [Быстрый старт: первая задача](../guide/quickstart.md) | руководство | — |
+| [Мастер настройки команды](../guide/setup.md) | руководство | `bin/borshkit.mjs`, `core/setup.mjs` |
+| [Работа команды, телефон и перенос](../guide/team-operations.md) | руководство | `bin/monitor-worker.mjs`, `core/adapters.mjs`, `core/approval-server.mjs`, `core/approvals.mjs`, `core/assessments.mjs`, `core/integrations.mjs`, `core/monitor.mjs`, `core/operations.mjs`, `core/portable.mjs` |
 | [Рецепт: из чего сварен Borshkit](../ingredients.md) | справка | — |
 | [Все команды](../reference/commands.md) | справка | `bin/borshkit.mjs` |
 | [Формат задачи (contract.json)](../reference/contract.md) | справка | `core/contract.mjs` |
+| [Команда, оценки ролей и ресурсы](../reference/team-resources.md) | справка | `core/config.mjs`, `core/executors.mjs`, `core/resources.mjs`, `core/roles.mjs`, `core/team.mjs` |
 | [Библиотека: навыки и проверенные ссылки](../../library/README.md) | справка | — |
 
 ## Модули ядра без документации
 
-Таких нет.
+- `core/builtins.mjs`
+- `core/process.mjs`

@@ -12,6 +12,8 @@ on:
         required: true
 permissions:
   contents: write
+  id-token: write
+  attestations: write
 jobs:
   archive:
     runs-on: ubuntu-latest
@@ -32,11 +34,24 @@ jobs:
             echo "Тег $TAG, а в package.json $version" >&2
             exit 1
           fi
+          node -e "const fs=require('fs');const v=require('./package.json').version;for(const f of ['.claude-plugin/plugin.json','integrations/vscode/package.json'])if(JSON.parse(fs.readFileSync(f)).version!==v)process.exit(1)"
       - run: npm run verify
       - run: |
-          npm pack
-          mv borshkit-*.tgz borshkit.tgz
+          release_dir="$RUNNER_TEMP/borshkit-release"
+          mkdir -p "$release_dir"
+          npm pack --pack-destination "$release_dir"
+          mv "$release_dir"/borshkit-*.tgz "$release_dir/borshkit.tgz"
+          node scripts/vsix.mjs "$release_dir/borshkit.vsix"
+          node scripts/provenance.mjs "$release_dir/borshkit.tgz" "$release_dir/borshkit.vsix"
+      - name: Подписанное происхождение архивов GitHub
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v3, verified ref 2026-10-09
+        with:
+          subject-path: |
+            ${{ runner.temp }}/borshkit-release/borshkit.tgz
+            ${{ runner.temp }}/borshkit-release/borshkit.vsix
       - name: Приложить к релизу
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload "$TAG" borshkit.tgz --clobber --repo "$GITHUB_REPOSITORY"
+        run: |
+          release_dir="$RUNNER_TEMP/borshkit-release"
+          gh release upload "$TAG" "$release_dir/borshkit.tgz" "$release_dir/borshkit.vsix" "$release_dir/SHA256SUMS" "$release_dir/build-provenance.json" --repo "$GITHUB_REPOSITORY"

@@ -1,0 +1,1 @@
+{"kind":"gemini-api","provider":"google","service":"google","baseUrl":"https://generativelanguage.googleapis.com/v1beta/","model":"gemini-2.5-flash-image","apiKeyEnv":"GEMINI_API_KEY","dataPolicy":"unknown","structuredOutput":"json_mode","modalities":{"output":["text","image"]}}
