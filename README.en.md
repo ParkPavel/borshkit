@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml"><img src="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml/badge.svg" alt="CI: Linux and Windows"></a>
+  <a href="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml"><img src="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml/badge.svg" alt="CI: Linux, Windows and macOS"></a>
   <img src="https://img.shields.io/badge/version-0.12.0-b3261e" alt="version 0.12.0">
   <a href="https://github.com/ParkPavel/borshkit/releases"><img src="https://img.shields.io/github/downloads/ParkPavel/borshkit/total?label=downloads&color=b3261e" alt="release archive downloads"></a>
   <img src="https://img.shields.io/badge/node-%E2%89%A522-2b1d1d" alt="Node.js 22 or newer">
@@ -23,7 +23,7 @@
 
 You say what should come out. Agents do the work. Borshkit shows what has been **proven** by checks and what you need to look at yourself. Borshkit takes a model’s word only where you allowed it for that kind of criterion and a measurement backs it.
 
-> **Version in this branch: 0.12.0, preparing release.** Tests use fake executors; CI targets Linux and Windows. Live model quality and future features are not claimed as implemented. [Limits](#limits).
+> **Package version: 0.12.0.** Tests use fake executors; CI targets Linux, Windows and macOS. Live model quality and future features are not claimed as implemented. [Limits](#limits).
 
 ## A visible team
 
@@ -33,7 +33,15 @@ You say what should come out. Agents do the work. Borshkit shows what has been *
 
 The new `design-prompter` role writes a visual design brief. Choose a model using a role assessment rather than its brand. [Commands and formats](docs/reference/team-resources.md) · [Team architecture and next stages](docs/concepts/team-workspace.md) · [Audit](docs/discussions/modernization-2026-10-08.md) (Russian documentation).
 
-The setup wizard, secure phone approvals, native Gemini/IDE adapters and a background service are still planned. Codex and Claude Code are the main entry points through their available tools; the host transcribes voice. `status --watch` runs while the CLI remains active. Autopilot defaults to off.
+`borshkit setup` saves the host, privacy, explicit models and roles. Use `--interactive` in a terminal or step commands from an app. [Guide](docs/guide/setup.md) (Russian). Compatibility is separate from role quality; a proposal neither applies settings nor launches work.
+
+<p align="center"><img src="assets/diagrams/setup.en.svg" alt="Setup: host, privacy, models, responsibilities and proposal; application, assessments, routing and launch are separate" width="100%"></p>
+
+Passkey approval for settings and critical questions is implemented after trusted enrollment. The branch adds `assessment`, shared budget/WIP, dependencies and checkpoints, explicit `monitor start/stop`, Gemini CLI/API, a local VSIX and explicit source transfer with fresh verification. Copilot/Roo/Cline use instruction exports; native executors are not claimed. Autopilot stays off.
+
+[Operations and security limits](docs/guide/team-operations.md) · [Implementation audit](docs/discussions/modernization-2026-10-09.md) (Russian). Local tests do not substitute for real model, phone browser, VS Code or exact-commit CI validation.
+
+<p align="center"><img src="assets/diagrams/operations.en.svg" alt="Team: assessment, budget, proposal, passkey and separate launch; monitor suggests, transfer requires fresh checks" width="100%"></p>
 >
 > **Language note:** Borshkit's messages are in Russian for now. Every command and flag also has an English name, and this README uses those.
 
@@ -118,7 +126,7 @@ All commands: [command reference](docs/reference/commands.md) (Russian and Engli
 | **Acceptance by goals** | `auto` / `model` / `manual` criteria, an acceptance sheet, trust goals for models confirmed by measurement |
 | **Workspace** | the `borshkit/` folder is an Obsidian vault with its own history; the `.gitignore` rule is added and checked automatically |
 | **Executors** | Claude Code, Codex (with GPT Image), any OpenAI-compatible API, your own programs; pools with fallback |
-| **18 roles** | architect, developer, reviewers, tester, researcher, designers, design prompt author, README illustrator… |
+| **21 roles** | architect, developer, reviewers, tester, researcher, designers, design prompt author, README illustrator… |
 | **Autopilot** | routine questions get their default answer after a minute; critical ones stop with a report and a context hand-over |
 | **Dispatcher** | who got the job, who is working, what waits for you: in the terminal, in `STATUS.md` and in the Claude Code status line |
 | **Research** | sources are stored as copies; the `citations` check verifies every quote word for word |
@@ -184,7 +192,7 @@ The documentation is in Russian for now:
 ## Development
 
 ```sh
-npm run verify   # static checks and all tests; CI runs them on Linux and Windows
+npm run verify   # static checks and all tests; CI runs them on Linux, Windows and macOS
 ```
 
 ## Author

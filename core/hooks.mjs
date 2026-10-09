@@ -45,6 +45,7 @@ export async function runHook(name, input) {
       ...questions.map(q => `${q.kind === 'critical' ? 'Критический вопрос' : 'Вопрос'} ${q.id}: ${q.text}`),
       'Это проект с пространством Borshkit (папка borshkit/). Начни с borshkit/START-HERE.md и borshkit/STATUS.md.',
       'Команда и ресурсы: borshkit команда; актуальные оценки ролей и план: borshkit команда план <задача>. Предложение, применение и запуск — отдельные действия.',
+      'Первичная настройка или продолжение выбора: borshkit мастер; отчёт — SETUP.md. Голос обрабатывает основная среда; удалённое подтверждение защиты пока недоступно.',
       'Не правь borshkit/settings и доказательства задач — пользуйся командами borshkit. «Готово» — не приёмка: принимает Borshkit по доказательствам и человек.'];
     return { hookSpecificOutput: { hookEventName: 'SessionStart', additionalContext: lines.join('\n') } };
   }

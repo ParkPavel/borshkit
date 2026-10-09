@@ -21,6 +21,8 @@ export const covered = (file, scope) => scope.some(p => p === '.' || norm(file) 
 export function validateContract(c) {
   assert(c && c.schemaVersion === 2, 'Неподдерживаемая версия контракта');
   id(c.taskId);
+  assert(c.dependencies === undefined || Array.isArray(c.dependencies) && new Set(c.dependencies).size === c.dependencies.length
+    && c.dependencies.every(d => typeof d === 'string' && ID.test(d) && d !== c.taskId), 'dependencies — разные задачи, кроме самой задачи');
   assert(KINDS.includes(c.kind), `Вид задачи — один из: ${KINDS.join(', ')}`);
   assert(nonempty(c.goal), 'У задачи нет цели');
   assert(strings(c.nonGoals) && strings(c.decisions), 'nonGoals и decisions — списки строк');

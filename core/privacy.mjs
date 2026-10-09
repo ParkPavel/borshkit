@@ -61,6 +61,11 @@ export function weakenings(before, after) {
   if (STRICTNESS[after.privacy] < STRICTNESS[before.privacy]) out.push(`режим приватности: ${PRIVACY_WORDS[before.privacy]} → ${PRIVACY_WORDS[after.privacy]}`);
   if (!before.autopilot && after.autopilot) out.push('включение автопилота: рутинные вопросы будут решаться без тебя');
   if ((before.trustedAgent ?? null) !== (after.trustedAgent ?? null)) out.push(`доверенный агент: ${before.trustedAgent ?? 'нет'} → ${after.trustedAgent ?? 'нет'}`);
+  for (const key of ['maxActiveRuns', 'maxActiveTasks', 'tokenBudget', 'usdBudget']) {
+    const old = before.execution?.[key], next = after.execution?.[key];
+    if (old != null && (next == null || next > old)) out.push(`предел execution.${key}: ${old} → ${next ?? 'без предела'}`);
+  }
+  if (JSON.stringify(before.execution?.rates ?? {}) !== JSON.stringify(after.execution?.rates ?? {})) out.push('тарифы моделей изменены — проверь источник и срок');
   for (const [tag, goal] of Object.entries(after.acceptance?.modelTrust ?? {})) {
     const old = before.acceptance?.modelTrust?.[tag];
     if (!old) out.push(`новая цель доверия «${tag}»: модель сможет закрывать такие критерии сама`);

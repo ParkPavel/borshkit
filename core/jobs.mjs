@@ -15,6 +15,7 @@ import { answer, ask, criticalStop, getQuestion, resolveDue } from './questions.
 import { writeStatusFiles } from './dispatch.mjs';
 import { qualification } from './team.mjs';
 import { executorFingerprint, fresh, readResources, recordResources, resourcesFor } from './resources.mjs';
+import { assertDependencies, reserveExecution, settleExecution } from './operations.mjs';
 
 // Jobs (spec §4.3, §10.3, §10.4): one role, one task, executors tried in order.
 // A limit hands the work to the next allowed executor in the pool; silence
@@ -80,6 +81,19 @@ async function changedFiles(repo, base) {
 async function knowledgeContext(space, taskId) {
   try { return (await import('./kb.mjs')).taskContext(space, taskId); } catch { return null; }
 }
+async function sourceContext(space, contract, root) {
+  // Tool-free executors receive only explicitly scoped tracked text. They do
+  // not gain a shell/file tool to compensate for missing context.
+  const names=(await git(root,['ls-files','-z']).catch(()=>'' )).split('\0').filter(p=>p && allowedWrite(space,contract,p) && !p.split('/').some(s=>s.startsWith('.')));
+  const chunks=[];let budget=10000;
+  for(const name of names) {
+    const target=await contained(root,path.resolve(root,name)), stat=await fs.lstat(path.resolve(root,name));
+    if(!stat.isFile() || stat.isSymbolicLink() || stat.size>budget)continue;
+    const bytes=await fs.readFile(target);if(bytes.includes(0))continue;
+    chunks.push(`${name}:\n${bytes.toString('utf8')}`);budget-=bytes.length;
+  }
+  return `Явные исходные файлы (ограниченный пакет; отсутствие файла не означает пустой файл):\n${chunks.join('\n\n')}`;
+}
 const IMAGE = [[0x89, 0x50, 0x4e, 0x47], [0xff, 0xd8, 0xff], [0x52, 0x49, 0x46, 0x46], [0x47, 0x49, 0x46]];
 const isImage = (bytes, file) => file.endsWith('.svg') ? /<svg[\s>]/i.test(bytes.toString('utf8', 0, 2000)) : IMAGE.some(sig => sig.every((b, i) => bytes[i] === b));
 
@@ -89,6 +103,7 @@ const isImage = (bytes, file) => file.endsWith('.svg') ? /<svg[\s>]/i.test(bytes
  */
 export async function runJob(space, options = {}) {
   const role = await loadRole(options.role);
+  await assertDependencies(space, options.taskId);
   if (role.authority !== 'workspace-write') return runJobUnlocked(space, options);
   // Two writers in one task's copy would mix their changes and commits.
   assert(ID.test(options.taskId ?? ''), `Недопустимое имя задачи «${options.taskId}»`);
@@ -96,7 +111,7 @@ export async function runJob(space, options = {}) {
   try { return await runJobUnlocked(space, options); } finally { await release(); }
 }
 async function runJobUnlocked(space, { taskId, role: roleId, executor = null, pool = null, lens = null, skills = [], imagePath = null, resumeOf = null, inPlace = false,
-  fetchImpl = globalThis.fetch, silenceMs = space.settings.silenceSeconds * 1000, tickMs = 500, env = process.env } = {}) {
+  fetchImpl = globalThis.fetch, silenceMs = space.settings.silenceSeconds * 1000, tickMs = 500, env = process.env, estimate = null } = {}) {
   const role = await loadRole(roleId);
   for (const ref of skills) await loadSkill(ref);
   const t = await readyTask(space, taskId, { draft: role.output === 'contract' });
@@ -138,7 +153,7 @@ async function runJobUnlocked(space, { taskId, role: roleId, executor = null, po
   const retried = new Set();
   for (let i = 0; i < candidates.length; i++) {
     const id = candidates[i], e = executors[id];
-    const attempt = { executor: id, provider: e.provider, model: e.model ?? null, kind: e.kind, fingerprint: executorFingerprint(e), endpoint: e.kind === 'openai-compat' ? role.output === 'image' ? 'images/generations' : 'chat/completions' : null, startedAt: new Date().toISOString(), launchedAt: null, outcome: 'running' };
+    const attempt = { executor: id, provider: e.provider, model: e.model ?? null, kind: e.kind, fingerprint: executorFingerprint(e), endpoint: e.kind === 'gemini-api' ? 'generateContent' : e.kind === 'openai-compat' ? role.output === 'image' ? 'images/generations' : 'chat/completions' : null, startedAt: new Date().toISOString(), launchedAt: null, outcome: 'running' };
     const skip = async (failure, reason) => { Object.assign(attempt, { outcome: 'skipped', failure, reason, endedAt: new Date().toISOString() }); job.attempts.push(attempt); await save(true); };
     const allowed = privacyAllows(space.settings.privacy, e);
     if (!allowed.ok) { await skip('PRIVACY', allowed.reason); continue; }
@@ -157,20 +172,28 @@ async function runJobUnlocked(space, { taskId, role: roleId, executor = null, po
     const writable = role.authority === 'workspace-write';
     const work = writable ? await ensureWorktree(space, taskId) : { path: t.repo };
     job.worktree = writable ? work.path : null;
-    const prompt = await buildPrompt({ role, contract: t.contract, lens, skills, checks: await currentChecks(space, t), context: await knowledgeContext(space, taskId),
-      materials, handoff, imagePath: role.output === 'image' && e.kind !== 'openai-compat' ? imagePath : null });
+    const knowledge = await knowledgeContext(space, taskId);
+    const context = ['gemini-cli','gemini-api','openai-compat'].includes(e.kind) ? `${await sourceContext(space,t.contract,work.path)}\n\n${knowledge??''}` : knowledge;
+    const prompt = await buildPrompt({ role, contract: t.contract, lens, skills, checks: await currentChecks(space, t), context,
+      materials, handoff, imagePath: role.output === 'image' && !['openai-compat', 'gemini-api'].includes(e.kind) ? imagePath : null });
     const leaks = outboundFindings(prompt, space.settings.privacy).filter(f => f.action === 'block');
     if (leaks.length) { await skip('PRIVACY', `в пакете для отправки найдено: ${[...new Set(leaks.map(l => l.kind))].join(', ')}`); outcome = { ok: false, failure: 'PRIVACY' }; break; }
 
     // What the reviewer is about to see; its answer is bound to this, not to the state at the end.
     const seen = role.output === 'review' ? await taskState(space, taskId) : null;
+    let reservation;
+    try { reservation = await reserveExecution(space, { taskId, executorId: id, executor: e, estimate }); }
+    catch (err) { await skip('BUDGET', err.message); continue; }
     job.attempts.push(attempt);
     Object.assign(job, { status: 'RUNNING', executor: id, startedAt: job.startedAt ?? attempt.startedAt, lastEventAt: new Date().toISOString(), activity: 'начал работу' });
     await save(true);
-    const handle = await startExecutor({ executor: e, prompt: role.output === 'image' && e.kind === 'openai-compat' ? `${role.prompt}\n\n${t.contract.goal}` : prompt,
+    let handle;
+    try { handle = await startExecutor({ executor: e, prompt: role.output === 'image' && ['openai-compat', 'gemini-api'].includes(e.kind) ? `${role.prompt}\n\n${t.contract.goal}` : prompt,
       schema: SCHEMAS[role.output], cwd: work.path, writable, timeoutMs: role.timeoutMs ?? 1800000, fetchImpl, env,
-      image: role.output === 'image' && e.kind === 'openai-compat', scratch: path.join(space.state, 'jobs', job.id),
-      onEvent: ({ kind, toolRunning }) => { if (['spawn', 'response'].includes(kind)) attempt.launchedAt ??= new Date().toISOString(); job.lastEventAt = new Date().toISOString(); job.toolRunning = toolRunning; job.activity = toolRunning ? 'выполняет инструмент' : kind === 'result' ? 'отвечает' : 'думает'; void save(); } });
+      image: role.output === 'image' && ['openai-compat', 'gemini-api'].includes(e.kind), scratch: path.join(space.state, 'jobs', job.id),
+      maxOutputTokens: estimate?.outputTokens,
+      onEvent: ({ kind, toolRunning }) => { if (['spawn', 'response'].includes(kind)) attempt.launchedAt ??= new Date().toISOString(); job.lastEventAt = new Date().toISOString(); job.toolRunning = toolRunning; job.activity = toolRunning ? 'выполняет инструмент' : kind === 'result' ? 'отвечает' : 'думает'; void save(); } }); }
+    catch (e) { await settleExecution(space, reservation.id, { launched: false }); throw e; }
 
     // Silence watch: a routine question, answered by a person or, in autopilot, by its default.
     let question = null, stoppedFor = null, watchBusy = false, watchClosed = false, pendingWatch = null;
@@ -201,14 +224,16 @@ async function runJobUnlocked(space, { taskId, role: roleId, executor = null, po
       if (!watchClosed && !watchBusy) pendingWatch = poll();
     }, tickMs);
     let result = await handle.done;
+    await settleExecution(space, reservation.id, { usage: result.usage, launched: Boolean(attempt.launchedAt) });
+    attempt.budgetReservation = reservation.id;
     watchClosed = true;
     clearInterval(watch);
     await pendingWatch;
     if (result.resources) await recordResources(space, id, result.resources, { source: 'HTTP_HEADERS', executor: e });
     if (question && (await getQuestion(space, question.id)).status === 'open') await answer(space, question.id, 'wait', { by: 'Borshkit' }).catch(() => {});
-    if (stoppedFor === 'stop') result = { ok: false, failure: 'STOPPED', error: 'остановлено по твоему ответу' };
-    if (result.ok && !(role.output === 'image' && e.kind === 'openai-compat')) {
-      try { validateOutput(role, result.result, t.contract); } catch (err) { result = { ok: false, failure: 'INVALID', error: err.message }; }
+    if (stoppedFor === 'stop') result = { ...result, ok: false, failure: 'STOPPED', error: 'остановлено по твоему ответу' };
+    if (result.ok && !(role.output === 'image' && ['openai-compat', 'gemini-api'].includes(e.kind))) {
+      try { validateOutput(role, result.result, t.contract); } catch (err) { result = { ...result, ok: false, failure: 'INVALID', error: err.message }; }
     }
     Object.assign(attempt, { outcome: result.ok ? 'ok' : 'failed', failure: result.ok ? null : result.failure, reason: result.ok ? null : result.error, usage: result.usage ?? null, endedAt: new Date().toISOString() });
     if (result.unconfirmedResult) {
@@ -274,7 +299,7 @@ async function runJobUnlocked(space, { taskId, role: roleId, executor = null, po
     const proposal = await proposeSettings(space, JSON.parse(r.patchJson), { from: executorId, reason: r.reason });
     job.result.proposal = proposal.id;
   } else {
-    if (role.output === 'image' && e.kind === 'openai-compat') {
+    if (role.output === 'image' && ['openai-compat', 'gemini-api'].includes(e.kind)) {
       const target = await contained(work.path, path.resolve(work.path, imagePath));
       await fs.mkdir(path.dirname(target), { recursive: true });
       await fs.writeFile(target, Buffer.from(r.imageBase64, 'base64'));

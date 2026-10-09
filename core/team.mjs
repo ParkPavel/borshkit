@@ -7,6 +7,7 @@ import { executorFingerprint, fresh, readResources, resourcesFor, stableJSON } f
 import { listRoles, loadRole, roleFingerprint } from './roles.mjs';
 import { authorProviders, readyTask } from './accept.mjs';
 import { proposeSettings } from './config.mjs';
+import { estimateCost } from './operations.mjs';
 
 // A qualified candidate is tied to an explicit model/configuration and a
 // local assessment artifact. Imported assessments are declarations, not live
@@ -16,11 +17,16 @@ export async function qualification(space, id, roleId, now = new Date(), roleDig
   if (!q) return { status: 'UNKNOWN', reason: 'нет записи оценки для роли' };
   if (!e.model || q.fingerprint !== executorFingerprint(e) || !fresh(q, now)) return { status: 'STALE', reason: 'оценка устарела или модель не закреплена' };
   if (q.roleDigest !== (roleDigest ?? await roleFingerprint(await loadRole(roleId)))) return { status: 'STALE', reason: 'инструкции, навыки или схема роли изменились' };
+  let suiteDigest = null;
   try {
     const file = await contained(space.project, path.resolve(space.project, q.evidence));
     if (sha(await fs.readFile(file)) !== q.evidenceSha) return { status: 'STALE', reason: 'материал оценки изменился' };
+    if (file.endsWith('.json')) {
+      const report = await readJSON(file).catch(() => null);
+      if (report?.role === roleId && report.executorId === id && report.fingerprint === q.fingerprint && /^[a-f0-9]{64}$/.test(report.suiteDigest)) suiteDigest = report.suiteDigest;
+    }
   } catch { return { status: 'UNKNOWN', reason: 'материал оценки недоступен' }; }
-  return { status: q.result, reason: q.result === 'PASS' ? 'по заявленной оценке роли' : 'оценка роли не пройдена', evidence: q.evidence };
+  return { status: q.result, reason: q.result === 'PASS' ? 'по заявленной оценке роли' : 'оценка роли не пройдена', evidence: q.evidence, suiteDigest };
 }
 export async function teamCatalog(space, { now = new Date() } = {}) {
   const [roles, probes, observations] = await Promise.all([listRoles(), readProbes(space), readResources(space)]);
@@ -35,14 +41,14 @@ export async function teamCatalog(space, { now = new Date() } = {}) {
     executors.push({ id, provider: e.provider, service: e.service ?? null, kind: e.kind, model: e.model ?? null, fingerprint: executorFingerprint(e),
       assignments: Object.entries(space.settings.pools ?? {}).filter(([, p]) => p.members.includes(id)).map(([pool, p]) => ({ pool, role: p.role ?? null })),
       dataPolicy: e.dataPolicy, probe, qualifications,
-      resources: resourcesFor(space, id, observations, { endpoint: e.kind === 'openai-compat' ? 'chat/completions' : null, now }),
-      imageResources: resourcesFor(space, id, observations, { endpoint: e.kind === 'openai-compat' ? 'images/generations' : null, now }) });
+      resources: resourcesFor(space, id, observations, { endpoint: e.kind === 'gemini-api' ? 'generateContent' : e.kind === 'openai-compat' ? 'chat/completions' : null, now }),
+      imageResources: resourcesFor(space, id, observations, { endpoint: e.kind === 'gemini-api' ? 'generateContent' : e.kind === 'openai-compat' ? 'images/generations' : null, now }) });
   }
   const candidates = await readJSON(path.join(ROOT, 'library/provider-candidates.json'));
   const services = candidates.entries.map(c => ({ ...c, executors: executors.filter(e => e.service === c.id).map(e => e.id), status: executors.some(e => e.service === c.id && e.probe === 'PASS') ? 'CONNECTION_CHECKED' : executors.some(e => e.service === c.id) ? 'NEEDS_CHECK' : 'NOT_CONFIGURED' }));
   return { at: now.toISOString(), roles: roles.map(({ prompt, ...r }) => ({ ...r, digest: roleDigests[r.id] })), executors, services, notice: candidates.notice };
 }
-export async function planTeam(space, { taskId, roles = ['architect', 'implementer', 'reviewer'], now = new Date() } = {}) {
+export async function planTeam(space, { taskId, roles = ['architect', 'implementer', 'reviewer'], now = new Date(), estimate = null } = {}) {
   assert(Array.isArray(roles) && roles.length > 0 && new Set(roles).size === roles.length, 'Укажи непустой список разных ролей');
   const task = await readyTask(space, taskId, { draft: true });
   const authors = await authorProviders(space, taskId);
@@ -61,12 +67,17 @@ export async function planTeam(space, { taskId, roles = ['architect', 'implement
         ...(role.crossProvider && authors.includes(e.provider) ? ['семейство уже участвовало в авторстве'] : []),
         ...resources.metrics.filter(m => m.remaining === 0).map(m => `исчерпан ресурс ${m.name} (${m.window})`)];
       return { executor: entry.id, provider: e.provider, model: e.model ?? null, eligible: !reasons.length, reasons, resources,
-        warnings: resources.status === 'CURRENT' ? [] : ['остаток ресурсов неизвестен или устарел'], assessment };
+        warnings: resources.status === 'CURRENT' ? [] : ['остаток ресурсов неизвестен или устарел'], assessment,
+        estimatedUsd: estimateCost(space, entry.id, estimate, now) };
     });
     // No vendor ranking: prefer current observations, then preserve stable ID
     // order. Cost optimization needs comparable measured data, not guesses.
-    candidates.sort((a, b) => Number(b.resources.status === 'CURRENT') - Number(a.resources.status === 'CURRENT') || a.executor.localeCompare(b.executor));
-    return { role: role.id, title: role.title, writable: role.authority === 'workspace-write', independent: role.crossProvider, candidates, members: [] };
+    const eligible = candidates.filter(c => c.eligible);
+    const comparablePrices = eligible.length > 0 && eligible.every(c => c.estimatedUsd !== null && c.assessment.suiteDigest)
+      && new Set(eligible.map(c => c.assessment.suiteDigest)).size === 1;
+    candidates.sort((a, b) => Number(b.eligible)-Number(a.eligible) || (comparablePrices && a.eligible && b.eligible ? a.estimatedUsd - b.estimatedUsd : 0)
+      || Number(b.resources.status === 'CURRENT') - Number(a.resources.status === 'CURRENT') || a.executor.localeCompare(b.executor));
+    return { role: role.id, title: role.title, writable: role.authority === 'workspace-write', independent: role.crossProvider, comparablePrices, candidates, members: [] };
   });
   const writers = rows.filter(r => r.writable);
   const reserved = new Set();
@@ -116,6 +127,7 @@ export async function proposeTeam(space, options, { from = 'человек' } = 
   }));
   const probes = await readProbes(space);
   for (const row of plan.rows) for (const id of row.members) expirations.push(probes[id].expiresAt);
+  for (const row of plan.rows.filter(r => r.comparablePrices)) for (const id of row.members) expirations.push(space.settings.execution.rates[id].expiresAt);
   const expiresAt = new Date(Math.min(...expirations.map(Date.parse))).toISOString();
   const proposal = await proposeSettings(space, { pools }, { from, reason: `распределение ролей для задачи ${options.taskId}`, inputs, roleInputs, expiresAt });
   return { plan, proposal };

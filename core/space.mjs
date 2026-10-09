@@ -3,6 +3,7 @@ import path from 'node:path';
 import { ROOT, acquireLock, assert, atomicJSON, atomicWrite, exists, git, isGitRoot, readJSON, sha } from './io.mjs';
 import { secretsInValue } from './secrets.mjs';
 import { validateExecutor, validatePool } from './executors.mjs';
+import { validateExecutionPolicy } from './operations.mjs';
 
 export const DEFAULT_FOLDER = 'borshkit';
 export const PRIVACY = ['moderate', 'strict', 'experiment'];
@@ -26,6 +27,7 @@ export function validateSettings(s) {
   assert(typeof executors === 'object' && !Array.isArray(executors) && typeof pools === 'object' && !Array.isArray(pools), 'executors и pools — объекты');
   for (const [id, e] of Object.entries(executors)) validateExecutor(id, e);
   for (const [name, pool] of Object.entries(pools)) validatePool(name, pool, executors);
+  if (s.execution !== undefined) validateExecutionPolicy(s.execution);
   const trust = s.acceptance?.modelTrust;
   assert(trust && typeof trust === 'object' && !Array.isArray(trust), 'acceptance.modelTrust — объект');
   for (const [tag, goal] of Object.entries(trust)) {
@@ -148,7 +150,7 @@ Git — это «машина времени» для файлов: каждое
 
 ## Что дальше
 
-1. \`borshkit исполнитель добавить claude\` — кто будет работать (или \`codex\`).
+1. \`borshkit мастер\` — выбрать среду, безопасность, модели и роли. В терминале доступен \`--диалог\`, в приложении — пошаговые команды. Выбор сохраняется; применение настроек и запуск отдельны.
 2. \`borshkit задача новая <имя> --цель "что должно получиться"\` — создать задачу.
 3. \`borshkit задача анализ <имя>\` — проверить, понятно ли описаны критерии.
 4. \`borshkit работа запустить <имя> --роль implementer --исполнитель claude\` — поручить работу.

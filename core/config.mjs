@@ -73,13 +73,14 @@ export async function checkProposal(space, id) {
 }
 /**
  * Apply a proposal. Changes toward strictness apply at once; a weakening needs
- * `confirmedByPerson`, which the CLI grants only after a typed confirmation in
- * a real terminal.
+ * `confirmedByPerson`, granted after a typed terminal confirmation or a
+ * verified assertion from a separately enrolled owner device.
  */
-export async function applyProposal(space, id, { confirmedByPerson = false } = {}) {
+export async function applyProposal(space, id, { confirmedByPerson = false, approvalDigest = null } = {}) {
   const release = await acquireLock(path.join(space.state, 'settings.lock'), { waitMs: 30000 });
   try {
     const proposal = await checkProposal(space, id);
+    assert(approvalDigest === null || approvalDigest === sha(stableJSON(proposal)), 'Подтверждённое действие изменилось — нужно новое согласие');
     const file = path.join(proposalsDir(space), `${id}.json`);
     const after = validateSettings(proposal.after);
     const weak = weakenings(space.settings, after);
