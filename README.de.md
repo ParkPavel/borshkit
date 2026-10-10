@@ -175,7 +175,7 @@ Das vollständige Rezept mit Versionen und Lizenzen steht in [docs/ingredients.m
 - Borshkit prüft das Aufgabenpaket, das es selbst an einen Agenten schickt. Was Claude Code oder Codex danach aus den Dateien der Projektkopie lesen, sieht es nicht: Ignorierte Dateien (`.env`) sind nicht in der Kopie, alle anderen kann der Agent lesen.
 - Prüfungen der Aufgaben (Tests, Build) laufen mit deiner Umgebung, weil Tests manchmal Schlüssel brauchen. Der Umgebungsfilter gilt nur für Ausführer.
 - Die Wissenskarte versteht Verknüpfungen in JS/TS-Code und Markdown. Swift, Python, Go und andere Sprachen werden noch nicht erfasst; die Abnahme hängt davon nicht ab.
-- Die Adapter für Claude Code und Codex sind gegen Fake-Programme mit demselben Ereignisformat getestet. Die Flags eines installierten Claude Code wurden geprüft. Die CI startet keine echten Modelle.
+- Die Adapter für Claude Code, Codex und Gemini sind gegen Fake-Programme mit demselben Ereignisformat getestet. Die Flags eines installierten Claude Code wurden geprüft. Die CI startet keine echten Modelle.
 - Bilder über Codex (GPT Image) sind noch nicht getestet: `borshkit executor probe codex` zeigt dir das mit deinem Abo.
 - Ob der Obsidian-Graph Links aus den Eigenschaften von Notizen anzeigt, ist nicht getestet. Deshalb stehen die Links zusätzlich als normale Links im Text.
 - Die Meldungen von Borshkit gibt es vorerst nur auf Russisch; Befehle und Flags auf Russisch und Englisch.

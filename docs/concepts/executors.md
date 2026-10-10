@@ -13,6 +13,8 @@ documents: ["../../core/executors.mjs", "../../core/adapters.mjs", "../../core/j
 |---|---|---|
 | `claude-cli` | Claude Code по твоей подписке | `borshkit исполнитель добавить claude` |
 | `codex-cli` | Codex CLI по подписке; умеет картинки через GPT Image | `borshkit исполнитель добавить codex` |
+| `gemini-cli` | Gemini CLI без инструментов: sandbox, запрещающая политика, точная модель | `borshkit исполнитель добавить gemini` |
+| `gemini-api` | Gemini API: текст, JSON и картинки PNG | манифест: `--файл манифест.json` |
 | `openai-compat` | любой API в формате OpenAI: бесплатные, платные, локальные (Ollama, LM Studio) | манифест: `--файл манифест.json` |
 | `command` | своя программа, которая читает задание и пишет ответ | манифест |
 

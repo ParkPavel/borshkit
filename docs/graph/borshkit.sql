@@ -1,5 +1,5 @@
 -- Borshkit knowledge graph (borshkit знания экспорт --sql). Generated; do not edit by hand.
--- notes: 166, links: 1281
+-- notes: 166, links: 1286
 CREATE TABLE notes(id TEXT PRIMARY KEY, type TEXT, kind TEXT, path TEXT, title TEXT, provenance TEXT, source TEXT, status TEXT);
 CREATE TABLE links(src TEXT, rel TEXT, dst TEXT, provenance TEXT);
 CREATE VIEW docs AS SELECT id, kind, path, title FROM notes WHERE type = 'doc';
@@ -286,6 +286,7 @@ INSERT INTO links VALUES ('knowledge/_generated/code/core/attribution.mjs.md', '
 INSERT INTO links VALUES ('knowledge/_generated/code/core/attribution.mjs.md', 'imports', 'knowledge/_generated/code/core/io.mjs.md', 'EXTRACTED');
 INSERT INTO links VALUES ('knowledge/_generated/code/core/attribution.mjs.md', 'tested-by', 'knowledge/_generated/code/test/attribution.test.mjs.md', 'EXTRACTED');
 INSERT INTO links VALUES ('knowledge/_generated/code/core/attribution.mjs.md', 'tested-by', 'knowledge/_generated/code/test/docs.test.mjs.md', 'EXTRACTED');
+INSERT INTO links VALUES ('knowledge/_generated/code/core/builtins.mjs.md', 'documented-by', 'knowledge/_generated/docs/docs/graph/README.md.md', 'EXTRACTED');
 INSERT INTO links VALUES ('knowledge/_generated/code/core/builtins.mjs.md', 'imported-by', 'knowledge/_generated/code/core/accept.mjs.md', 'EXTRACTED');
 INSERT INTO links VALUES ('knowledge/_generated/code/core/builtins.mjs.md', 'imports', 'knowledge/_generated/code/core/attribution.mjs.md', 'EXTRACTED');
 INSERT INTO links VALUES ('knowledge/_generated/code/core/builtins.mjs.md', 'imports', 'knowledge/_generated/code/core/citations.mjs.md', 'EXTRACTED');
@@ -592,6 +593,7 @@ INSERT INTO links VALUES ('knowledge/_generated/code/core/privacy.mjs.md', 'impo
 INSERT INTO links VALUES ('knowledge/_generated/code/core/privacy.mjs.md', 'imports', 'knowledge/_generated/code/core/secrets.mjs.md', 'EXTRACTED');
 INSERT INTO links VALUES ('knowledge/_generated/code/core/privacy.mjs.md', 'tested-by', 'knowledge/_generated/code/test/operations.test.mjs.md', 'EXTRACTED');
 INSERT INTO links VALUES ('knowledge/_generated/code/core/privacy.mjs.md', 'tested-by', 'knowledge/_generated/code/test/privacy.test.mjs.md', 'EXTRACTED');
+INSERT INTO links VALUES ('knowledge/_generated/code/core/process.mjs.md', 'documented-by', 'knowledge/_generated/docs/docs/graph/README.md.md', 'EXTRACTED');
 INSERT INTO links VALUES ('knowledge/_generated/code/core/process.mjs.md', 'imported-by', 'knowledge/_generated/code/bin/borshkit.mjs.md', 'EXTRACTED');
 INSERT INTO links VALUES ('knowledge/_generated/code/core/process.mjs.md', 'imported-by', 'knowledge/_generated/code/core/accept.mjs.md', 'EXTRACTED');
 INSERT INTO links VALUES ('knowledge/_generated/code/core/process.mjs.md', 'imported-by', 'knowledge/_generated/code/core/adapters.mjs.md', 'EXTRACTED');
@@ -1173,6 +1175,7 @@ INSERT INTO links VALUES ('knowledge/_generated/docs/docs/concepts/space.md.md',
 INSERT INTO links VALUES ('knowledge/_generated/docs/docs/concepts/space.md.md', 'related', 'knowledge/_generated/docs/docs/concepts/privacy.md.md', 'DECLARED');
 INSERT INTO links VALUES ('knowledge/_generated/docs/docs/concepts/team-workspace.md.md', 'documents', 'knowledge/_generated/code/core/resources.mjs.md', 'DECLARED');
 INSERT INTO links VALUES ('knowledge/_generated/docs/docs/concepts/team-workspace.md.md', 'documents', 'knowledge/_generated/code/core/team.mjs.md', 'DECLARED');
+INSERT INTO links VALUES ('knowledge/_generated/docs/docs/concepts/team-workspace.md.md', 'documents', 'knowledge/_generated/manifest/Dockerfile.md', 'EXTRACTED');
 INSERT INTO links VALUES ('knowledge/_generated/docs/docs/concepts/team-workspace.md.md', 'references', 'knowledge/_generated/docs/docs/concepts/executors.md.md', 'EXTRACTED');
 INSERT INTO links VALUES ('knowledge/_generated/docs/docs/concepts/team-workspace.md.md', 'references', 'knowledge/_generated/docs/docs/concepts/roles-and-skills.md.md', 'EXTRACTED');
 INSERT INTO links VALUES ('knowledge/_generated/docs/docs/concepts/team-workspace.md.md', 'references', 'knowledge/_generated/docs/docs/discussions/modernization-2026-10-08.md.md', 'EXTRACTED');
@@ -1231,6 +1234,7 @@ INSERT INTO links VALUES ('knowledge/_generated/docs/docs/graph/README.md.md', '
 INSERT INTO links VALUES ('knowledge/_generated/docs/docs/graph/README.md.md', 'documents', 'knowledge/_generated/code/core/approval-server.mjs.md', 'EXTRACTED');
 INSERT INTO links VALUES ('knowledge/_generated/docs/docs/graph/README.md.md', 'documents', 'knowledge/_generated/code/core/approvals.mjs.md', 'EXTRACTED');
 INSERT INTO links VALUES ('knowledge/_generated/docs/docs/graph/README.md.md', 'documents', 'knowledge/_generated/code/core/assessments.mjs.md', 'EXTRACTED');
+INSERT INTO links VALUES ('knowledge/_generated/docs/docs/graph/README.md.md', 'documents', 'knowledge/_generated/code/core/builtins.mjs.md', 'EXTRACTED');
 INSERT INTO links VALUES ('knowledge/_generated/docs/docs/graph/README.md.md', 'documents', 'knowledge/_generated/code/core/citations.mjs.md', 'EXTRACTED');
 INSERT INTO links VALUES ('knowledge/_generated/docs/docs/graph/README.md.md', 'documents', 'knowledge/_generated/code/core/config.mjs.md', 'EXTRACTED');
 INSERT INTO links VALUES ('knowledge/_generated/docs/docs/graph/README.md.md', 'documents', 'knowledge/_generated/code/core/contract.mjs.md', 'EXTRACTED');
@@ -1248,6 +1252,7 @@ INSERT INTO links VALUES ('knowledge/_generated/docs/docs/graph/README.md.md', '
 INSERT INTO links VALUES ('knowledge/_generated/docs/docs/graph/README.md.md', 'documents', 'knowledge/_generated/code/core/operations.mjs.md', 'EXTRACTED');
 INSERT INTO links VALUES ('knowledge/_generated/docs/docs/graph/README.md.md', 'documents', 'knowledge/_generated/code/core/portable.mjs.md', 'EXTRACTED');
 INSERT INTO links VALUES ('knowledge/_generated/docs/docs/graph/README.md.md', 'documents', 'knowledge/_generated/code/core/privacy.mjs.md', 'EXTRACTED');
+INSERT INTO links VALUES ('knowledge/_generated/docs/docs/graph/README.md.md', 'documents', 'knowledge/_generated/code/core/process.mjs.md', 'EXTRACTED');
 INSERT INTO links VALUES ('knowledge/_generated/docs/docs/graph/README.md.md', 'documents', 'knowledge/_generated/code/core/questions.mjs.md', 'EXTRACTED');
 INSERT INTO links VALUES ('knowledge/_generated/docs/docs/graph/README.md.md', 'documents', 'knowledge/_generated/code/core/resources.mjs.md', 'EXTRACTED');
 INSERT INTO links VALUES ('knowledge/_generated/docs/docs/graph/README.md.md', 'documents', 'knowledge/_generated/code/core/roles.mjs.md', 'EXTRACTED');
