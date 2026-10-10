@@ -8,7 +8,7 @@ import { findSecrets } from '../core/secrets.mjs';
 
 const problems = [];
 const files = (await git(ROOT, ['ls-files', '-z', '--cached', '--others', '--exclude-standard'])).split('\0').filter(Boolean);
-for (const file of files.filter(f => f.endsWith('.mjs'))) {
+for (const file of files.filter(f => /\.(mjs|cjs|js)$/.test(f))) {
   try { await exec(process.execPath, ['--check', path.join(ROOT, file)]); }
   catch (e) { problems.push(`${file}: не разбирается — ${e.stderr || e.message}`); }
 }

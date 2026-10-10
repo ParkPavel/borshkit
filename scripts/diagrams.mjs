@@ -149,21 +149,21 @@ function architecture(lang) {
   // Core: jobs sit at the bottom, next to the executors they call
   parts.push(group({ x: B.x, y: 74, w: B.w, h: 380, label: t.core }));
   const g = [
-    ['g1', 100, t.g1, 'space · config · privacy · experiment · hooks', t.g1d],
-    ['g2', 186, t.g2, 'contract · snapshot · accept · builtins', t.g2d],
-    ['g4', 272, t.g4, 'kb · materials · gitshell · eval', t.g4d],
-    ['g3', 358, t.g3, 'jobs · roles · adapters · executors · questions', t.g3d],
+    ['g1', 100, t.g1, 'space · setup · config · approvals', t.g1d],
+    ['g2', 186, t.g2, 'contract · snapshot · accept · assessments', t.g2d],
+    ['g4', 272, t.g4, 'kb · materials · gitshell · portable', t.g4d],
+    ['g3', 358, t.g3, 'jobs · roles · team · resources · monitor', t.g3d],
   ];
-  for (const [id, y, title, mods, d] of g) parts.push(block({ x: B.x + 12, y, w: B.w - 24, h: 76, rows: [['t', title], ['m', mods], ['l', d]], id }));
+  for (const [id, y, title, mods, d] of g) parts.push(block({ x: B.x + 12, y, w: B.w - 24, h: 76, rows: [['t', title], ['m', mods], ...(id === 'g3' ? [['m', 'adapters · executors · questions']] : []), ['l', d]], id }));
   // Files
   parts.push(group({ x: C.x, y: 74, w: C.w, h: 380, label: t.files }));
   parts.push(block({ x: C.x + 10, y: 100, w: C.w - 20, h: 156, id: 'space', rows: [['t', 'borshkit/'], ['l', t.spaceL],
-    ['m', 'settings/workspace.json'], ['m', 'tasks/<id>/ contract · evidence'], ['m', '  logs · acceptance.md'], ['m', 'jobs/ · questions/ · STATUS.md'], ['m', 'knowledge/ · materials/'], ['m', '.state/ kb.sqlite · locks/']] }));
+    ['m', 'settings/workspace.json'], ['m', 'tasks/<id>/ contract · evidence'], ['m', '  logs · acceptance.md'], ['m', 'jobs/ · questions/ · STATUS.md'], ['m', 'TEAM.md · .state/resources.json'], ['m', 'knowledge/ · materials/'], ['m', '.state/ kb.sqlite · locks/']] }));
   parts.push(block({ x: C.x + 10, y: 268, w: C.w - 20, h: 74, id: 'project', rows: [['t', t.project], ['m', '.gitignore: /borshkit/'], ['l', t.projectL]] }));
   parts.push(block({ x: C.x + 10, y: 364, w: C.w - 20, h: 80, id: 'copy', rows: [['t', t.copy], ['m', '../<project>.borshkit-worktrees/<id>'], ['l', t.copyL]] }));
   // Executors
   parts.push(group({ x: B.x, y: 486, w: W - B.x - 20, h: 122, label: t.exec }));
-  const ex = [['Claude Code', 'claude-cli', t.sub2], ['Codex · GPT Image', 'codex-cli', t.sub2], [t.api, 'openai-compat', t.sub3], [t.own, 'command', t.sub4]];
+  const ex = [['Claude · Gemini CLI', 'claude-cli · gemini-cli', t.sub2], ['Codex · GPT Image', 'codex-cli', t.sub2], [t.api, 'openai-compat · gemini-api', t.sub3], [t.own, 'command', t.sub4]];
   const ew = (W - B.x - 20 - 24 - 3 * 12) / 4;
   ex.forEach(([n, k, l], i) => parts.push(block({ x: B.x + 12 + i * (ew + 12), y: 512, w: ew, h: 80, rows: [['t', n], ['c', k], ['l', l]], id: i === 0 ? 'ex' : '' })));
   // Arrows: every caller goes through the same CLI into the core
@@ -360,7 +360,78 @@ function kb(lang) {
   return svg(lang, { w: W, h: H, title: t.title, desc: `${t.sub}. ${t.caption}`, css, body: parts.join('\n') });
 }
 
-export const DIAGRAMS = { banner, architecture, flow, evidence, pool, kb };
+// Team planning is a distinct phase; applying pools does not launch agents.
+function team(lang) {
+  const texts = {
+    ru: ['Видимая команда', 'Оценки ролей, ресурсы и независимость проверяются до предложения', ['Задача', 'Роль', 'Исполнитель', 'Модель / API', 'Результат', 'Ревью'], ['Предложено', 'Применено', 'Запущено', 'Проверено', 'Принято'], 'Неизвестный остаток виден. Устаревшие данные требуют нового плана.', 'Подключение ≠ оценка роли. Выполненная работа ≠ приёмка.'],
+    en: ['A visible team', 'Role assessments, resources and independence are checked before a proposal', ['Task', 'Role', 'Executor', 'Model / API', 'Result', 'Review'], ['Proposed', 'Applied', 'Launched', 'Verified', 'Accepted'], 'Unknown balances stay visible. Stale data requires a new plan.', 'Connection ≠ role assessment. Completed work ≠ acceptance.'],
+    de: ['Ein sichtbares Team', 'Rollenbewertung, Ressourcen und Unabhängigkeit werden vor dem Vorschlag geprüft', ['Aufgabe', 'Rolle', 'Ausführer', 'Modell / API', 'Ergebnis', 'Review'], ['Vorgeschlagen', 'Angewendet', 'Gestartet', 'Geprüft', 'Abgenommen'], 'Unbekannte Restwerte sind sichtbar. Veraltete Daten brauchen einen neuen Plan.', 'Verbindung ≠ Rollenbewertung. Erledigte Arbeit ≠ Abnahme.'],
+    ko: ['보이는 팀', '제안 전에 역할 평가, 자원과 독립성을 확인합니다', ['작업', '역할', '실행자', '모델 / API', '결과', '검토'], ['제안', '적용', '실행', '검증', '인수'], '알 수 없는 잔량을 표시합니다. 오래된 데이터는 새 계획이 필요합니다.', '연결 ≠ 역할 평가. 작업 완료 ≠ 인수.'],
+    'zh-TW': ['看得見的團隊', '提案前檢查角色評估、資源與獨立性', ['任務', '角色', '執行者', '模型 / API', '結果', '審查'], ['已提案', '已套用', '已啟動', '已驗證', '已驗收'], '未知餘額明確顯示。過期資料需要重新規劃。', '連線 ≠ 角色評估。工作完成 ≠ 驗收。'],
+    fr: ['Une équipe visible', 'Les évaluations, les ressources et l’indépendance sont vérifiées avant la proposition', ['Tâche', 'Rôle', 'Exécutant', 'Modèle / API', 'Résultat', 'Revue'], ['Proposé', 'Appliqué', 'Lancé', 'Vérifié', 'Accepté'], 'Les soldes inconnus restent visibles. Les données périmées exigent un nouveau plan.', 'Connexion ≠ évaluation du rôle. Travail terminé ≠ acceptation.'],
+  };
+  const [title, sub, flowLabels, states, caption, distinction] = texts[lang];
+  const parts = [`<text class="ttl" x="20" y="36">${esc(title)}</text><text class="sub" x="20" y="56">${esc(sub)}</text>`];
+  const files = ['contract.json', 'roles/<role>', 'executors', 'model · endpoint', 'files · usage', 'other provider'];
+  flowLabels.forEach((label, i) => {
+    const x = 20 + i * 160;
+    parts.push(block({ x, y: 90, w: 144, h: 72, rows: [['t', label], ['m', files[i]]] }));
+    if (i < 5) parts.push(arrow([[x + 144, 126], [x + 160, 126]], { color: 'red' }));
+  });
+  const commands = ['team propose', 'settings apply', 'job run', 'task verify', 'task converge'];
+  states.forEach((label, i) => {
+    const x = 20 + i * 192;
+    parts.push(block({ x, y: 208, w: 176, h: 76, rows: [['t', label], ['c', commands[i]]], cls: i === 4 ? 'ok' : '' }));
+    if (i < 4) parts.push(arrow([[x + 176, 246], [x + 192, 246]]));
+  });
+  parts.push(`<text class="cap" x="20" y="324">${esc(caption)}</text><text class="cap" x="20" y="350">${esc(distinction)}</text>`);
+  return svg(lang, { w: 1000, h: 378, title, desc: `${sub}. ${caption}. ${distinction}`, body: parts.join('\n') });
+}
+function setup(lang) {
+  const texts = {
+    ru: ['Настройка команды', 'Выбор сохраняется; готовность моделей и запуск проверяются отдельно', ['Среда', 'Безопасность', 'Модели', 'Обязанности', 'Предложение'], ['Применить', 'Проверить', 'Распределить', 'Запустить'], 'Приложение: пошаговые команды. Терминал: диалог с сохранением выбора.', 'Обнаружен файл CLI ≠ выполнен вход. Совместимость ≠ качество роли.'],
+    en: ['Set up the team', 'Choices are saved; model readiness and launch are checked separately', ['Host', 'Privacy', 'Models', 'Responsibilities', 'Proposal'], ['Apply', 'Assess', 'Assign', 'Launch'], 'App: step commands. Terminal: a dialogue with saved choices.', 'CLI file found ≠ signed in. Compatibility ≠ role quality.'],
+    de: ['Team einrichten', 'Die Auswahl wird gespeichert; Modellbereitschaft und Start werden separat geprüft', ['Umgebung', 'Datenschutz', 'Modelle', 'Aufgaben', 'Vorschlag'], ['Anwenden', 'Bewerten', 'Zuordnen', 'Starten'], 'App: Schrittbefehle. Terminal: Dialog mit gespeicherter Auswahl.', 'CLI-Datei gefunden ≠ angemeldet. Kompatibilität ≠ Rollenqualität.'],
+    ko: ['팀 설정', '선택을 저장하며 모델 준비 상태와 실행은 별도로 확인합니다', ['환경', '보안', '모델', '담당 업무', '제안'], ['적용', '평가', '배정', '실행'], '앱: 단계별 명령. 터미널: 선택을 저장하는 대화.', 'CLI 파일 발견 ≠ 로그인. 호환성 ≠ 역할 품질.'],
+    'zh-TW': ['設定團隊', '儲存選擇；模型準備狀態與啟動分開檢查', ['環境', '隱私', '模型', '職責', '提案'], ['套用', '評估', '指派', '啟動'], '應用程式：逐步指令。終端機：儲存選擇的對話。', '找到 CLI 檔案 ≠ 已登入。相容性 ≠ 角色品質。'],
+    fr: ['Configurer l’équipe', 'Les choix sont enregistrés ; disponibilité et lancement sont vérifiés séparément', ['Environnement', 'Confidentialité', 'Modèles', 'Responsabilités', 'Proposition'], ['Appliquer', 'Évaluer', 'Affecter', 'Lancer'], 'Application : commandes par étape. Terminal : dialogue avec choix enregistrés.', 'Fichier CLI trouvé ≠ connecté. Compatibilité ≠ qualité du rôle.'],
+  };
+  const [title, sub, choices, actions, caption, distinction] = texts[lang];
+  const parts = [`<text class="ttl" x="20" y="36">${esc(title)}</text><text class="sub" x="20" y="56">${esc(sub)}</text>`];
+  const steps = ['setup host', 'setup privacy', 'setup executor', 'setup roles', 'setup propose'];
+  choices.forEach((label, i) => {
+    const x = 20 + i * 192;
+    parts.push(block({ x, y: 90, w: 176, h: 72, rows: [['t', label], ['c', steps[i]]] }));
+    if (i < 4) parts.push(arrow([[x + 176, 126], [x + 192, 126]], { color: 'red' }));
+  });
+  const commands = ['settings apply', 'probe · qualify', 'team plan', 'job run'];
+  actions.forEach((label, i) => {
+    const x = 20 + i * 240;
+    parts.push(block({ x, y: 208, w: 224, h: 76, rows: [['t', label], ['c', commands[i]]] }));
+    if (i < 3) parts.push(arrow([[x + 224, 246], [x + 240, 246]]));
+  });
+  parts.push(`<text class="cap" x="20" y="324">${esc(caption)}</text><text class="cap" x="20" y="350">${esc(distinction)}</text>`);
+  return svg(lang, { w: 1000, h: 378, title, desc: `${sub}. ${caption}. ${distinction}`, body: parts.join('\n') });
+}
+function operations(lang) {
+  const texts={
+    ru:['Работа профессиональной команды','Каждый переход оставляет проверяемый факт; настройки и запуск — отдельные действия',['Оценка роли','Резерв бюджета','Распределение','Согласие владельца','Работа и ревью'],['Монитор состояния','Наблюдения и план','Предложение','Новая проверка','Перенос источников'],'Passkey требует доверенного сопряжения и HTTPS. Монитор не применяет настройки и не запускает jobs.'],
+    en:['Professional team operations','Each transition records a fact; settings and launch are separate',['Role assessment','Budget reservation','Role routing','Owner approval','Work and review'],['State monitor','Observe and plan','Proposal','Fresh verification','Source transfer'],'Passkey requires trusted enrollment and HTTPS. The monitor never applies settings or launches jobs.'],
+    de:['Betrieb eines professionellen Teams','Jeder Übergang hält einen Fakt fest; Einstellungen und Start sind getrennt',['Rollenbewertung','Budgetreservierung','Rollenzuordnung','Eigentümerfreigabe','Arbeit und Prüfung'],['Statusmonitor','Beobachten und planen','Vorschlag','Erneute Prüfung','Quellenübertragung'],'Passkey verlangt Kopplung und HTTPS. Der Monitor wendet keine Einstellungen an und startet keine Jobs.'],
+    ko:['전문 팀 운영','단계별 사실 기록; 설정 적용과 실행은 별도',['역할 평가','예산 예약','역할 배정','소유자 승인','작업 및 리뷰'],['상태 모니터','관찰 및 계획','제안','새로운 검증','소스 이전'],'Passkey는 신뢰할 수 있는 등록과 HTTPS가 필요합니다. 모니터는 설정 적용이나 작업 실행을 하지 않습니다.'],
+    'zh-TW':['專業團隊運作','每個轉換記錄事實；設定與啟動分開',['角色評估','預算保留','角色指派','擁有者確認','工作與審查'],['狀態監控','觀察與規劃','提案','重新驗證','來源移轉'],'Passkey 需要可信任的配對與 HTTPS。監控不會套用設定或啟動工作。'],
+    fr:['Exploitation d’une équipe professionnelle','Chaque transition consigne un fait ; réglages et lancement sont séparés',['Évaluation du rôle','Réserve du budget','Affectation','Accord du propriétaire','Travail et relecture'],['Moniteur d’état','Observer et planifier','Proposition','Nouvelle vérification','Transfert des sources'],'Passkey exige appairage et HTTPS. Le moniteur n’applique aucun réglage et ne lance aucun travail.']};
+  const [title,sub,top,bottom,note]=texts[lang],parts=[`<text class="ttl" x="20" y="36">${esc(title)}</text><text class="sub" x="20" y="56">${esc(sub)}</text>`];
+  const commands=['assessment run','budget · reserve','team plan','approval · passkey','job run'];
+  top.forEach((label,i)=>{const x=20+i*192;parts.push(block({x,y:90,w:176,h:80,rows:[['t',label],['c',commands[i]]]}));if(i<4)parts.push(arrow([[x+176,130],[x+192,130]],{color:'red'}));});
+  const below=['monitor start/stop','TEAM.md · STATUS.md','team propose','probe · qualify','portable export/import'];
+  bottom.forEach((label,i)=>{const x=20+i*192;parts.push(block({x,y:230,w:176,h:80,rows:[['t',label],['c',below[i]]]}));if(i<2)parts.push(arrow([[x+176,270],[x+192,270]]));});
+  parts.push(arrow([[492,230],[492,188],[668,188],[668,170]],{color:'waitl'}));
+  parts.push(arrow([[860,230],[860,204],[684,204],[684,230]],{color:'offl'}));
+  parts.push(`<text class="cap" x="20" y="357">${esc(note)}</text><text class="sub" x="20" y="384">UNKNOWN ≠ PASS · completed ≠ accepted · checksum ≠ attestation</text>`);
+  return svg(lang,{w:1000,h:416,title,desc:`${sub}. ${note}`,body:parts.join('\n')});
+}
+export const DIAGRAMS = { banner, architecture, flow, evidence, pool, kb, team, setup, operations };
 export async function writeDiagrams() {
   const dir = path.join(ROOT, 'assets', 'diagrams'), written = [];
   await fs.mkdir(dir, { recursive: true });

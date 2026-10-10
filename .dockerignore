@@ -1,0 +1,5 @@
+.git
+borshkit
+node_modules
+*.tgz
+*.vsix

@@ -1,0 +1,1 @@
+{"schemaVersion":1,"id":"security-reviewer","title":"Независимый ревьюер безопасности","stage":"verify","authority":"read-only","output":"review","requires":{"structuredOutput":true,"output":["text","code"]},"crossProvider":true,"packs":[],"timeoutMs":1800000}

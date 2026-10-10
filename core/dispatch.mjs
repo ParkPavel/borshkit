@@ -4,6 +4,9 @@ import { atomicWrite, exists, readJSON } from './io.mjs';
 import { listQuestions } from './questions.mjs';
 import { FAILURE_WORDS } from './executors.mjs';
 import { PRIVACY_WORDS } from './privacy.mjs';
+import { formatTeam, formatResources, writeTeamFiles } from './team.mjs';
+import { readResources, resourcesFor } from './resources.mjs';
+import { executionStatus } from './operations.mjs';
 
 // The dispatcher (decision D18): one status model, several views — a terminal
 // card list, a one-line status, STATUS.md for Obsidian and a self-refreshing
@@ -24,16 +27,18 @@ const ago = (iso, now) => {
 };
 /** Cards for jobs worth looking at: running ones, ones waiting for a person, and the last few finished. */
 export async function cards(space, { now = new Date(), recent = 5 } = {}) {
-  const jobs = await listJobs(space), questions = await listQuestions(space, { open: true });
+  const jobs = await listJobs(space), questions = await listQuestions(space, { open: true }), observations = await readResources(space);
   const shown = [...jobs.filter(j => ACTIVE.has(j.status) || j.status === 'WAITING_HUMAN'), ...jobs.filter(j => !ACTIVE.has(j.status) && j.status !== 'WAITING_HUMAN').slice(0, recent)];
   return shown.map(j => {
     const silentFor = j.status === 'RUNNING' && j.lastEventAt ? (now - new Date(j.lastEventAt)) / 1000 : 0;
     const q = questions.filter(x => x.jobId === j.id);
+    const attempt = j.attempts?.findLast(a => a.executor === j.executor);
     return {
       jobId: j.id, taskId: j.taskId, role: j.role, executor: j.executor ?? '—', status: j.status, word: JOB_WORDS[j.status] ?? j.status,
       since: j.startedAt ?? j.createdAt, lastEvent: ago(j.lastEventAt, now), silent: silentFor > space.settings.silenceSeconds ? Math.round(silentFor) : 0,
       activity: j.activity ?? '', handovers: (j.attempts ?? []).filter(a => a.outcome !== 'ok' && a.outcome !== 'running').map(a => `${a.executor}: ${FAILURE_WORDS[a.failure] ?? a.reason ?? a.outcome}`),
-      quota: j.quota ?? 'неизвестно', needsYou: q.map(x => `${x.kind === 'critical' ? '⛔' : '❓'} ${x.text} (${x.id})`),
+      model: attempt?.model ?? null, endpoint: attempt?.endpoint ?? null, launchedAt: attempt?.launchedAt ?? null,
+      quota: j.executor ? formatResources(resourcesFor(space, j.executor, observations, { endpoint: attempt?.endpoint ?? null, now })) : 'неизвестно', needsYou: q.map(x => `${x.kind === 'critical' ? '⛔' : '❓'} ${x.text} (${x.id})`),
     };
   });
 }
@@ -49,6 +54,8 @@ export function formatCards(list) {
   return list.map(c => [
     `${c.status === 'FAILED' ? '🔴' : c.status === 'WAITING_HUMAN' ? '⛔' : c.status === 'COMPLETED' ? '🟢' : c.silent ? '🟠' : '🔵'} ${c.taskId} · ${c.role} · ${c.word}`,
     `   кому ушло: ${c.executor} · с ${c.since.slice(11, 16)} · последний признак жизни: ${c.lastEvent}${c.silent ? ` · молчит ${c.silent} с` : ''}`,
+    `   модель: ${c.model ?? 'не закреплена'}${c.endpoint ? ` · API: ${c.endpoint}` : ''} · запуск: ${c.launchedAt ?? 'нет подтверждения запуска'}`,
+    c.status === 'COMPLETED' ? '   выполнение завершено; приёмка задачи проверяется отдельно' : null,
     c.activity ? `   что делает: ${c.activity}` : null,
     c.handovers.length ? `   передачи: ${c.handovers.join(' → ')}` : null,
     `   квота: ${c.quota}`,
@@ -59,13 +66,16 @@ const esc = s => String(s).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;'
 /** Rewrite STATUS.md and status.html; called after every job or question event. */
 export async function writeStatusFiles(space, { now = new Date() } = {}) {
   const list = await cards(space, { now }), line = await statusLine(space, { now });
-  await atomicWrite(path.join(space.dir, 'STATUS.md'), `# Диспетчерская\n\n> ${line}\n> Обновлено: ${now.toISOString().slice(0, 19).replace('T', ' ')}\n\n\`\`\`\n${formatCards(list)}\n\`\`\`\n`, { mode: 0o644 });
-  const rows = list.map(c => `<tr class="${esc(c.status)}"><td>${esc(c.taskId)}</td><td>${esc(c.role)}</td><td>${esc(c.executor)}</td><td>${esc(c.word)}${c.silent ? ` · молчит ${c.silent} с` : ''}</td><td>${esc(c.lastEvent)}</td><td>${esc(c.activity)}</td><td>${esc(c.handovers.join(' → '))}</td><td>${c.needsYou.map(esc).join('<br>')}</td></tr>`).join('\n');
+  const team = await writeTeamFiles(space, { now });
+  const execution=await executionStatus(space), monitor=await (await import('./monitor.mjs')).monitorStatus(space);
+  const controls=`Бюджет: учтено/зарезервировано ${execution.tokens} токенов, $${execution.usd}; неопределённый расход: ${execution.unknown.length}. Активные вызовы: ${execution.activeRuns}.\nМонитор: ${monitor.state}.\nПределы: ${JSON.stringify(execution.policy)}\nНастройки и запуск работ выполняются отдельно.`;
+  await atomicWrite(path.join(space.dir, 'STATUS.md'), `# Диспетчерская\n\n> ${line}\n> Обновлено: ${now.toISOString().slice(0, 19).replace('T', ' ')}\n\n\`\`\`\n${formatCards(list)}\n\`\`\`\n\n## Бюджет и монитор\n\n${controls}\n`, { mode: 0o644 });
+  const rows = list.map(c => `<tr class="${esc(c.status)}"><td>${esc(c.taskId)}</td><td>${esc(c.role)}</td><td>${esc(c.executor)}<br>${esc(c.model ?? 'модель не закреплена')}${c.endpoint ? `<br>${esc(c.endpoint)}` : ''}</td><td>${esc(c.word)}${c.status === 'COMPLETED' ? ' · выполнение завершено; приёмка отдельно' : ''}${c.silent ? ` · молчит ${c.silent} с` : ''}<br>${esc(c.launchedAt ?? 'нет подтверждения запуска')}</td><td>${esc(c.lastEvent)}</td><td>${esc(c.activity)}</td><td>${esc(c.handovers.join(' → '))}</td><td>${c.needsYou.map(esc).join('<br>')}</td></tr>`).join('\n');
   await atomicWrite(path.join(space.dir, 'status.html'), `<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta http-equiv="refresh" content="5"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Borshkit — диспетчерская</title>
 <style>:root{color-scheme:light dark;--bg:#fff;--fg:#1d1d1f;--line:#ddd;--wait:#b35c00;--bad:#c62828;--ok:#2e7d32}@media(prefers-color-scheme:dark){:root{--bg:#161616;--fg:#eee;--line:#333}}
 body{margin:0;padding:16px;background:var(--bg);color:var(--fg);font:15px/1.4 system-ui,sans-serif}table{border-collapse:collapse;width:100%}td,th{border-bottom:1px solid var(--line);padding:6px;text-align:left;vertical-align:top}
 .WAITING_HUMAN td{color:var(--wait)}.FAILED td{color:var(--bad)}.COMPLETED td:nth-child(4){color:var(--ok)}div.wrap{overflow-x:auto}</style></head>
 <body><h1>Диспетчерская</h1><p>${esc(line)}</p><div class="wrap"><table><tr><th>Задача</th><th>Роль</th><th>Кому ушло</th><th>Состояние</th><th>Признак жизни</th><th>Что делает</th><th>Передачи</th><th>Ждёт тебя</th></tr>
-${rows || '<tr><td colspan="8">Работ пока не было.</td></tr>'}</table></div><p><small>Обновлено ${esc(now.toISOString().slice(0, 19).replace('T', ' '))}. Страница обновляется сама.</small></p></body></html>
+${rows || '<tr><td colspan="8">Работ пока не было.</td></tr>'}</table></div><h2>Бюджет и монитор</h2><pre>${esc(controls)}</pre><h2>Команда и ресурсы</h2><pre>${esc(formatTeam(team))}</pre><p>Предложение → применение настроек → запуск → проверка → приёмка. Действия выполняются отдельно.</p><p><small>Обновлено ${esc(now.toISOString().slice(0, 19).replace('T', ' '))}. Страница перечитывает файл; данные обновляют явно запущенные CLI или монитор.</small></p></body></html>
 `, { mode: 0o644 });
 }

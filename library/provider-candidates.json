@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "notice": "Это ссылки для выбора сервиса. Бесплатный доступ и остатки проверяются в конкретном аккаунте; каталог не подключает API и не закрепляет модели.",
+  "entries": [
+    { "id": "google", "name": "Google AI Studio / Gemini API", "freeAccess": "CHECK_ACCOUNT", "url": "https://ai.google.dev/gemini-api/docs/pricing" },
+    { "id": "groq", "name": "Groq", "freeAccess": "CHECK_ACCOUNT", "url": "https://console.groq.com/docs/rate-limits" },
+    { "id": "openrouter", "name": "OpenRouter", "freeAccess": "CHECK_ACCOUNT", "url": "https://openrouter.ai/docs/faq" },
+    { "id": "huggingface", "name": "Hugging Face Inference Providers", "freeAccess": "CHECK_ACCOUNT", "url": "https://huggingface.co/docs/inference-providers/pricing" },
+    { "id": "local", "name": "Локальная модель", "freeAccess": "OWN_HARDWARE", "url": "https://huggingface.co/models" }
+  ]
+}

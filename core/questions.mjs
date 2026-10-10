@@ -1,7 +1,8 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { assert, atomicJSON, atomicWrite, exists, readJSON } from './io.mjs';
+import { acquireLock, assert, atomicJSON, atomicWrite, exists, readJSON, sha } from './io.mjs';
+import { stableJSON } from './resources.mjs';
 import { journal, saveSpace } from './space.mjs';
 
 // Questions to a person (decision D21). A routine question has a reversible
@@ -30,7 +31,15 @@ export async function listQuestions(space, { open = false } = {}) {
   const all = await Promise.all((await fs.readdir(dir(space))).filter(f => f.endsWith('.json')).map(f => readJSON(path.join(dir(space), f))));
   return all.filter(q => !open || q.status === 'open').sort((a, b) => a.createdAt.localeCompare(b.createdAt));
 }
-export async function answer(space, id, optionId, { by = 'человек', confirmedByPerson = false, now = new Date() } = {}) {
+export async function answer(space, id, optionId, options = {}) {
+  await getQuestion(space, id);
+  const release = await acquireLock(path.join(space.state, 'questions', `${id}.lock`), { waitMs: 30000 });
+  try {
+    assert(!options.expectedDigest || options.expectedDigest === sha(stableJSON(await getQuestion(space, id))), 'Вопрос изменился — нужно новое согласие');
+    return await answerUnlocked(space, id, optionId, options);
+  } finally { await release(); }
+}
+async function answerUnlocked(space, id, optionId, { by = 'человек', confirmedByPerson = false, now = new Date() } = {}) {
   const q = await getQuestion(space, id);
   assert(q.status === 'open', `На вопрос ${id} уже ответили`);
   assert(q.options.some(o => o.id === optionId), `Вариант — один из: ${q.options.map(o => o.id).join(', ')}`);

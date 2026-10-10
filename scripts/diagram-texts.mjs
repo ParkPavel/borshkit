@@ -8,7 +8,7 @@ export const T = {
     arch: {
       title: 'Как устроен Borshkit', sub: 'Node.js 22+ · ноль зависимостей · всё хранится локально',
       inputs: 'Кто вызывает', you: 'Ты', youL: 'команды в терминале', ccL: 'плагин: хуки, навык',
-      agents: 'Codex и другие', agentsL: 'читают AGENTS.md', person: 'Только ты', personL1: 'фраза в терминале:', personL2: 'ослабить защиту,', personL3: 'собрать, отправить',
+      agents: 'Codex и другие', agentsL: 'читают AGENTS.md', person: 'Только ты', personL1: 'терминал / passkey', personL2: 'настройки: passkey', personL3: 'Git: терминал',
       core: 'core/ — ядро', g1: 'Пространство', g1d: 'настройки меняются только через предложения',
       g2: 'Задачи и приёмка', g2d: 'доказательства привязаны к состоянию',
       g3: 'Работы', g3d: 'роль + исполнитель, пулы, вопросы, диспетчерская',
@@ -102,7 +102,7 @@ export const T = {
     arch: {
       title: 'How Borshkit is built', sub: 'Node.js 22+ · zero dependencies · everything is stored locally',
       inputs: 'Who calls it', you: 'You', youL: 'commands in a terminal', ccL: 'plugin: hooks, skill',
-      agents: 'Codex and others', agentsL: 'read AGENTS.md', person: 'Only you', personL1: 'a typed phrase to', personL2: 'weaken protection,', personL3: 'merge, push',
+      agents: 'Codex and others', agentsL: 'read AGENTS.md', person: 'Only you', personL1: 'terminal / passkey', personL2: 'settings: passkey', personL3: 'Git: terminal',
       core: 'core/ — the core', g1: 'Workspace', g1d: 'settings change only through proposals',
       g2: 'Tasks and acceptance', g2d: 'evidence is bound to the state',
       g3: 'Jobs', g3d: 'role + executor, pools, questions, dispatcher',
@@ -196,7 +196,7 @@ export const T = {
     arch: {
       title: 'Wie Borshkit aufgebaut ist', sub: 'Node.js 22+ · keine Abhängigkeiten · alles bleibt lokal',
       inputs: 'Wer es aufruft', you: 'Du', youL: 'Befehle im Terminal', ccL: 'Plugin: Hooks, Skill',
-      agents: 'Codex und andere', agentsL: 'lesen AGENTS.md', person: 'Nur du', personL1: 'getippte Phrase:', personL2: 'Schutz lockern,', personL3: 'mergen, pushen',
+      agents: 'Codex und andere', agentsL: 'lesen AGENTS.md', person: 'Nur du', personL1: 'Terminal / Passkey', personL2: 'Einstellungen: Passkey', personL3: 'Git: Terminal',
       core: 'core/ — der Kern', g1: 'Arbeitsbereich', g1d: 'Einstellungen ändern sich nur über Vorschläge',
       g2: 'Aufgaben und Abnahme', g2d: 'Nachweise sind an den Zustand gebunden',
       g3: 'Aufträge', g3d: 'Rolle + Ausführer, Pools, Fragen, Leitstand',
@@ -289,7 +289,7 @@ export const T = {
     arch: {
       title: 'Borshkit의 구조', sub: 'Node.js 22+ · 의존성 없음 · 모든 것은 로컬에 저장',
       inputs: '호출하는 쪽', you: '나', youL: '터미널 명령', ccL: '플러그인: 훅, 스킬',
-      agents: 'Codex 등', agentsL: 'AGENTS.md를 읽음', person: '나만 가능', personL1: '터미널에 문구 입력:', personL2: '보호 완화,', personL3: '병합, 푸시',
+      agents: 'Codex 등', agentsL: 'AGENTS.md를 읽음', person: '나만 가능', personL1: '터미널 / passkey', personL2: '설정: passkey', personL3: 'Git: 터미널',
       core: 'core/ — 핵심', g1: '작업 공간', g1d: '설정은 제안을 통해서만 바뀜',
       g2: '작업과 인수', g2d: '증거는 상태에 묶임',
       g3: '작업 실행', g3d: '역할 + 실행자, 풀, 질문, 상황판',
@@ -382,7 +382,7 @@ export const T = {
     arch: {
       title: 'Borshkit 的結構', sub: 'Node.js 22+ · 零相依套件 · 一切存放在本機',
       inputs: '誰來呼叫', you: '你', youL: '終端機指令', ccL: '外掛：hooks、技能',
-      agents: 'Codex 等', agentsL: '讀取 AGENTS.md', person: '只有你', personL1: '在終端機輸入短語：', personL2: '放寬保護、', personL3: '合併、推送',
+      agents: 'Codex 等', agentsL: '讀取 AGENTS.md', person: '只有你', personL1: '終端機 / passkey', personL2: '設定：passkey', personL3: 'Git：終端機',
       core: 'core/ — 核心', g1: '工作區', g1d: '設定只能透過提案變更',
       g2: '任務與驗收', g2d: '證據綁定到狀態',
       g3: '工作', g3d: '角色 + 執行者、池、提問、調度台',
@@ -475,7 +475,7 @@ export const T = {
     arch: {
       title: 'Comment Borshkit est construit', sub: 'Node.js 22+ · aucune dépendance · tout reste en local',
       inputs: 'Qui l’appelle', you: 'Toi', youL: 'commandes au terminal', ccL: 'plugin : hooks, skill',
-      agents: 'Codex et autres', agentsL: 'lisent AGENTS.md', person: 'Toi seul', personL1: 'phrase tapée pour :', personL2: 'affaiblir la protection,', personL3: 'fusionner, pousser',
+      agents: 'Codex et autres', agentsL: 'lisent AGENTS.md', person: 'Toi seul', personL1: 'terminal / passkey', personL2: 'réglages : passkey', personL3: 'Git : terminal',
       core: 'core/ — le cœur', g1: 'Espace de travail', g1d: 'les réglages ne changent que par propositions',
       g2: 'Tâches et recette', g2d: 'les preuves sont liées à l’état',
       g3: 'Travaux', g3d: 'rôle + exécutant, pools, questions, tableau de bord',

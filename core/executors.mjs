@@ -1,14 +1,22 @@
 import path from 'node:path';
 import { assert, atomicJSON, exists, readJSON } from './io.mjs';
 import { runCommand } from './process.mjs';
+import { executorFingerprint, recordResources, resourcesFromHeaders } from './resources.mjs';
 
 // Executors (spec §4): who does the work. The manifest is declared by a person
 // (through a settings proposal) and checked by a probe; the free-API catalog is
 // a hint for finding candidates, never a source of capabilities.
-export const KINDS = ['claude-cli', 'codex-cli', 'openai-compat', 'command'];
+export const KINDS = ['claude-cli', 'codex-cli', 'gemini-cli', 'gemini-api', 'openai-compat', 'command'];
 export const DATA_POLICIES = ['trains', 'no-train', 'local', 'unknown'];
 export const STRUCTURED = ['json_schema', 'json_mode', 'none'];
 export const MODALITIES = ['text', 'code', 'image'];
+// Shared by the CLI and setup wizard. An installed CLI does not establish
+// its account's data policy, model availability or permission to spend.
+export const PRESETS = {
+  claude: { kind: 'claude-cli', command: 'claude', provider: 'anthropic', dataPolicy: 'unknown', structuredOutput: 'json_schema', modalities: { output: ['text', 'code'] } },
+  codex: { kind: 'codex-cli', command: 'codex', provider: 'openai', dataPolicy: 'unknown', structuredOutput: 'json_schema', modalities: { output: ['text', 'code', 'image'] } },
+  gemini: { kind: 'gemini-cli', command: 'gemini', provider: 'google', dataPolicy: 'unknown', structuredOutput: 'json_mode', modalities: { output: ['text', 'code'] } },
+};
 export const EXECUTOR_ID = /^[a-z0-9][a-z0-9._-]{0,40}$/;
 const NAME = /^[A-Za-z_][A-Za-z0-9_]{0,127}$/;
 
@@ -19,9 +27,9 @@ export function validateExecutor(id, e) {
   assert(DATA_POLICIES.includes(e.dataPolicy), `Исполнитель ${id}: dataPolicy — ${DATA_POLICIES.join(', ')}`);
   assert(STRUCTURED.includes(e.structuredOutput), `Исполнитель ${id}: structuredOutput — ${STRUCTURED.join(', ')}`);
   assert(e.modalities && Array.isArray(e.modalities.output) && e.modalities.output.length && e.modalities.output.every(m => MODALITIES.includes(m)), `Исполнитель ${id}: modalities.output — список из ${MODALITIES.join(', ')}`);
-  if (['claude-cli', 'codex-cli', 'command'].includes(e.kind)) assert(typeof e.command === 'string' && e.command, `Исполнитель ${id}: нужна command`);
+  if (['claude-cli', 'codex-cli', 'gemini-cli', 'command'].includes(e.kind)) assert(typeof e.command === 'string' && e.command, `Исполнитель ${id}: нужна command`);
   if (e.kind === 'command') assert(e.args === undefined || (Array.isArray(e.args) && e.args.every(a => typeof a === 'string')), `Исполнитель ${id}: args — список строк`);
-  if (e.kind === 'openai-compat') {
+  if (['openai-compat','gemini-api'].includes(e.kind)) {
     const url = new URL(e.baseUrl ?? 'invalid:');
     assert(['http:', 'https:'].includes(url.protocol), `Исполнитель ${id}: baseUrl — адрес http(s)`);
     assert(typeof e.model === 'string' && e.model, `Исполнитель ${id}: нужна model`);
@@ -29,6 +37,17 @@ export function validateExecutor(id, e) {
   assert(e.apiKeyEnv === undefined || NAME.test(e.apiKeyEnv), `Исполнитель ${id}: apiKeyEnv — ИМЯ переменной окружения, не сам ключ`);
   assert(e.envAllow === undefined || (Array.isArray(e.envAllow) && e.envAllow.every(n => NAME.test(n))), `Исполнитель ${id}: envAllow — имена переменных`);
   assert(e.model === undefined || /^[a-zA-Z0-9._:/@-]{1,120}$/.test(e.model), `Исполнитель ${id}: недопустимое имя модели`);
+  assert(e.quotaGroup === undefined || EXECUTOR_ID.test(e.quotaGroup), `Исполнитель ${id}: недопустимая группа общего лимита`);
+  assert(e.service === undefined || EXECUTOR_ID.test(e.service), `Исполнитель ${id}: недопустимое имя сервиса`);
+  if (e.qualifications !== undefined) {
+    assert(e.qualifications && typeof e.qualifications === 'object' && !Array.isArray(e.qualifications), 'qualifications — объект оценок ролей');
+    for (const [role, q] of Object.entries(e.qualifications)) {
+      assert(/^[a-z0-9-]{1,40}$/.test(role) && e.model && q && ['PASS', 'FAIL'].includes(q.result), `Оценка ${id}/${role}: нужна явная модель и результат PASS или FAIL`);
+      assert(Number.isFinite(Date.parse(q.at)) && Date.parse(q.expiresAt) > Date.parse(q.at), `Оценка ${id}/${role}: нужны at и expiresAt`);
+      assert(typeof q.evidence === 'string' && !path.isAbsolute(q.evidence) && !q.evidence.split(/[\\/]/).some(p => p === '..' || p.startsWith('.')) && /\.(md|json|txt)$/.test(q.evidence), `Оценка ${id}/${role}: материал — относительный путь к md/json/txt без скрытых папок`);
+      assert(/^[a-f0-9]{64}$/.test(q.evidenceSha) && /^[a-f0-9]{64}$/.test(q.fingerprint) && /^[a-f0-9]{64}$/.test(q.roleDigest), `Оценка ${id}/${role}: нужны SHA-256 материала, конфигурации и роли`);
+    }
+  }
   return e;
 }
 export function validatePool(name, pool, executors) {
@@ -36,6 +55,8 @@ export function validatePool(name, pool, executors) {
   assert(pool && Array.isArray(pool.members) && pool.members.length && pool.members.every(m => m in executors), `Пул ${name}: members — имена объявленных исполнителей`);
   assert(pool.maxSwitches === undefined || (Number.isInteger(pool.maxSwitches) && pool.maxSwitches >= 0 && pool.maxSwitches <= 20), `Пул ${name}: maxSwitches — 0..20`);
   assert(pool.waitSeconds === undefined || (Number.isInteger(pool.waitSeconds) && pool.waitSeconds >= 0 && pool.waitSeconds <= 3600), `Пул ${name}: waitSeconds — 0..3600`);
+  assert(pool.qualificationRequired === undefined || typeof pool.qualificationRequired === 'boolean', `Пул ${name}: qualificationRequired — boolean`);
+  assert(pool.role === undefined || /^[a-z0-9-]{1,40}$/.test(pool.role), `Пул ${name}: недопустимая роль`);
   return pool;
 }
 /** Decision D2: in the strict mode only executors that keep data (local or contractually no-train). */
@@ -49,7 +70,7 @@ export function capable(role, executor, probe) {
   const missing = [];
   for (const m of role.requires?.output ?? []) if (!executor.modalities.output.includes(m)) missing.push(`нет выхода «${m}»`);
   if (role.requires?.structuredOutput && executor.structuredOutput === 'none') missing.push('нет структурированного ответа');
-  if (role.authority === 'workspace-write' && executor.kind === 'openai-compat' && role.output !== 'files' && role.output !== 'image') missing.push('API-модель не может писать файлы сама');
+  if (role.authority === 'workspace-write' && ['openai-compat','gemini-api'].includes(executor.kind) && role.output !== 'files' && role.output !== 'image') missing.push('API-модель не может писать файлы сама');
   if (probe && probe.ok === false) missing.push(`проверка исполнителя не пройдена: ${probe.missing.join(', ')}`);
   return { ok: !missing.length, missing };
 }
@@ -72,6 +93,7 @@ export const FAILURE_WORDS = { NETWORK: 'нет связи', QUOTA: 'лимит 
 const REQUIRED_FLAGS = {
   'claude-cli': ['--print', '--output-format', '--json-schema', '--tools', '--strict-mcp-config', '--no-session-persistence'],
   'codex-cli': ['--sandbox', '--output-schema', '--json'],
+  'gemini-cli': ['--sandbox', '--approval-mode', '--policy', '--extensions', '--output-format', '--model'],
 };
 const probesFile = space => path.join(space.dir, 'settings', 'probes.json');
 export async function readProbes(space) { return (await exists(probesFile(space))) ? readJSON(probesFile(space)) : {}; }
@@ -83,22 +105,26 @@ export async function readProbes(space) { return (await exists(probesFile(space)
 export async function probeExecutor(space, id, { fetchImpl = globalThis.fetch, env = process.env } = {}) {
   const e = space.settings.executors?.[id];
   assert(e, `Исполнитель ${id} не объявлен`);
-  const probe = { at: new Date().toISOString(), ok: true, missing: [], version: null };
+  const now = new Date();
+  const probe = { at: now.toISOString(), expiresAt: new Date(now.getTime() + 3600000).toISOString(), fingerprint: executorFingerprint(e), ok: true, missing: [], version: null };
   try {
-    if (e.kind === 'claude-cli' || e.kind === 'codex-cli') {
+    if (e.kind === 'claude-cli' || e.kind === 'codex-cli' || e.kind === 'gemini-cli') {
       const help = (await runCommand(e.command, e.kind === 'codex-cli' ? ['exec', '--help'] : ['--help'], { timeout: 30000 })).stdout;
       probe.version = (await runCommand(e.command, ['--version'], { timeout: 30000 })).stdout.trim() || null;
       for (const flag of REQUIRED_FLAGS[e.kind]) if (!help.includes(flag)) probe.missing.push(`флаг ${flag}`);
     } else if (e.kind === 'command') {
-      await runCommand(e.command, ['--version'], { timeout: 30000 }).then(r => { probe.version = r.stdout.trim() || null; }, () => {});
+      probe.version = (await runCommand(e.command, ['--version'], { timeout: 30000 })).stdout.trim() || null;
     } else {
-      const headers = e.apiKeyEnv && env[e.apiKeyEnv] ? { authorization: `Bearer ${env[e.apiKeyEnv]}` } : {};
+      const headers = e.apiKeyEnv && env[e.apiKeyEnv] ? e.kind==='gemini-api'?{'x-goog-api-key':env[e.apiKeyEnv]}:{ authorization: `Bearer ${env[e.apiKeyEnv]}` } : {};
       if (e.apiKeyEnv && !env[e.apiKeyEnv]) probe.missing.push(`переменная ${e.apiKeyEnv} не задана`);
       const response = await fetchImpl(new URL('models', e.baseUrl.endsWith('/') ? e.baseUrl : `${e.baseUrl}/`).href, { headers });
       probe.rateLimit = { limit: response.headers.get('x-ratelimit-limit-requests'), remaining: response.headers.get('x-ratelimit-remaining-requests') };
+      const resources = resourcesFromHeaders(response.headers, 'models', now);
+      if (resources) await recordResources(space, id, resources, { source: 'HTTP_HEADERS', executor: e, now });
       if (!response.ok) probe.missing.push(`сервер ответил ${response.status}`);
       else {
-        const ids = ((await response.json()).data ?? []).map(m => m.id);
+        const body = await response.json();
+        const ids = e.kind==='gemini-api'?(body.models??[]).map(m=>m.name?.replace(/^models\//,'')):(body.data??[]).map(m=>m.id);
         if (ids.length && !ids.includes(e.model)) probe.missing.push(`модели ${e.model} нет в списке сервера`);
       }
     }
