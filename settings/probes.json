@@ -14,17 +14,5 @@
       "OTHER: Команду codex нельзя запустить без оболочки. Укажи настоящий исполняемый файл."
     ],
     "version": null
-  },
-  "mistral-free": {
-    "at": "2026-10-10T18:36:12.917Z",
-    "expiresAt": "2026-10-10T19:36:12.917Z",
-    "fingerprint": "29d8aa596834c7e15178f4a29257f7a9bb3a665e408e26612a794f4b896faf11",
-    "ok": true,
-    "missing": [],
-    "version": null,
-    "rateLimit": {
-      "limit": null,
-      "remaining": null
-    }
   }
 }
