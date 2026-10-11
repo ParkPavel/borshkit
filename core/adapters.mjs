@@ -48,7 +48,7 @@ function claudeArgs(e, schema, writable) {
     '--permission-mode', 'dontAsk', '--json-schema', JSON.stringify(schema)];
 }
 function codexArgs(e, schemaFile, writable) {
-  return ['exec', '--ignore-user-config', '--ephemeral', '--sandbox', writable ? 'workspace-write' : 'read-only', '-c', 'approval_policy="never"',
+  return ['exec', '--ignore-user-config', '--ephemeral', '--skip-git-repo-check', '--sandbox', writable ? 'workspace-write' : 'read-only', '-c', 'approval_policy="never"',
     ...(e.model ? ['-m', e.model] : []), ...(e.effort ? ['-c', `model_reasoning_effort=${JSON.stringify(e.effort)}`] : []),
     '--json', '--output-schema', schemaFile, '-'];
 }
@@ -89,7 +89,10 @@ async function startCli({ executor: e, prompt, schema, cwd, writable, onEvent, t
     } else if (ev && e.kind === 'codex-cli') {
       if (ev.type === 'item.started' && ev.item?.type === 'command_execution') toolRunning = true;
       if (ev.type === 'item.completed' && ev.item?.type === 'command_execution') toolRunning = false;
-      if (ev.type === 'item.completed' && ev.item?.type === 'agent_message') { try { result = JSON.parse(ev.item.text); } catch { error = 'ответ не по схеме'; } }
+      if (ev.type === 'item.completed' && ev.item?.type === 'agent_message') {
+        // Only the last message is the answer: earlier plain-text progress notes must not stick.
+        try { result = JSON.parse(ev.item.text); if (error === 'ответ не по схеме') error = null; } catch { result = null; error = 'ответ не по схеме'; }
+      }
       if (ev.type === 'turn.completed') usage = ev.usage ?? null;
       if (ev.type === 'error' || ev.type === 'turn.failed') error = ev.message ?? ev.error?.message ?? JSON.stringify(ev);
     } else if (ev && e.kind === 'gemini-cli') {
