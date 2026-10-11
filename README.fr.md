@@ -175,7 +175,7 @@ La recette complète, avec les versions et les licences, se trouve dans [docs/in
 - Borshkit vérifie le paquet de tâche qu’il envoie lui-même à l’agent. Ce que Claude Code ou Codex lisent ensuite dans les fichiers de la copie du projet, il ne le voit pas : les fichiers ignorés (`.env`) ne sont pas dans la copie, mais l’agent peut lire tous les autres.
 - Les vérifications des tâches (tests, build) tournent avec ton environnement, car les tests ont parfois besoin de clés. Le filtre d’environnement ne s’applique qu’aux exécutants.
 - La carte des connaissances comprend les liens du code JS/TS et du Markdown. Swift, Python, Go et les autres langages n’y entrent pas encore ; la recette n’en dépend pas.
-- Les adaptateurs Claude Code et Codex sont testés avec de faux programmes qui produisent le même format d’événements. Les options d’un Claude Code installé ont été vérifiées. La CI ne lance pas de vrais modèles.
+- Les adaptateurs Claude Code, Codex et Gemini sont testés avec de faux programmes qui produisent le même format d’événements. Les options d’un Claude Code installé ont été vérifiées. La CI ne lance pas de vrais modèles.
 - Les images via Codex (GPT Image) ne sont pas encore testées : `borshkit executor probe codex` te le dira pour ton abonnement.
 - On n’a pas testé si le graphe d’Obsidian affiche les liens issus des propriétés des notes. C’est pourquoi les liens sont répétés sous forme de liens ordinaires dans le texte.
 - Pour l’instant, les messages de Borshkit sont uniquement en russe ; les commandes et les options existent en russe et en anglais.

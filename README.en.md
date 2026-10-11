@@ -175,7 +175,7 @@ The full recipe with versions and licenses is in [docs/ingredients.md](docs/ingr
 - Borshkit checks the task packet it sends to an agent. It does not see what Claude Code or Codex read from the files of the project copy afterwards: ignored files (`.env`) are not in the copy, but the agent can read every other file.
 - Task checks (tests, build) run with your environment, because tests sometimes need keys. The environment filter applies only to executors.
 - The knowledge map understands links in JS/TS code and Markdown. Swift, Python, Go and other languages are not mapped yet; acceptance does not depend on it.
-- The Claude Code and Codex adapters are tested against fake programs with the same event format. The flags of an installed Claude Code have been checked. CI does not run real models.
+- The Claude Code, Codex and Gemini adapters are tested against fake programs with the same event format. The flags of an installed Claude Code have been checked. CI does not run real models.
 - Images through Codex (GPT Image) are not tested yet: `borshkit executor probe codex` shows it on your subscription.
 - Whether the Obsidian graph shows links from note properties is not tested. That is why links are repeated as ordinary links in the text.
 - Borshkit's messages are in Russian only for now; commands and flags are in Russian and English.
