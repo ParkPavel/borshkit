@@ -174,7 +174,7 @@ export function formatSetup(report) {
     '3. Модели — borshkit мастер среда codex --модель <id> --данные no-train',
     ...report.detected.map(d => `   ${d.command}: ${d.status === 'FOUND_NOT_CHECKED' ? 'файл программы найден; подключение и вход не проверены' : 'не найден в PATH этой машины'}`),
     ...Object.entries(draft.executors).map(([id, e]) => `   Выбрано: ${id} → ${e.kind} → ${e.provider}/${e.model}; данные: ${e.dataPolicy}`),
-    '   Для API: borshkit мастер среда <имя> --файл <манифест.json>. Ключи — только в переменных окружения.',
+    '   Для API: borshkit мастер среда freellmapi|ollama|openrouter|groq --модель <id> или <имя> --файл <манифест.json>. Ключи — только в переменных окружения.',
     `4. Обязанности: ${draft.roles.join(', ') || 'не выбраны'} — borshkit мастер роли ${DEFAULT_SETUP_ROLES.join(',')}`,
     ...report.compatibility.map(r => `   ${r.title}: ${r.candidates.join(', ') || 'нет совместимого кандидата'}${r.refused.length ? `; ${r.refused.map(e => `${e.id}: ${e.reasons.join('; ')}`).join(' · ')}` : ''}`),
     ...(!report.independentReviewPossible ? ['   Независимое ревью требует другого семейства: текущий состав не подходит для полного цикла.'] : []),

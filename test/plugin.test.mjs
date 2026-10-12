@@ -99,3 +99,18 @@ test('model trust: one run per human verdict on the same work, per model family,
   await applyProposal(s, p.id, { confirmedByPerson: true });
   assert.deepEqual(s.settings.acceptance.modelTrust['ui-a11y'].measured.provider, 'openai');
 });
+
+test('the /borshkit:setup command keeps keys out of the chat, leaves applying to the person and names real steps', async () => {
+  const text = await fs.readFile(path.join(ROOT, 'commands', 'setup.md'), 'utf8');
+  const [, front] = text.match(/^---\n([\s\S]*?)\n---\n/);
+  assert.match(front, /^description: \S/m);
+  assert.match(front, /^allowed-tools: Bash\(borshkit:\*\), Bash\(borsch:\*\), AskUserQuestion, Read$/m);
+  assert.match(text, /Ключи API никогда не спрашивай в чате/);
+  assert.match(text, /Не запускай `borshkit настройки применить` за него/);
+  const help = (await run(process.execPath, [path.join(ROOT, 'bin', 'borshkit.mjs'), 'помощь'])).stdout;
+  const lines = help.split('\n');
+  for (const [, command, sub] of text.matchAll(/`borshkit (мастер|исполнитель|настройки|задача|начать|доктор|роли)(?: ([а-яё]+))?/g))
+    assert.ok(lines.some(l => l.includes(`borshkit ${command}`) && (!sub || l.includes(sub))), `${command} ${sub ?? ''}`);
+  for (const preset of ['freellmapi', 'ollama', 'openrouter', 'groq']) assert.ok(help.includes(preset), preset);
+  assert.ok((await readJSON(path.join(ROOT, 'package.json'))).files.includes('commands'));
+});

@@ -17,6 +17,28 @@ export const PRESETS = {
   codex: { kind: 'codex-cli', command: 'codex', provider: 'openai', dataPolicy: 'unknown', structuredOutput: 'json_schema', modalities: { output: ['text', 'code', 'image'] } },
   gemini: { kind: 'gemini-cli', command: 'gemini', provider: 'google', dataPolicy: 'unknown', structuredOutput: 'json_mode', modalities: { output: ['text', 'code'] } },
 };
+// API services reached over the OpenAI format. A preset fills in the address
+// and the key variable; the model and, where it varies, the model family stay
+// the person's explicit choice. The key itself is never part of a preset.
+const api = (baseUrl, extra) => ({ kind: 'openai-compat', baseUrl, dataPolicy: 'unknown', structuredOutput: 'json_schema', modalities: { output: ['text'] }, ...extra });
+export const API_PRESETS = {
+  freellmapi: api('http://localhost:3001/v1', { service: 'freellmapi', model: 'auto', provider: 'router', apiKeyEnv: 'FREELLMAPI_API_KEY' }),
+  ollama: api('http://localhost:11434/v1', { service: 'ollama', provider: 'local', dataPolicy: 'local' }),
+  openrouter: api('https://openrouter.ai/api/v1', { service: 'openrouter', apiKeyEnv: 'OPENROUTER_API_KEY' }),
+  groq: api('https://api.groq.com/openai/v1', { service: 'groq', apiKeyEnv: 'GROQ_API_KEY', structuredOutput: 'json_mode' }),
+};
+/** A ready manifest by name: CLI presets first, then API services. */
+export function presetFor(id) {
+  const preset = PRESETS[id] ?? API_PRESETS[id];
+  return preset ? structuredClone(preset) : null;
+}
+/** What a preset still needs from the person before it is a valid manifest. */
+export function presetGaps(e) {
+  const gaps = [];
+  if (e.kind === 'openai-compat' && !e.model) gaps.push('--модель <точный id модели у сервиса>');
+  if (!e.provider) gaps.push('--семейство <семейство модели: meta, mistral, qwen, openai…>');
+  return gaps;
+}
 export const EXECUTOR_ID = /^[a-z0-9][a-z0-9._-]{0,40}$/;
 const NAME = /^[A-Za-z_][A-Za-z0-9_]{0,127}$/;
 
