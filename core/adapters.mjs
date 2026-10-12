@@ -3,7 +3,7 @@ import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { commandSpec } from './process.mjs';
 import { childEnv } from './privacy.mjs';
-import { classifyFailure } from './executors.mjs';
+import { classifyFailure, errorText, httpHint, MISSING_KEY } from './executors.mjs';
 import { resetTime, resourcesFromHeaders } from './resources.mjs';
 import { assert } from './io.mjs';
 
@@ -133,18 +133,21 @@ async function startApi({ executor: e, prompt, schema, onEvent, timeoutMs, fetch
   let resources = null;
   const done = (async () => {
     try {
+      if (e.apiKeyEnv && !env[e.apiKeyEnv]) return { ok: false, failure: 'AUTH', error: MISSING_KEY(e.apiKeyEnv) };
       onEvent({ kind: 'request', toolRunning: true });
       const body = image
         ? { model: e.model, prompt, n: 1, response_format: 'b64_json' }
         : { model: e.model, messages: [{ role: 'user', content: prompt }],
           ...(Number.isInteger(maxOutputTokens) && maxOutputTokens > 0 ? { max_tokens: maxOutputTokens } : {}),
           ...(e.structuredOutput === 'json_schema' ? { response_format: { type: 'json_schema', json_schema: { name: 'result', schema, strict: false } } } : e.structuredOutput === 'json_mode' ? { response_format: { type: 'json_object' } } : {}) };
-      const response = await fetchImpl(new URL(image ? 'images/generations' : 'chat/completions', base).href, { method: 'POST', headers, body: JSON.stringify(body), signal: controller.signal });
+      const url = new URL(image ? 'images/generations' : 'chat/completions', base).href;
+      const response = await fetchImpl(url, { method: 'POST', headers, body: JSON.stringify(body), signal: controller.signal });
       resources = resourcesFromHeaders(response.headers, image ? 'images/generations' : 'chat/completions');
       onEvent({ kind: 'response', toolRunning: false });
       const text = await response.text();
       if (!response.ok) {
-        const message = `HTTP ${response.status}: ${text.slice(0, 500)}`;
+        const hint = httpHint(response.status, e, url);
+        const message = `HTTP ${response.status}${hint ? ` (${hint})` : ''}: ${text.slice(0, 500)}`;
         const reset = resetTime(response.headers.get('retry-after'));
         return { ok: false, failure: response.status === 429 ? 'QUOTA' : classifyFailure(message), error: message, resources, retryAfter: reset ? Math.max(0, Math.ceil((Date.parse(reset) - Date.now()) / 1000)) : null };
       }
@@ -158,7 +161,8 @@ async function startApi({ executor: e, prompt, schema, onEvent, timeoutMs, fetch
       try { return { ok: true, result: JSON.parse(content), usage: data.usage ?? null, resources }; }
       catch { return { ok: false, failure: 'INVALID', error: 'ответ не по схеме', usage: data.usage ?? null, resources }; }
     } catch (err) {
-      return { ok: false, failure: stoppedBy ?? classifyFailure(err.message), error: stoppedBy === 'TIMEOUT' ? 'превышено время' : err.message, resources };
+      const text = errorText(err);
+      return { ok: false, failure: stoppedBy ?? classifyFailure(text), error: stoppedBy === 'TIMEOUT' ? 'превышено время' : text, resources };
     } finally { clearTimeout(timer); }
   })();
   return { done, stop: reason => { stoppedBy = reason; controller.abort(); } };
@@ -187,7 +191,7 @@ async function startGeminiApi({executor:e,prompt,schema,onEvent,timeoutMs,fetchI
       if(image){const item=parts.find(p=>p.inlineData?.mimeType==='image/png');return item?{ok:true,result:{imageBase64:item.inlineData.data},usage,resources}:{ok:false,failure:'INVALID',error:'Gemini не вернул PNG',usage,resources};}
       try{return{ok:true,result:JSON.parse(parts.filter(p=>!p.thought).map(p=>p.text??'').join('')),usage,resources};}
       catch{return{ok:false,failure:'INVALID',error:'ответ не по схеме',usage,resources};}
-    }catch(err){return{ok:false,failure:stoppedBy??classifyFailure(err.message),error:err.message,resources};}finally{clearTimeout(timer);}
+    }catch(err){const text=errorText(err);return{ok:false,failure:stoppedBy??classifyFailure(text),error:text,resources};}finally{clearTimeout(timer);}
   })();
   return{done,stop:reason=>{stoppedBy=reason;controller.abort();}};
 }
