@@ -1,0 +1,1 @@
+{"kind":"openai-compat","provider":"router","service":"freellmapi","baseUrl":"http://localhost:3001/v1","model":"auto","apiKeyEnv":"ROUTER_API_KEY","dataPolicy":"unknown","structuredOutput":"json_schema","modalities":{"output":["text"]}}

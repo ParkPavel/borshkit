@@ -17,6 +17,28 @@ export const PRESETS = {
   codex: { kind: 'codex-cli', command: 'codex', provider: 'openai', dataPolicy: 'unknown', structuredOutput: 'json_schema', modalities: { output: ['text', 'code', 'image'] } },
   gemini: { kind: 'gemini-cli', command: 'gemini', provider: 'google', dataPolicy: 'unknown', structuredOutput: 'json_mode', modalities: { output: ['text', 'code'] } },
 };
+// API services reached over the OpenAI format. A preset fills in the address
+// and the key variable; the model and, where it varies, the model family stay
+// the person's explicit choice. The key itself is never part of a preset.
+const api = (baseUrl, extra) => ({ kind: 'openai-compat', baseUrl, dataPolicy: 'unknown', structuredOutput: 'json_schema', modalities: { output: ['text'] }, ...extra });
+export const API_PRESETS = {
+  freellmapi: api('http://localhost:3001/v1', { service: 'freellmapi', model: 'auto', provider: 'router', apiKeyEnv: 'FREELLMAPI_API_KEY' }),
+  ollama: api('http://localhost:11434/v1', { service: 'ollama', provider: 'local', dataPolicy: 'local' }),
+  openrouter: api('https://openrouter.ai/api/v1', { service: 'openrouter', apiKeyEnv: 'OPENROUTER_API_KEY' }),
+  groq: api('https://api.groq.com/openai/v1', { service: 'groq', apiKeyEnv: 'GROQ_API_KEY', structuredOutput: 'json_mode' }),
+};
+/** A ready manifest by name: CLI presets first, then API services. */
+export function presetFor(id) {
+  const preset = PRESETS[id] ?? API_PRESETS[id];
+  return preset ? structuredClone(preset) : null;
+}
+/** What a preset still needs from the person before it is a valid manifest. */
+export function presetGaps(e) {
+  const gaps = [];
+  if (e.kind === 'openai-compat' && !e.model) gaps.push('--модель <точный id модели у сервиса>');
+  if (!e.provider) gaps.push('--семейство <семейство модели: meta, mistral, qwen, openai…>');
+  return gaps;
+}
 export const EXECUTOR_ID = /^[a-z0-9][a-z0-9._-]{0,40}$/;
 const NAME = /^[A-Za-z_][A-Za-z0-9_]{0,127}$/;
 
@@ -83,6 +105,18 @@ const FAILURES = [
   [/oauth|unauthori[sz]ed|forbidden|\b401\b|\b403\b|not allowed|login/i, 'AUTH'],
   [/ENOENT|not recognized|command not found|no such file/i, 'EXECUTABLE'],
 ];
+/** Node's fetch says only "fetch failed"; the reason (ECONNREFUSED, ENOTFOUND…) is in err.cause. */
+export function errorText(err) {
+  const code = err?.cause?.code;
+  return code && !String(err.message).includes(code) ? `${err.message} (${code})` : String(err?.message ?? err);
+}
+/** A plain-words hint for an API that answered with an error: what the person can check. */
+export function httpHint(status, e, url) {
+  if (status === 401 || status === 403) return e.apiKeyEnv ? `ключ не принят — проверь значение переменной ${e.apiKeyEnv}` : 'нужен ключ — впиши в манифест apiKeyEnv: ИМЯ переменной с ключом';
+  if (status === 404) return `по адресу ${url} ничего нет — проверь baseUrl; у OpenAI-совместимых серверов он обычно кончается на /v1`;
+  return null;
+}
+export const MISSING_KEY = name => `переменная ${name} не задана — после setx или export открой терминал заново, чтобы Borshkit её увидел`;
 export function classifyFailure(message) {
   if (!message) return 'OTHER';
   for (const [pattern, kind] of FAILURES) if (pattern.test(message)) return kind;
@@ -116,19 +150,26 @@ export async function probeExecutor(space, id, { fetchImpl = globalThis.fetch, e
       probe.version = (await runCommand(e.command, ['--version'], { timeout: 30000 })).stdout.trim() || null;
     } else {
       const headers = e.apiKeyEnv && env[e.apiKeyEnv] ? e.kind==='gemini-api'?{'x-goog-api-key':env[e.apiKeyEnv]}:{ authorization: `Bearer ${env[e.apiKeyEnv]}` } : {};
-      if (e.apiKeyEnv && !env[e.apiKeyEnv]) probe.missing.push(`переменная ${e.apiKeyEnv} не задана`);
-      const response = await fetchImpl(new URL('models', e.baseUrl.endsWith('/') ? e.baseUrl : `${e.baseUrl}/`).href, { headers });
+      if (e.apiKeyEnv && !env[e.apiKeyEnv]) probe.missing.push(MISSING_KEY(e.apiKeyEnv));
+      const url = new URL('models', e.baseUrl.endsWith('/') ? e.baseUrl : `${e.baseUrl}/`).href;
+      let response;
+      try { response = await fetchImpl(url, { headers }); }
+      catch (err) {
+        const text = errorText(err), kind = classifyFailure(text);
+        throw new Error(kind === 'NETWORK' ? `${text} — сервер ${new URL(url).origin} не отвечает; проверь, что он запущен` : text);
+      }
       probe.rateLimit = { limit: response.headers.get('x-ratelimit-limit-requests'), remaining: response.headers.get('x-ratelimit-remaining-requests') };
       const resources = resourcesFromHeaders(response.headers, 'models', now);
       if (resources) await recordResources(space, id, resources, { source: 'HTTP_HEADERS', executor: e, now });
-      if (!response.ok) probe.missing.push(`сервер ответил ${response.status}`);
+      // A missing key variable is already said above; a 401 adds nothing new.
+      if (!response.ok && !(e.apiKeyEnv && !env[e.apiKeyEnv] && [401, 403].includes(response.status))) { const hint = httpHint(response.status, e, url); probe.missing.push(`сервер ответил ${response.status}${hint ? `: ${hint}` : ''}`); }
       else {
         const body = await response.json();
         const ids = e.kind==='gemini-api'?(body.models??[]).map(m=>m.name?.replace(/^models\//,'')):(body.data??[]).map(m=>m.id);
         if (ids.length && !ids.includes(e.model)) probe.missing.push(`модели ${e.model} нет в списке сервера`);
       }
     }
-  } catch (err) { probe.missing.push(`${classifyFailure(err.message)}: ${err.message.split('\n')[0]}`); }
+  } catch (err) { const text = errorText(err); probe.missing.push(`${classifyFailure(text)}: ${text.split('\n')[0]}`); }
   probe.ok = !probe.missing.length;
   const all = await readProbes(space);
   all[id] = probe;
