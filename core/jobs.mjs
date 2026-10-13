@@ -5,7 +5,7 @@ import { acquireLock, assert, atomicJSON, atomicWrite, contained, exists, git, r
 import { journal, saveSpace } from './space.mjs';
 import { capable, FAILURE_WORDS, privacyAllows, readProbes } from './executors.mjs';
 import { startExecutor } from './adapters.mjs';
-import { buildPrompt, loadRole, loadSkill, SCHEMAS, validateOutput } from './roles.mjs';
+import { buildPrompt, shippedLines, loadRole, loadSkill, SCHEMAS, validateOutput } from './roles.mjs';
 import { outboundFindings } from './privacy.mjs';
 import { authorProviders, taskState, currentChecks, readyTask, recordReview } from './accept.mjs';
 import { loadMaterial, materialText } from './materials.mjs';
@@ -176,7 +176,7 @@ async function runJobUnlocked(space, { taskId, role: roleId, executor = null, po
     const context = ['gemini-cli','gemini-api','openai-compat'].includes(e.kind) ? `${await sourceContext(space,t.contract,work.path)}\n\n${knowledge??''}` : knowledge;
     const prompt = await buildPrompt({ role, contract: t.contract, lens, skills, checks: await currentChecks(space, t), context,
       materials, handoff, imagePath: role.output === 'image' && !['openai-compat', 'gemini-api'].includes(e.kind) ? imagePath : null });
-    const leaks = outboundFindings(prompt, space.settings.privacy).filter(f => f.action === 'block');
+    const leaks = outboundFindings(prompt, space.settings.privacy, { shipped: await shippedLines({ role, skills }) }).filter(f => f.action === 'block');
     if (leaks.length) { await skip('PRIVACY', `в пакете для отправки найдено: ${[...new Set(leaks.map(l => l.kind))].join(', ')}`); outcome = { ok: false, failure: 'PRIVACY' }; break; }
 
     // What the reviewer is about to see; its answer is bound to this, not to the state at the end.
