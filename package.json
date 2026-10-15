@@ -28,6 +28,7 @@
     "roles",
     "packs",
     "skills",
+    "commands",
     "hooks",
     ".claude-plugin",
     "docs",
@@ -82,5 +83,9 @@
   "homepage": "https://github.com/ParkPavel/borshkit#readme",
   "bugs": {
     "url": "https://github.com/ParkPavel/borshkit/issues"
+  },
+  "funding": {
+    "type": "individual",
+    "url": "https://web.tribute.tg/d/Sh8"
   }
 }

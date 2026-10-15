@@ -167,3 +167,20 @@ test('CLI setup steps work through an app without TTY and --yes never applies th
   await assert.rejects(cli(dir, 'мастер', '--диалог'), e => /пошаговые команды/.test(e.stderr));
   assert.equal((await readJSON(s.settingsFile)).privacy, 'moderate');
 });
+
+test('API presets fill the address and key variable; the model and a varying family stay the person\'s choice', async t => {
+  const dir = await project(t);
+  await cli(dir, 'начать');
+  await cli(dir, 'мастер', 'среда', 'freellmapi');
+  await assert.rejects(cli(dir, 'мастер', 'среда', 'groq'), e => /Для groq укажи: --модель .* --семейство/.test(e.stderr));
+  await cli(dir, 'мастер', 'среда', 'groq', '--модель', 'llama-3.3-70b-versatile', '--семейство', 'meta');
+  await cli(dir, 'мастер', 'среда', 'ollama', '--модель', 'qwen3:8b', '--адрес', 'http://127.0.0.1:11434/v1');
+  const { executors } = await readSetup(await openSpace(dir));
+  assert.deepEqual([executors.freellmapi.baseUrl, executors.freellmapi.model, executors.freellmapi.apiKeyEnv], ['http://localhost:3001/v1', 'auto', 'FREELLMAPI_API_KEY']);
+  assert.deepEqual([executors.groq.provider, executors.groq.apiKeyEnv, executors.groq.structuredOutput], ['meta', 'GROQ_API_KEY', 'json_mode']);
+  assert.deepEqual([executors.ollama.baseUrl, executors.ollama.dataPolicy, executors.ollama.apiKeyEnv], ['http://127.0.0.1:11434/v1', 'local', undefined]);
+  // Adding through the CLI still stops for the person: no TTY, no application.
+  await assert.rejects(cli(dir, 'исполнитель', 'добавить', 'openrouter', '--модель', 'x/y'), e => /семейство/.test(e.stderr));
+  await assert.rejects(cli(dir, 'исполнитель', 'добавить', 'freellmapi'), e => /только человек в терминале/.test(e.stderr));
+  assert.deepEqual((await openSpace(dir)).settings.executors, {});
+});

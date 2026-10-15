@@ -11,6 +11,7 @@
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="Claude-Code-Plugin">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-6b5757" alt="Lizenz Apache-2.0"></a>
   <a href="https://t.me/parkpavel_chigon"><img src="https://img.shields.io/badge/Telegram-Kanal%20des%20Autors-26a5e4?logo=telegram&logoColor=white" alt="Telegram-Kanal des Autors"></a>
+  <a href="https://web.tribute.tg/d/Sh8"><img src="https://img.shields.io/badge/Tribute-unterst%C3%BCtzen-e8554e?logo=telegram&logoColor=white" alt="Projekt unterstützen"></a>
 </p>
 
 <p align="center">
@@ -175,7 +176,7 @@ Das vollständige Rezept mit Versionen und Lizenzen steht in [docs/ingredients.m
 - Borshkit prüft das Aufgabenpaket, das es selbst an einen Agenten schickt. Was Claude Code oder Codex danach aus den Dateien der Projektkopie lesen, sieht es nicht: Ignorierte Dateien (`.env`) sind nicht in der Kopie, alle anderen kann der Agent lesen.
 - Prüfungen der Aufgaben (Tests, Build) laufen mit deiner Umgebung, weil Tests manchmal Schlüssel brauchen. Der Umgebungsfilter gilt nur für Ausführer.
 - Die Wissenskarte versteht Verknüpfungen in JS/TS-Code und Markdown. Swift, Python, Go und andere Sprachen werden noch nicht erfasst; die Abnahme hängt davon nicht ab.
-- Die Adapter für Claude Code und Codex sind gegen Fake-Programme mit demselben Ereignisformat getestet. Die Flags eines installierten Claude Code wurden geprüft. Die CI startet keine echten Modelle.
+- Die Adapter für Claude Code, Codex und Gemini sind gegen Fake-Programme mit demselben Ereignisformat getestet. Die Flags eines installierten Claude Code wurden geprüft. Die CI startet keine echten Modelle.
 - Bilder über Codex (GPT Image) sind noch nicht getestet: `borshkit executor probe codex` zeigt dir das mit deinem Abo.
 - Ob der Obsidian-Graph Links aus den Eigenschaften von Notizen anzeigt, ist nicht getestet. Deshalb stehen die Links zusätzlich als normale Links im Text.
 - Die Meldungen von Borshkit gibt es vorerst nur auf Russisch; Befehle und Flags auf Russisch und Englisch.
@@ -198,6 +199,14 @@ npm run verify   # statische Prüfungen und alle Tests; die CI führt sie unter 
 ## Autor
 
 **Pavel Park** — [GitHub](https://github.com/ParkPavel) · [Telegram-Kanal](https://t.me/parkpavel_chigon)
+
+## Projekt unterstützen
+
+Borshkit ist kostenlos und quelloffen. Wenn es dir hilft, unterstütze die Entwicklung mit einer Spende über Tribute.
+
+<p><a href="https://web.tribute.tg/d/Sh8"><img src="https://img.shields.io/badge/Tribute-Spenden-e8554e?style=for-the-badge&logo=telegram&logoColor=white" alt="Spenden"></a></p>
+
+Im Terminal: `borshkit support` zeigt den Link und bietet an, ihn im Browser zu öffnen. Ein Stern auf GitHub und eine Empfehlung an Kollegen helfen ebenfalls sehr.
 
 ## Lizenz
 

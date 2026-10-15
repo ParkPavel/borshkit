@@ -11,7 +11,8 @@ import { acceptManualEdit, applyProposal, checkProposal, proposeSettings, revert
 import { endExperiment, recordKey, startExperiment } from '../core/experiment.mjs';
 import { PRIVACY_WORDS, STRICTNESS } from '../core/privacy.mjs';
 import readline from 'node:readline/promises';
-import { PRESETS, probeExecutor, readProbes, validateExecutor, FAILURE_WORDS } from '../core/executors.mjs';
+import { spawn } from 'node:child_process';
+import { API_PRESETS, PRESETS, presetFor, presetGaps, probeExecutor, readProbes, validateExecutor, FAILURE_WORDS } from '../core/executors.mjs';
 import { DEFAULT_SETUP_ROLES, SETUP_HOSTS, formatSetup, proposeSetup, readSetup, updateSetup, writeSetupFiles } from '../core/setup.mjs';
 import { formatPlan, formatTeam, planTeam, proposeTeam, writeTeamFiles } from '../core/team.mjs';
 import { executorFingerprint, recordResources } from '../core/resources.mjs';
@@ -36,7 +37,7 @@ import { exportInstructions } from '../core/integrations.mjs';
 const COMMANDS = { начать: 'init', статус: 'status', задача: 'task', сохранить: 'save', доктор: 'doctor', помощь: 'help', материал: 'material', приватность: 'privacy', настройки: 'settings', эксперимент: 'experiment',
   исполнители: 'executors', исполнитель: 'executor', работа: 'job', вопрос: 'question', вопросы: 'question', роли: 'roles', знания: 'knowledge', атрибуция: 'attribution',
   оценка: 'eval', hook: 'hook', история: 'history', 'что-изменилось': 'changes', 'кто-что': 'who', вернуть: 'restore', 'сохранить-проект': 'save-project', собрать: 'merge', отправить: 'push',
-  навыки: 'skills', библиотека: 'library', команда: 'team', ресурсы: 'resources', мастер: 'setup', стенд: 'assessment', бюджет: 'budget', координация: 'coordination', подтверждение: 'approval', монитор: 'monitor', перенос:'portable', интеграция:'integration' };
+  навыки: 'skills', библиотека: 'library', команда: 'team', ресурсы: 'resources', мастер: 'setup', стенд: 'assessment', бюджет: 'budget', координация: 'coordination', подтверждение: 'approval', монитор: 'monitor', перенос:'portable', интеграция:'integration', поддержать: 'support' };
 const WHICH = { проект: 'project', пространство: 'space', project: 'project', space: 'space' };
 const SUB = { добавить: 'add', список: 'list', обновить: 'refresh', показать: 'show', предложить: 'propose', применить: 'apply', принять: 'accept', вернуть: 'revert', начать: 'start', ключ: 'key', завершить: 'end',
   проверить: 'probe', запустить: 'run', продолжить: 'resume', ответить: 'answer', собрать: 'build', найти: 'search', контекст: 'context', урок: 'lesson', экспорт: 'export', контрибьюторы: 'contributors', картинки: 'assets', план: 'plan', записать: 'record', оценить: 'qualify', отпечаток: 'fingerprint' };
@@ -44,9 +45,19 @@ const MODES = { умеренный: 'moderate', строгий: 'strict', экс
 const TASK = { новая: 'new', анализ: 'check', проверить: 'verify', отзыв: 'review', подтвердить: 'confirm', итог: 'converge', принять: 'accept', обновить: 'update' };
 const FLAGS = { цель: 'goal', вид: 'kind', база: 'base', папка: 'folder', проект: 'project', 'только-локально': 'local-only', исполнитель: 'executor', результат: 'result',
   текст: 'text', название: 'title', да: 'yes', 'ключи-отозваны': 'revoked', от: 'from', причина: 'reason', через: 'via', манифест: 'manifest', readme: 'readme',
-  роль: 'role', роли: 'roles', срок: 'until', пул: 'pool', клоны: 'clones', к: 'to', скрытые: 'hidden', порог: 'threshold', сколько: 'limit', удалённый: 'remote', линза: 'lens', файл: 'file', следить: 'watch', строка: 'line', команда: 'command', семейство: 'provider', данные: 'data', модель: 'model', навыки: 'skills', 'в-папке': 'in-place', диалог: 'interactive', мастер: 'wizard' };
-const LONE = ['json', 'local-only', 'yes', 'revoked', 'help', 'watch', 'line', 'in-place', 'interactive', 'wizard', 'trusted-proxy', 'suggest'];
-Object.assign(FLAGS, { 'вход-токены': 'input-tokens', 'выход-токены': 'output-tokens' });
+  роль: 'role', роли: 'roles', срок: 'until', пул: 'pool', клоны: 'clones', к: 'to', скрытые: 'hidden', порог: 'threshold', сколько: 'limit', удалённый: 'remote', линза: 'lens', файл: 'file', следить: 'watch', строка: 'line', команда: 'command', семейство: 'provider', данные: 'data', модель: 'model', навыки: 'skills', 'в-папке': 'in-place', диалог: 'interactive', мастер: 'wizard', открыть: 'open' };
+const LONE = ['json', 'local-only', 'yes', 'revoked', 'help', 'watch', 'line', 'in-place', 'interactive', 'wizard', 'trusted-proxy', 'suggest', 'open'];
+Object.assign(FLAGS, { 'вход-токены': 'input-tokens', 'выход-токены': 'output-tokens', адрес: 'address', переменная: 'key-env' });
+// Flags that complete a preset or a manifest: an explicit choice of the person.
+const MANIFEST_FLAGS = [['command', 'command'], ['provider', 'provider'], ['data', 'dataPolicy'], ['model', 'model'], ['address', 'baseUrl'], ['key-env', 'apiKeyEnv']];
+function manifestFrom(id, base, flags) {
+  assert(base && base.kind, `Готовые исполнители: ${[...Object.keys(PRESETS), ...Object.keys(API_PRESETS)].join(', ')}; для остальных — --файл манифест.json`);
+  const manifest = { ...base };
+  for (const [flag, key] of MANIFEST_FLAGS) if (typeof flags[flag] === 'string') manifest[key] = flags[flag];
+  const gaps = presetGaps(manifest);
+  assert(!gaps.length, `Для ${id} укажи: ${gaps.join(' ')}`);
+  return manifest;
+}
 const executionEstimate = flags => flags['input-tokens'] === undefined && flags['output-tokens'] === undefined ? null :
   { inputTokens: Number(flags['input-tokens']), outputTokens: Number(flags['output-tokens']) };
 const YES = ['да', 'yes', 'ok', 'y'], NO = ['нет', 'no', 'n'];
@@ -72,6 +83,7 @@ const HELP = `Borshkit — Modular AI Workspace
   borshkit мастер вход codex-app|codex-cli|claude-app|claude-cli|vscode|gemini-cli|other
   borshkit мастер безопасность строгий|умеренный
   borshkit мастер среда claude|codex|gemini --модель <id> [--данные no-train|local|unknown]
+  borshkit мастер среда freellmapi|ollama|openrouter|groq [--модель <id>] [--семейство meta] [--адрес URL]
   borshkit мастер среда <имя> --файл <манифест.json>
   borshkit мастер роли architect,implementer,tester,reviewer
   borshkit мастер предложить | заново    предложение без применения или новый подбор
@@ -88,6 +100,7 @@ const HELP = `Borshkit — Modular AI Workspace
   borshkit статус                       что происходит и что ждёт тебя
   borshkit доктор                       проверить окружение и пространство
   borshkit сохранить "что изменилось"   точка возврата в истории пространства
+  borshkit поддержать [--открыть]       поддержать проект донатом: ссылка и страница в браузере
 
   borshkit задача новая <имя> --цель "что должно получиться" [--вид feature|bug|maintenance|research] [--база <коммит|ветка>]
   borshkit задача анализ <имя>          понятно ли описаны цели и критерии
@@ -107,6 +120,7 @@ const HELP = `Borshkit — Modular AI Workspace
 
   borshkit исполнители                  кто может работать и что показала проверка
   borshkit исполнитель добавить claude|codex|gemini [--данные no-train|trains|local] | <имя> --файл манифест.json
+  borshkit исполнитель добавить freellmapi|ollama|openrouter|groq [--модель <id>] [--семейство meta] [--адрес URL] [--переменная ИМЯ]
   borshkit исполнитель проверить <имя>  сверить установленную программу или API с тем, что нужно
   borshkit исполнитель отпечаток <имя>
   borshkit исполнитель оценить <имя> --роль <роль> --файл assessments/role.md --результат PASS|FAIL --срок <ISO-дата>
@@ -144,7 +158,32 @@ const HELP = `Borshkit — Modular AI Workspace
   borshkit оценка доверие <метка> [--семейство openai] [--порог 0.05]   насколько можно верить «готово» модели этого семейства
 
 Английские имена тоже работают: init, status, doctor, save, task new|check|verify|review|converge|confirm|accept.
-Добавь --json, чтобы получить ответ для программ.`;
+Добавь --json, чтобы получить ответ для программ.
+
+Нравится Borshkit? Поддержи проект: borshkit поддержать`;
+
+const SUPPORT_URL = 'https://web.tribute.tg/d/Sh8';
+const SUPPORT_TEXT = `Спасибо, что хочешь поддержать Borshkit!
+Донат через Tribute: ${SUPPORT_URL}
+Не до денег? Звезда на GitHub и рассказ друзьям тоже помогают: https://github.com/ParkPavel/borshkit`;
+/** Opens a page in the default browser; failure is not an error, the link is already printed. */
+function openInBrowser(url) {
+  const [cmd, args] = process.platform === 'win32' ? ['cmd', ['/c', 'start', '', url]]
+    : process.platform === 'darwin' ? ['open', [url]] : ['xdg-open', [url]];
+  try { spawn(cmd, args, { stdio: 'ignore', detached: true, windowsHide: true }).on('error', () => {}).unref(); return true; }
+  catch { return false; }
+}
+async function supportCommand(flags) {
+  if (flags.json) return print(flags, { url: SUPPORT_URL }, '');
+  console.log(SUPPORT_TEXT);
+  let wanted = flags.open === true;
+  if (!wanted && process.stdin.isTTY && process.stdout.isTTY) {
+    const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+    try { wanted = /^(да|д|yes|y)$/i.test((await rl.question('Открыть страницу доната в браузере? (да/нет) ')).trim()); }
+    finally { rl.close(); }
+  }
+  if (wanted) console.log(openInBrowser(SUPPORT_URL) ? 'Открываю страницу в браузере…' : 'Браузер не открылся — скопируй ссылку выше.');
+}
 
 function print(flags, value, text) { console.log(flags.json ? JSON.stringify(value, null, 2) : text); }
 /**
@@ -171,16 +210,20 @@ async function setupDialog(space) {
     await updateSetup(space, { host: await ask(`Среда: ${Object.keys(SETUP_HOSTS).join(', ')}`, draft.host ?? 'codex-cli') });
     const privacy = await ask('Безопасность: строгий (только local/no-train) или умеренный', draft.privacy ?? 'strict');
     await updateSetup(space, { privacy: MODES[privacy] ?? privacy });
-    const ids = (await ask('Исполнители: claude, codex, gemini через запятую; для API используй мастер среда --файл',
-      Object.keys(draft.executors).filter(id => Object.hasOwn(PRESETS, id)).join(',') || 'codex')).split(',').map(s => s.trim());
-    assert(ids.length && ids.every(id => Object.hasOwn(PRESETS, id)), 'В диалоге выбери claude, codex и/или gemini; остальные подключаются через манифест');
+    const known = [...Object.keys(PRESETS), ...Object.keys(API_PRESETS)];
+    const ids = (await ask(`Исполнители через запятую: ${known.join(', ')}; другие API — мастер среда <имя> --файл`,
+      Object.keys(draft.executors).filter(id => known.includes(id)).join(',') || 'codex')).split(',').map(s => s.trim());
+    assert(ids.length && ids.every(id => known.includes(id)), `В диалоге выбери из списка: ${known.join(', ')}; остальные подключаются через манифест`);
     await updateSetup(space, { executors: Object.fromEntries(ids.filter(id => draft.executors[id]).map(id => [id, draft.executors[id]])) }, { replaceExecutors: true });
     for (const id of new Set(ids)) {
-      const current = draft.executors[id] ?? space.settings.executors[id] ?? PRESETS[id];
+      const current = draft.executors[id] ?? space.settings.executors[id] ?? presetFor(id);
       const model = await ask(`${id}: точный ID модели из твоей среды`, current.model);
       assert(model, 'Модель обязательна; оставлять её на скрытом автоматическом выборе нельзя');
+      const provider = current.provider ?? await ask(`${id}: семейство модели (meta, mistral, qwen, openai…)`);
+      assert(provider, 'Семейство модели нужно, чтобы ревью делала другая семья');
       const dataPolicy = await ask(`${id}: политика твоего аккаунта — unknown, no-train, local или trains`, current.dataPolicy);
-      await updateSetup(space, { executors: { [id]: { ...current, model, dataPolicy } } });
+      if (current.apiKeyEnv) console.log(`Ключ ${id} храни только в переменной ${current.apiKeyEnv}, не в чате и не в файлах.`);
+      await updateSetup(space, { executors: { [id]: { ...current, model, provider, dataPolicy } } });
     }
     const roles = (await ask('Обязанности команды — имена ролей через запятую', (draft.roles.length ? draft.roles : DEFAULT_SETUP_ROLES).join(',')))
       .split(',').map(s => s.trim());
@@ -203,12 +246,8 @@ async function setupCommand(space, positional, flags) {
     assert(id, 'Укажи имя исполнителя');
     const draft = await readSetup(space);
     const base = typeof flags.file === 'string' ? await readJSON(path.resolve(flags.file)) :
-      draft.executors[id] ?? space.settings.executors[id] ?? (Object.hasOwn(PRESETS, id) ? PRESETS[id] : null);
-    assert(base, 'Выбери claude, codex, gemini, существующего исполнителя или укажи --файл манифест.json');
-    const manifest = { ...base };
-    for (const [flag, key] of [['model', 'model'], ['command', 'command'], ['data', 'dataPolicy'], ['provider', 'provider']])
-      if (typeof flags[flag] === 'string') manifest[key] = flags[flag];
-    await updateSetup(space, { executors: { [id]: manifest } });
+      draft.executors[id] ?? space.settings.executors[id] ?? presetFor(id);
+    await updateSetup(space, { executors: { [id]: manifestFrom(id, base, flags) } });
   } else if (sub === 'роли' || sub === 'roles') {
     assert(typeof positional[1] === 'string', 'Укажи имена ролей через запятую');
     await updateSetup(space, { roles: positional[1].split(',').map(s => s.trim()) });
@@ -508,6 +547,7 @@ export async function main(argv = process.argv.slice(2)) {
     }
     return print(flags, report, lines.join('\n'));
   }
+  if (command === 'support') return supportCommand(flags);
   if (command === 'setup') return setupCommand(await open(flags), positional.slice(1), flags);
   if (command === 'integration') {
     assert(positional[1]==='export','Интеграция: export --host <среда>');
@@ -641,9 +681,7 @@ export async function main(argv = process.argv.slice(2)) {
       return print(flags, p, `Оценка предложена (${p.id}); живой benchmark не запускался. Применить: borshkit настройки применить ${p.id}`);
     }
     if (sub === 'add') {
-      const manifest = typeof flags.file === 'string' ? await readJSON(path.resolve(flags.file)) : { ...PRESETS[id] };
-      assert(manifest && manifest.kind, `Готовые исполнители: ${Object.keys(PRESETS).join(', ')}; для остальных — --файл манифест.json`);
-      for (const [flag, key] of [['command', 'command'], ['provider', 'provider'], ['data', 'dataPolicy'], ['model', 'model']]) if (typeof flags[flag] === 'string') manifest[key] = flags[flag];
+      const manifest = manifestFrom(id, typeof flags.file === 'string' ? await readJSON(path.resolve(flags.file)) : presetFor(id), flags);
       const proposal = await proposeSettings(space, { executors: { ...(space.settings.executors ?? {}), [id]: manifest } }, { reason: `добавить исполнителя ${id}` });
       const confirmed = await confirmPerson(`Добавить исполнителя ${id}: ${proposal.weakens.join('; ')}`, 'да, ослабить');
       assert(confirmed, `${PERSON_ONLY} Предложение сохранено: ${proposal.id}`);

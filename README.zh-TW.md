@@ -11,6 +11,7 @@
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="Claude Code 外掛">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-6b5757" alt="授權 Apache-2.0"></a>
   <a href="https://t.me/parkpavel_chigon"><img src="https://img.shields.io/badge/Telegram-%E4%BD%9C%E8%80%85%E9%A0%BB%E9%81%93-26a5e4?logo=telegram&logoColor=white" alt="作者的 Telegram 頻道"></a>
+  <a href="https://web.tribute.tg/d/Sh8"><img src="https://img.shields.io/badge/Tribute-%E8%B4%8A%E5%8A%A9-e8554e?logo=telegram&logoColor=white" alt="支持這個專案"></a>
 </p>
 
 <p align="center">
@@ -175,7 +176,7 @@ Borshkit 就是一鍋羅宋湯：用別人親手種出、公開分享的最好�
 - Borshkit 會檢查它自己送給代理的任務包。之後 Claude Code 或 Codex 從專案副本的檔案裡讀了什麼，它看不到：被忽略的檔案（`.env`）不在副本裡，但其他檔案代理都能讀。
 - 任務的檢查（測試、建置）會用你的環境變數執行，因為測試有時需要金鑰。環境過濾只套用在執行者身上。
 - 知識地圖只理解 JS/TS 程式碼和 Markdown 之間的連結。Swift、Python、Go 等其他語言目前還不會收進地圖；驗收結果不受影響。
-- Claude Code 和 Codex 的轉接器，是用事件格式相同的假程式測試的。已安裝的 Claude Code 的旗標已經核對過。CI 不會執行真正的模型。
+- Claude Code、Codex 和 Gemini 的轉接器，是用事件格式相同的假程式測試的。已安裝的 Claude Code 的旗標已經核對過。CI 不會執行真正的模型。
 - 透過 Codex（GPT Image）產生圖片還沒有測試：`borshkit executor probe codex` 會用你的訂閱實際確認。
 - Obsidian 圖譜會不會顯示筆記屬性裡的連結，還沒有測試。所以連結也會以一般連結的形式在內文中再寫一次。
 - Borshkit 的訊息目前只有俄文；指令和旗標有俄文和英文兩種。
@@ -198,6 +199,14 @@ npm run verify   # 靜態檢查與所有測試；CI 會在 Linux 和 Windows 上
 ## 作者
 
 **Pavel Park** — [GitHub](https://github.com/ParkPavel) · [Telegram 頻道](https://t.me/parkpavel_chigon)
+
+## 支持這個專案
+
+Borshkit 免費且開源。如果它對你有幫助，歡迎透過 Tribute 贊助。
+
+<p><a href="https://web.tribute.tg/d/Sh8"><img src="https://img.shields.io/badge/Tribute-%E8%B4%8A%E5%8A%A9-e8554e?style=for-the-badge&logo=telegram&logoColor=white" alt="贊助"></a></p>
+
+在終端機中：`borshkit support` 會顯示連結並詢問是否在瀏覽器中開啟。在 GitHub 按星號、向同事推薦也很有幫助。
 
 ## 授權
 

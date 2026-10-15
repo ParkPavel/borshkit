@@ -11,6 +11,7 @@
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="Claude Code 플러그인">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-6b5757" alt="라이선스 Apache-2.0"></a>
   <a href="https://t.me/parkpavel_chigon"><img src="https://img.shields.io/badge/Telegram-%EB%A7%8C%EB%93%A0%20%EC%82%AC%EB%9E%8C%20%EC%B1%84%EB%84%90-26a5e4?logo=telegram&logoColor=white" alt="만든 사람의 Telegram 채널"></a>
+  <a href="https://web.tribute.tg/d/Sh8"><img src="https://img.shields.io/badge/Tribute-%ED%9B%84%EC%9B%90-e8554e?logo=telegram&logoColor=white" alt="프로젝트 후원"></a>
 </p>
 
 <p align="center">
@@ -175,7 +176,7 @@ Borshkit은 보르시입니다. 다른 사람들이 기르고 누구나 쓸 수 
 - Borshkit은 자신이 에이전트에게 보내는 작업 묶음을 검사합니다. 그 뒤에 Claude Code나 Codex가 프로젝트 복사본의 파일에서 무엇을 읽는지는 보지 못합니다. 무시되는 파일(`.env`)은 복사본에 없지만, 나머지 파일은 에이전트가 모두 읽을 수 있습니다.
 - 작업 검사(테스트, 빌드)는 사용자의 환경 변수로 실행됩니다. 테스트에 키가 필요할 때가 있기 때문입니다. 환경 필터는 실행자에게만 적용됩니다.
 - 지식 지도는 JS/TS 코드와 Markdown의 연결만 이해합니다. Swift, Python, Go 등 다른 언어는 아직 지도에 들어가지 않습니다. 인수 결과는 이것과 무관합니다.
-- Claude Code와 Codex 어댑터는 같은 이벤트 형식을 쓰는 가짜 프로그램으로 테스트했습니다. 설치된 Claude Code의 플래그는 확인했습니다. CI에서는 실제 모델을 실행하지 않습니다.
+- Claude Code, Codex, Gemini 어댑터는 같은 이벤트 형식을 쓰는 가짜 프로그램으로 테스트했습니다. 설치된 Claude Code의 플래그는 확인했습니다. CI에서는 실제 모델을 실행하지 않습니다.
 - Codex(GPT Image)를 통한 이미지 생성은 아직 테스트하지 않았습니다. 사용자의 구독에서 되는지는 `borshkit executor probe codex`로 확인할 수 있습니다.
 - Obsidian 그래프가 노트 속성에 있는 링크를 보여 주는지는 테스트하지 않았습니다. 그래서 같은 링크를 본문에도 일반 링크로 한 번 더 적어 둡니다.
 - Borshkit의 메시지는 아직 러시아어로만 나옵니다. 명령과 플래그는 러시아어와 영어 둘 다 있습니다.
@@ -198,6 +199,14 @@ npm run verify   # 정적 검사와 전체 테스트. CI가 Linux, Windows 및 m
 ## 만든 사람
 
 **Pavel Park** — [GitHub](https://github.com/ParkPavel) · [Telegram 채널](https://t.me/parkpavel_chigon)
+
+## 프로젝트 후원
+
+Borshkit은 무료 오픈 소스입니다. 도움이 되었다면 Tribute를 통해 후원해 주세요.
+
+<p><a href="https://web.tribute.tg/d/Sh8"><img src="https://img.shields.io/badge/Tribute-%ED%9B%84%EC%9B%90%ED%95%98%EA%B8%B0-e8554e?style=for-the-badge&logo=telegram&logoColor=white" alt="후원하기"></a></p>
+
+터미널에서: `borshkit support`는 링크를 보여 주고 브라우저에서 열지 묻습니다. GitHub 별표와 동료에게 소개하는 것도 큰 도움이 됩니다.
 
 ## 라이선스
 

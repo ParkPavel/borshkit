@@ -11,6 +11,7 @@
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="плагин Claude Code">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-6b5757" alt="лицензия Apache-2.0"></a>
   <a href="https://t.me/parkpavel_chigon"><img src="https://img.shields.io/badge/Telegram-%D0%BA%D0%B0%D0%BD%D0%B0%D0%BB%20%D0%B0%D0%B2%D1%82%D0%BE%D1%80%D0%B0-26a5e4?logo=telegram&logoColor=white" alt="Telegram-канал автора"></a>
+  <a href="https://web.tribute.tg/d/Sh8"><img src="https://img.shields.io/badge/Tribute-%D0%BF%D0%BE%D0%B4%D0%B4%D0%B5%D1%80%D0%B6%D0%B0%D1%82%D1%8C-e8554e?logo=telegram&logoColor=white" alt="Поддержать проект"></a>
 </p>
 
 <p align="center">
@@ -173,7 +174,7 @@ Borshkit — это борщ: собран из лучших ингредиен�
 - Borshkit проверяет задание, которое сам отправляет агенту. Что Claude Code или Codex потом читают из файлов копии проекта, он не видит: игнорируемых файлов (`.env`) в копии нет, а остальные доступны агенту целиком.
 - Проверки задач (тесты, сборка) запускаются с твоим окружением: тестам бывают нужны ключи. Фильтр окружения действует только на исполнителей.
 - Карта знаний понимает связи кода JS/TS и Markdown. Файлы Swift, Python, Go и других языков в неё пока не попадают; на приёмку это не влияет.
-- Адаптеры Claude Code и Codex проверены на поддельных программах с тем же форматом событий. Флаги установленного Claude Code сверены. Живых запусков с настоящими моделями в CI нет.
+- Адаптеры Claude Code, Codex и Gemini проверены на поддельных программах с тем же форматом событий. Флаги установленного Claude Code сверены. Живых запусков с настоящими моделями в CI нет.
 - Картинки через Codex (GPT Image) не проверены: это покажет `borshkit исполнитель проверить codex` на твоей подписке.
 - Видит ли граф Obsidian связи из свойств заметок, не проверено. Поэтому связи продублированы обычными ссылками в тексте.
 - Сообщения Borshkit пока только на русском; команды и флаги — на русском и английском.
@@ -195,6 +196,14 @@ npm run verify   # статические проверки и все тесты;
 ## Автор
 
 **Pavel Park** — [GitHub](https://github.com/ParkPavel) · [Telegram-канал](https://t.me/parkpavel_chigon)
+
+## Поддержать проект
+
+Borshkit бесплатный и открытый. Если он тебе помогает, поддержи развитие донатом через Tribute.
+
+<p><a href="https://web.tribute.tg/d/Sh8"><img src="https://img.shields.io/badge/Tribute-%D0%9F%D0%BE%D0%B4%D0%B4%D0%B5%D1%80%D0%B6%D0%B0%D1%82%D1%8C%20%D0%B4%D0%BE%D0%BD%D0%B0%D1%82%D0%BE%D0%BC-e8554e?style=for-the-badge&logo=telegram&logoColor=white" alt="Поддержать донатом"></a></p>
+
+Из терминала: `borshkit поддержать` покажет ссылку и предложит открыть её в браузере. Звезда на GitHub и рассказ коллегам тоже очень помогают.
 
 ## Лицензия
 

@@ -72,6 +72,12 @@ export async function roleFingerprint(role) {
 }
 
 const cut = (text, max) => text.length > max ? `${text.slice(0, max)}\n…(обрезано, всего ${text.length} символов)` : text;
+/** Non-empty lines of the role and skill texts shipped with Borshkit. */
+export async function shippedLines({ role, skills = [] }) {
+  const texts = [role.prompt];
+  for (const ref of [...new Set([...role.packs, ...skills])]) texts.push(...(await loadSkill(ref)).texts);
+  return new Set(texts.flatMap(t => t.split(/\r?\n/)).filter(l => l.trim()));
+}
 /**
  * The packet an executor receives. Everything after the role text is data:
  * the contract, checks already run on this exact state, the knowledge slice,

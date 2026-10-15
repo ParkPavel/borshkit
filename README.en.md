@@ -11,6 +11,7 @@
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="Claude Code plugin">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-6b5757" alt="license Apache-2.0"></a>
   <a href="https://t.me/parkpavel_chigon"><img src="https://img.shields.io/badge/Telegram-author%27s%20channel-26a5e4?logo=telegram&logoColor=white" alt="The author's Telegram channel"></a>
+  <a href="https://web.tribute.tg/d/Sh8"><img src="https://img.shields.io/badge/Tribute-support-e8554e?logo=telegram&logoColor=white" alt="Support the project"></a>
 </p>
 
 <p align="center">
@@ -175,7 +176,7 @@ The full recipe with versions and licenses is in [docs/ingredients.md](docs/ingr
 - Borshkit checks the task packet it sends to an agent. It does not see what Claude Code or Codex read from the files of the project copy afterwards: ignored files (`.env`) are not in the copy, but the agent can read every other file.
 - Task checks (tests, build) run with your environment, because tests sometimes need keys. The environment filter applies only to executors.
 - The knowledge map understands links in JS/TS code and Markdown. Swift, Python, Go and other languages are not mapped yet; acceptance does not depend on it.
-- The Claude Code and Codex adapters are tested against fake programs with the same event format. The flags of an installed Claude Code have been checked. CI does not run real models.
+- The Claude Code, Codex and Gemini adapters are tested against fake programs with the same event format. The flags of an installed Claude Code have been checked. CI does not run real models.
 - Images through Codex (GPT Image) are not tested yet: `borshkit executor probe codex` shows it on your subscription.
 - Whether the Obsidian graph shows links from note properties is not tested. That is why links are repeated as ordinary links in the text.
 - Borshkit's messages are in Russian only for now; commands and flags are in Russian and English.
@@ -198,6 +199,14 @@ npm run verify   # static checks and all tests; CI runs them on Linux, Windows a
 ## Author
 
 **Pavel Park** — [GitHub](https://github.com/ParkPavel) · [Telegram channel](https://t.me/parkpavel_chigon)
+
+## Support the project
+
+Borshkit is free and open source. If it helps you, support its development with a donation via Tribute.
+
+<p><a href="https://web.tribute.tg/d/Sh8"><img src="https://img.shields.io/badge/Tribute-Donate-e8554e?style=for-the-badge&logo=telegram&logoColor=white" alt="Donate"></a></p>
+
+From the terminal: `borshkit support` prints the link and offers to open it in your browser. A star on GitHub and telling your colleagues help a lot too.
 
 ## License
 
