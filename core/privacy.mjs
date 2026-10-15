@@ -40,10 +40,13 @@ function luhn(digits) {
  * mode except the experiment, where they are recorded for revocation instead;
  * personal data blocks in the moderate and strict modes.
  */
-export function outboundFindings(text, mode) {
+export function outboundFindings(text, mode, { shipped = null } = {}) {
   const findings = findSecrets(text).map(f => ({ ...f, action: mode === 'experiment' ? 'record' : 'block' }));
   if (mode === 'experiment') return findings;
   String(text).split(/\r?\n/).forEach((line, i) => {
+    // Sample data in role and skill texts shipped with Borshkit (fake emails in
+    // break-ui) is not personal data; secrets above are still checked everywhere.
+    if (shipped?.has(line)) return;
     for (const [kind, pattern] of PII) if (pattern.test(line)) findings.push({ kind, line: i + 1, action: 'block' });
     for (const m of line.matchAll(/\b(?:\d[ -]?){13,19}\b/g)) {
       const digits = m[0].replace(/\D/g, '');

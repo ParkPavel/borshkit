@@ -14,6 +14,18 @@ import { git, isGitRoot } from './io.mjs';
 export async function snapshot(project, { exclude = [] } = {}) {
   return (await isGitRoot(project)) ? gitSnapshot(project) : filesSnapshot(project, exclude);
 }
+/**
+ * The state of one commit, for a task that starts from a ref other than HEAD
+ * (`задача новая --база`). The digest is bound to the commit's tree.
+ */
+export async function commitSnapshot(repo, ref) {
+  const head = (await git(repo, ['rev-parse', '--verify', '-q', `${ref}^{commit}`]).catch(() => '')).trim();
+  if (!head) throw new Error(`База «${ref}» не найдена в истории проекта`);
+  const tree = (await git(repo, ['rev-parse', `${head}^{tree}`])).trim();
+  const files = (await git(repo, ['ls-tree', '-r', '-z', '--name-only', head])).split('\0').filter(Boolean);
+  const digest = crypto.createHash('sha256').update(`commit-tree\0${tree}`).digest('hex');
+  return { kind: 'git', head, digest, fileCount: files.length, ref };
+}
 async function hashFiles(root, files, seed) {
   const hash = crypto.createHash('sha256');
   hash.update(seed);

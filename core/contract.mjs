@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { assert, atomicJSON, contained, exists, git, readJSON, sha, withLock } from './io.mjs';
-import { fileDigests, snapshot } from './snapshot.mjs';
+import { commitSnapshot, fileDigests, snapshot } from './snapshot.mjs';
 import { assertIgnored, journal, saveSpace } from './space.mjs';
 import { MATERIAL_ID } from './materials.mjs';
 import { assertSettingsIntact } from './config.mjs';
@@ -106,14 +106,18 @@ export async function taskDir(space, taskId) {
   id(taskId);
   return contained(space.dir, path.join(space.tasks, taskId));
 }
-export async function newTask(space, { taskId, goal, kind = 'feature' }) {
+export async function newTask(space, { taskId, goal, kind = 'feature', base: baseRef = null }) {
   assert(nonempty(goal), 'Опиши цель задачи: --цель "что должно получиться"');
   assert(KINDS.includes(kind), `Вид задачи — один из: ${KINDS.join(', ')}`);
   await assertIgnored(space);
   await assertSettingsIntact(space);
   const dir = await taskDir(space, taskId), file = path.join(dir, 'contract.json'), basisFile = path.join(dir, 'basis.json');
-  const base = await snapshot(space.project, { exclude: [space.folder] });
-  const before = await uncommitted(space);
+  // --база: the task starts from that commit, not from the project's HEAD;
+  // the project's uncommitted files are not part of it.
+  assert(baseRef === null || (typeof baseRef === 'string' && baseRef.trim()), 'Укажи коммит или ветку: --база <ref>');
+  assert(baseRef === null || space.projectIsGit, 'База по коммиту есть только в проекте с Git');
+  const base = baseRef ? await commitSnapshot(space.project, baseRef.trim()) : await snapshot(space.project, { exclude: [space.folder] });
+  const before = baseRef ? {} : await uncommitted(space);
   const contract = { schemaVersion: 2, taskId, kind, goal, nonGoals: [], decisions: [], base, paths: ['.'], goals: [], criteria: [], checks: [], acceptance: { policy: 'mixed' } };
   await withLock(space.state, async () => {
     assert(!(await exists(file)) && !(await exists(basisFile)), 'Такая задача уже есть; создание никогда не перезаписывает контракт');

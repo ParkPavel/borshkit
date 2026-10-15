@@ -105,3 +105,15 @@ test('from a tool (no terminal) the CLI tightens privacy but refuses to weaken i
   assert.match(refused.stderr, /только человек в терминале/);
   assert.equal((await readJSON(s.settingsFile)).privacy, 'strict');
 });
+
+test('shipped role and skill lines skip the personal-data check, never the secret check', async () => {
+  const { loadRole, shippedLines, buildPrompt } = await import('../core/roles.mjs');
+  const role = await loadRole('designer');
+  const shipped = await shippedLines({ role });
+  const prompt = await buildPrompt({ role, contract: { taskId: 't', goal: 'g', criteria: [], paths: [] }, context: 'пиши на ivan.petrov@mail.ru' });
+  assert.ok(outboundFindings(prompt, 'moderate').some(f => f.kind === 'email'), 'sample emails in break-ui are seen without the exemption');
+  const left = outboundFindings(prompt, 'moderate', { shipped });
+  assert.deepEqual(left.map(f => f.kind), ['email'], 'only the email from the task context remains');
+  const key = 'sk-ant-api03-' + 'a'.repeat(90);
+  assert.ok(outboundFindings(key, 'moderate', { shipped: new Set([key]) }).some(f => f.action === 'block'), 'a secret blocks even on a shipped line');
+});

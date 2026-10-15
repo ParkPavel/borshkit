@@ -5,7 +5,7 @@ import { acquireLock, assert, atomicJSON, atomicWrite, contained, exists, git, r
 import { journal, saveSpace } from './space.mjs';
 import { capable, FAILURE_WORDS, privacyAllows, readProbes } from './executors.mjs';
 import { startExecutor } from './adapters.mjs';
-import { buildPrompt, loadRole, loadSkill, SCHEMAS, validateOutput } from './roles.mjs';
+import { buildPrompt, shippedLines, loadRole, loadSkill, SCHEMAS, validateOutput } from './roles.mjs';
 import { outboundFindings } from './privacy.mjs';
 import { authorProviders, taskState, currentChecks, readyTask, recordReview } from './accept.mjs';
 import { loadMaterial, materialText } from './materials.mjs';
@@ -46,9 +46,12 @@ export async function ensureWorktree(space, taskId) {
   const target = path.join(root, taskId), branch = `borshkit/${taskId}`;
   await fs.mkdir(root, { recursive: true });
   const branches = (await git(space.project, ['branch', '--list', branch])).trim();
-  await git(space.project, branches ? ['worktree', 'add', target, branch] : ['worktree', 'add', '-b', branch, target, head]);
+  // A task created with --база starts its copy from that commit.
+  const contract = await readJSON(path.join(space.tasks, taskId, 'contract.json')).catch(() => null);
+  const start = contract?.base?.ref && contract.base.head ? contract.base.head : head;
+  await git(space.project, branches ? ['worktree', 'add', target, branch] : ['worktree', 'add', '-b', branch, target, start]);
   const dirty = (await git(space.project, ['status', '--porcelain'])).trim();
-  const created = { path: target, branch, base: head, isolated: true, createdAt: new Date().toISOString() };
+  const created = { path: target, branch, base: start, isolated: true, createdAt: new Date().toISOString() };
   await atomicJSON(infoFile, created);
   await journal(space, `Для задачи «${taskId}» создана отдельная копия проекта: ${target}${dirty ? ' (несохранённые изменения проекта в неё не попали)' : ''}.`);
   return created;
@@ -80,6 +83,17 @@ async function changedFiles(repo, base) {
 }
 async function knowledgeContext(space, taskId) {
   try { return (await import('./kb.mjs')).taskContext(space, taskId); } catch { return null; }
+}
+const DIFF_LIMIT = 120000;
+/** The task's committed and uncommitted change since its base, bounded. */
+async function taskDiff(root, contract) {
+  const base = contract.base?.head;
+  if (!base) return null;
+  const text = await git(root, ['diff', '--no-color', '--no-ext-diff', base]).catch(() => '');
+  const untracked = (await git(root, ['ls-files', '--others', '--exclude-standard']).catch(() => '')).trim();
+  if (!text.trim() && !untracked) return null;
+  const cut = text.length > DIFF_LIMIT ? `${text.slice(0, DIFF_LIMIT)}\n… (diff truncated at ${DIFF_LIMIT} characters)` : text;
+  return `Изменения задачи от базы ${base.slice(0, 12)} (git diff):\n${cut}${untracked ? `\nНе добавленные в git файлы:\n${untracked}` : ''}`;
 }
 async function sourceContext(space, contract, root) {
   // Tool-free executors receive only explicitly scoped tracked text. They do
@@ -173,10 +187,14 @@ async function runJobUnlocked(space, { taskId, role: roleId, executor = null, po
     const work = writable ? await ensureWorktree(space, taskId) : { path: t.repo };
     job.worktree = writable ? work.path : null;
     const knowledge = await knowledgeContext(space, taskId);
-    const context = ['gemini-cli','gemini-api','openai-compat'].includes(e.kind) ? `${await sourceContext(space,t.contract,work.path)}\n\n${knowledge??''}` : knowledge;
+    const sources = ['gemini-cli','gemini-api','openai-compat'].includes(e.kind) ? await sourceContext(space,t.contract,work.path) : null;
+    // A read-only role must see what it reviews even when its sandbox refuses
+    // every shell command (codex read-only on Windows): the task's diff from its base.
+    const diff = role.authority !== 'workspace-write' ? await taskDiff(work.path, t.contract) : null;
+    const context = [sources, diff, knowledge].filter(Boolean).join('\n\n') || null;
     const prompt = await buildPrompt({ role, contract: t.contract, lens, skills, checks: await currentChecks(space, t), context,
       materials, handoff, imagePath: role.output === 'image' && !['openai-compat', 'gemini-api'].includes(e.kind) ? imagePath : null });
-    const leaks = outboundFindings(prompt, space.settings.privacy).filter(f => f.action === 'block');
+    const leaks = outboundFindings(prompt, space.settings.privacy, { shipped: await shippedLines({ role, skills }) }).filter(f => f.action === 'block');
     if (leaks.length) { await skip('PRIVACY', `в пакете для отправки найдено: ${[...new Set(leaks.map(l => l.kind))].join(', ')}`); outcome = { ok: false, failure: 'PRIVACY' }; break; }
 
     // What the reviewer is about to see; its answer is bound to this, not to the state at the end.

@@ -77,6 +77,12 @@ const cut = (text, max) => text.length > max ? `${text.slice(0, max)}\n…(об�
  * the contract, checks already run on this exact state, the knowledge slice,
  * materials and a handoff from a previous executor.
  */
+/** Non-empty lines of the role and skill texts shipped with Borshkit. */
+export async function shippedLines({ role, skills = [] }) {
+  const texts = [role.prompt];
+  for (const ref of [...new Set([...role.packs, ...skills])]) texts.push(...(await loadSkill(ref)).texts);
+  return new Set(texts.flatMap(t => t.split(/\r?\n/)).filter(l => l.trim()));
+}
 export async function buildPrompt({ role, contract, lens = null, skills = [], checks = [], context = null, materials = [], handoff = null, imagePath = null }) {
   const parts = [role.prompt.trim()];
   if (lens !== null) assert(LENSES.includes(lens), `Линза «ленивый сеньор»: ${LENSES.join(', ')}`);

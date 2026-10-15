@@ -6,7 +6,7 @@ import { assert, atomicJSON, atomicWrite, contained, readJSON, sha } from './io.
 import { relative } from './contract.mjs';
 import { capable, privacyAllows } from './executors.mjs';
 import { executorFingerprint } from './resources.mjs';
-import { buildPrompt, loadRole, roleFingerprint, SCHEMAS, validateOutput } from './roles.mjs';
+import { buildPrompt, shippedLines, loadRole, roleFingerprint, SCHEMAS, validateOutput } from './roles.mjs';
 import { startExecutor } from './adapters.mjs';
 import { childEnv, outboundFindings } from './privacy.mjs';
 import { runCommand } from './process.mjs';
@@ -48,7 +48,7 @@ export async function runAssessment(space, executorId, suite, { fetchImpl = glob
       }
       const prompt = await buildPrompt({ role, contract: c.contract ?? { taskId: c.id, goal: c.prompt, criteria: [], paths: Object.keys(c.fixtures) },
         context: `Задание: ${c.prompt}\nЯвные входы:\n${Object.entries(c.fixtures).map(([p,v]) => `${p}:\n${v}`).join('\n\n')}`, imagePath:c.imagePath??null });
-      assert(!outboundFindings(prompt, space.settings.privacy).some(f => f.action === 'block'), 'В задании обнаружены данные, запрещённые к отправке');
+      assert(!outboundFindings(prompt, space.settings.privacy, { shipped: await shippedLines({ role }) }).some(f => f.action === 'block'), 'В задании обнаружены данные, запрещённые к отправке');
       const reserved = await reserveExecution(space, { taskId: id, executorId, estimate });
       let launched = false, result = null;
       try {
