@@ -11,6 +11,7 @@
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="Claude Code 外掛">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-6b5757" alt="授權 Apache-2.0"></a>
   <a href="https://t.me/parkpavel_chigon"><img src="https://img.shields.io/badge/Telegram-%E4%BD%9C%E8%80%85%E9%A0%BB%E9%81%93-26a5e4?logo=telegram&logoColor=white" alt="作者的 Telegram 頻道"></a>
+  <a href="https://web.tribute.tg/d/Sh8"><img src="https://img.shields.io/badge/Tribute-%E8%B4%8A%E5%8A%A9-e8554e?logo=telegram&logoColor=white" alt="支持這個專案"></a>
 </p>
 
 <p align="center">
@@ -198,6 +199,14 @@ npm run verify   # 靜態檢查與所有測試；CI 會在 Linux 和 Windows 上
 ## 作者
 
 **Pavel Park** — [GitHub](https://github.com/ParkPavel) · [Telegram 頻道](https://t.me/parkpavel_chigon)
+
+## 支持這個專案
+
+Borshkit 免費且開源。如果它對你有幫助，歡迎透過 Tribute 贊助。
+
+<p><a href="https://web.tribute.tg/d/Sh8"><img src="https://img.shields.io/badge/Tribute-%E8%B4%8A%E5%8A%A9-e8554e?style=for-the-badge&logo=telegram&logoColor=white" alt="贊助"></a></p>
+
+在終端機中：`borshkit support` 會顯示連結並詢問是否在瀏覽器中開啟。在 GitHub 按星號、向同事推薦也很有幫助。
 
 ## 授權
 
