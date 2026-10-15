@@ -11,6 +11,7 @@
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="Claude Code 플러그인">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-6b5757" alt="라이선스 Apache-2.0"></a>
   <a href="https://t.me/parkpavel_chigon"><img src="https://img.shields.io/badge/Telegram-%EB%A7%8C%EB%93%A0%20%EC%82%AC%EB%9E%8C%20%EC%B1%84%EB%84%90-26a5e4?logo=telegram&logoColor=white" alt="만든 사람의 Telegram 채널"></a>
+  <a href="https://web.tribute.tg/d/Sh8"><img src="https://img.shields.io/badge/Tribute-%ED%9B%84%EC%9B%90-e8554e?logo=telegram&logoColor=white" alt="프로젝트 후원"></a>
 </p>
 
 <p align="center">
@@ -198,6 +199,14 @@ npm run verify   # 정적 검사와 전체 테스트. CI가 Linux, Windows 및 m
 ## 만든 사람
 
 **Pavel Park** — [GitHub](https://github.com/ParkPavel) · [Telegram 채널](https://t.me/parkpavel_chigon)
+
+## 프로젝트 후원
+
+Borshkit은 무료 오픈 소스입니다. 도움이 되었다면 Tribute를 통해 후원해 주세요.
+
+<p><a href="https://web.tribute.tg/d/Sh8"><img src="https://img.shields.io/badge/Tribute-%ED%9B%84%EC%9B%90%ED%95%98%EA%B8%B0-e8554e?style=for-the-badge&logo=telegram&logoColor=white" alt="후원하기"></a></p>
+
+터미널에서: `borshkit support`는 링크를 보여 주고 브라우저에서 열지 묻습니다. GitHub 별표와 동료에게 소개하는 것도 큰 도움이 됩니다.
 
 ## 라이선스
 

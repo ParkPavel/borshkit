@@ -11,6 +11,7 @@
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="Claude Code plugin">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-6b5757" alt="license Apache-2.0"></a>
   <a href="https://t.me/parkpavel_chigon"><img src="https://img.shields.io/badge/Telegram-author%27s%20channel-26a5e4?logo=telegram&logoColor=white" alt="The author's Telegram channel"></a>
+  <a href="https://web.tribute.tg/d/Sh8"><img src="https://img.shields.io/badge/Tribute-support-e8554e?logo=telegram&logoColor=white" alt="Support the project"></a>
 </p>
 
 <p align="center">
@@ -198,6 +199,14 @@ npm run verify   # static checks and all tests; CI runs them on Linux, Windows a
 ## Author
 
 **Pavel Park** — [GitHub](https://github.com/ParkPavel) · [Telegram channel](https://t.me/parkpavel_chigon)
+
+## Support the project
+
+Borshkit is free and open source. If it helps you, support its development with a donation via Tribute.
+
+<p><a href="https://web.tribute.tg/d/Sh8"><img src="https://img.shields.io/badge/Tribute-Donate-e8554e?style=for-the-badge&logo=telegram&logoColor=white" alt="Donate"></a></p>
+
+From the terminal: `borshkit support` prints the link and offers to open it in your browser. A star on GitHub and telling your colleagues help a lot too.
 
 ## License
 

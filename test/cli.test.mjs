@@ -27,3 +27,11 @@ test('the CLI creates a space, a task and reports status in Russian and as JSON'
   const unknown = await cli(dir, 'что-то').catch(e => e);
   assert.match(unknown.stderr, /Неизвестная команда/);
 });
+
+test('the support command prints the donation link and never opens a browser without a terminal', async t => {
+  const dir = await project(t);
+  const text = (await cli(dir, 'поддержать')).stdout;
+  assert.match(text, /https:\/\/web\.tribute\.tg\/d\/Sh8/);
+  assert.doesNotMatch(text, /Открываю/);
+  assert.equal(JSON.parse((await cli(dir, 'support', '--json')).stdout).url, 'https://web.tribute.tg/d/Sh8');
+});
