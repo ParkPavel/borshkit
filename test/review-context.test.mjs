@@ -37,3 +37,14 @@ test('review context does not follow untracked symlinks outside the repository',
   await fs.symlink(path.dirname(root), path.join(root, 'src', 'outside'));
   await assert.rejects(taskDiff(root, { paths: ['src'], base: { head: base } }), /выходит за пределы/);
 });
+
+test('an all-numeric short Git id is metadata, not a phone number', async t => {
+  const { outboundFindings } = await import('../core/privacy.mjs');
+  const root = await project(t);
+  await git(root, ['branch', '123456789012']);
+  const diff = await taskDiff(root, { paths: ['src'], base: { head: '123456789012' } });
+  assert.deepEqual(outboundFindings(diff, 'moderate'), []);
+  // Real personal data in file content must still be blocked.
+  await write(root, { 'src/phone.txt': 'Call +1 (415) 555-0100\n' });
+  assert.ok(outboundFindings(await taskDiff(root, { paths: ['src'], base: { head: '123456789012' } }), 'moderate').some(f => f.kind === 'phone'));
+});
