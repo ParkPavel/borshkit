@@ -1,3 +1,5 @@
 #!/bin/sh
 # Puts the Borshkit CLI on the PATH of Claude Code's Bash tool when the plugin is enabled.
-exec node "$(dirname "$0")/borshkit.mjs" "$@"
+# Only shell built-ins: no dirname/sed subprocess that can fail to start under Git Bash.
+case "$0" in */*) here="${0%/*}" ;; *) here=. ;; esac
+exec node "$here/borshkit.mjs" "$@"

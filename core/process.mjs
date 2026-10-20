@@ -45,6 +45,8 @@ export function shimTarget(text) {
   return target && !/%/.test(target) ? target.replaceAll('\\', path.sep) : null;
 }
 export async function runCommand(command, args, options = {}) {
-  const spec = await commandSpec(command);
+  let spec;
+  try { spec = await commandSpec(command); }
+  catch (e) { e.infrastructure = true; throw e; }
   return exec(spec.executable, [...spec.prefix, ...args], { windowsHide: true, timeout: 120000, maxBuffer: 16 * 1024 * 1024, ...options });
 }

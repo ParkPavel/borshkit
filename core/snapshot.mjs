@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { git, isGitRoot } from './io.mjs';
+import { git, isGitRoot, GitExitError } from './io.mjs';
 
 // Git snapshot adapted from Claudex src/io.mjs snapshot() (Apache-2.0, same author).
 
@@ -13,6 +13,20 @@ import { git, isGitRoot } from './io.mjs';
  */
 export async function snapshot(project, { exclude = [] } = {}) {
   return (await isGitRoot(project)) ? gitSnapshot(project) : filesSnapshot(project, exclude);
+}
+/**
+ * The state of one commit, for a task that starts from a ref other than HEAD
+ * (`задача новая --база`). The digest is bound to the commit's tree.
+ */
+export async function commitSnapshot(repo, ref) {
+  let head;
+  try { head = (await git(repo, ['rev-parse', '--verify', '-q', '--end-of-options', `${ref}^{commit}`])).trim(); }
+  catch (e) { if (!(e instanceof GitExitError) || e.code !== 1) throw e; }
+  if (!head) throw new Error(`База «${ref}» не найдена в истории проекта`);
+  const tree = (await git(repo, ['rev-parse', `${head}^{tree}`])).trim();
+  const files = (await git(repo, ['ls-tree', '-r', '-z', '--name-only', head])).split('\0').filter(Boolean);
+  const digest = crypto.createHash('sha256').update(`commit-tree\0${tree}`).digest('hex');
+  return { kind: 'git', head, digest, fileCount: files.length, ref };
 }
 async function hashFiles(root, files, seed) {
   const hash = crypto.createHash('sha256');
@@ -51,7 +65,7 @@ async function submoduleState(dir) {
 }
 async function gitSnapshot(repo) {
   let head = null;
-  try { head = (await git(repo, ['rev-parse', '--verify', '-q', 'HEAD'])).trim() || null; } catch { /* no commits yet */ }
+  try { head = (await git(repo, ['rev-parse', '--verify', '-q', 'HEAD'])).trim() || null; } catch (e) { if (!(e instanceof GitExitError) || e.code !== 1) throw e; }
   const listed = (await git(repo, ['ls-files', '-z', '--cached', '--others', '--exclude-standard'])).split('\0').filter(Boolean);
   const files = [...new Set(listed)].sort();
   return { kind: 'git', head, digest: await hashFiles(repo, files, head ?? 'unborn'), fileCount: files.length };

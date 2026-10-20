@@ -117,7 +117,7 @@ export async function verifyCheck(space, taskId, checkId) {
   else try {
     const result = await runCommand(check.command, check.args, { cwd: t.repo, timeout: check.timeoutMs ?? 120000, maxBuffer: 8 * 1024 * 1024 });
     log = result.stdout + result.stderr;
-  } catch (e) { status = 'FAIL'; error = e.message; log = `${e.stdout ?? ''}${e.stderr ?? ''}\n${e.message}\n`; }
+  } catch (e) { status = !e.infrastructure && Number.isInteger(e.code) && e.code > 0 && !e.signal && !e.killed && (e.code >>> 0) < 0xC0000000 ? 'FAIL' : 'UNKNOWN'; error = e.message; log = `${e.stdout ?? ''}${e.stderr ?? ''}\n${e.message}\n`; }
   const after = await context(space, t);
   const logFile = await contained(space.dir, path.join(t.dir, 'logs', `${evidenceId}.log`));
   await fs.mkdir(path.dirname(logFile), { recursive: true });

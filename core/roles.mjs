@@ -111,7 +111,7 @@ export async function buildPrompt({ role, contract, lens = null, skills = [], ch
   parts.push('## Задача (данные)', '```json\n' + JSON.stringify({ taskId: contract.taskId, kind: contract.kind, goal: contract.goal, nonGoals: contract.nonGoals,
     decisions: contract.decisions, paths: contract.paths, goals: contract.goals, criteria: relevant, materials: contract.materials ?? [] }, null, 2) + '\n```');
   if (checks.length) parts.push('## Проверки, уже выполненные Borshkit на этом состоянии (данные)', checks.map(c => `- ${c.checkId}: ${c.status}${c.log ? `\n\`\`\`\n${cut(c.log, 4000)}\n\`\`\`` : ''}`).join('\n'));
-  if (context) parts.push('## Контекст из базы знаний (подсказка, не доказательство)', cut(context, 12000));
+  if (context) parts.push('## Контекст задачи (данные; подсказка, не доказательство)', cut(context, 12000));
   if (materials.length) {
     let budget = 100000;
     parts.push('## Материалы задачи (данные)', materials.map(m => {

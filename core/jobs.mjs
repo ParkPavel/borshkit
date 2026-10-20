@@ -46,9 +46,12 @@ export async function ensureWorktree(space, taskId) {
   const target = path.join(root, taskId), branch = `borshkit/${taskId}`;
   await fs.mkdir(root, { recursive: true });
   const branches = (await git(space.project, ['branch', '--list', branch])).trim();
-  await git(space.project, branches ? ['worktree', 'add', target, branch] : ['worktree', 'add', '-b', branch, target, head]);
+  // A task created with --база starts its copy from that commit.
+  const contract = await readJSON(path.join(space.tasks, taskId, 'contract.json')).catch(() => null);
+  const start = contract?.base?.ref && contract.base.head ? contract.base.head : head;
+  await git(space.project, branches ? ['worktree', 'add', target, branch] : ['worktree', 'add', '-b', branch, target, start]);
   const dirty = (await git(space.project, ['status', '--porcelain'])).trim();
-  const created = { path: target, branch, base: head, isolated: true, createdAt: new Date().toISOString() };
+  const created = { path: target, branch, base: start, isolated: true, createdAt: new Date().toISOString() };
   await atomicJSON(infoFile, created);
   await journal(space, `Для задачи «${taskId}» создана отдельная копия проекта: ${target}${dirty ? ' (несохранённые изменения проекта в неё не попали)' : ''}.`);
   return created;
@@ -80,6 +83,39 @@ async function changedFiles(repo, base) {
 }
 async function knowledgeContext(space, taskId) {
   try { return (await import('./kb.mjs')).taskContext(space, taskId); } catch { return null; }
+}
+export const TASK_CONTEXT_LIMIT = 12000;
+const DIFF_LIMIT = 9000;
+/** Task-scoped data only, including new text files. Errors must reach the caller. */
+export async function taskDiff(root, contract, space = { folder: 'borshkit' }) {
+  const base = contract.base?.head;
+  if (!base) return null;
+  const scoped = names => names.split('\0').filter(name => name && allowedWrite(space, contract, name));
+  const names = scoped(await git(root, ['diff', '--name-only', '-z', '--no-renames', base]));
+  const untracked = scoped(await git(root, ['ls-files', '-z', '--others', '--exclude-standard']));
+  const chunks = [`Изменения задачи от базы ${base.slice(0, 12)}. Только paths; неполный пакет не доказывает отсутствие ошибок.`];
+  let remaining = DIFF_LIMIT - chunks[0].length, omitted = 0;
+  for (const name of names) {
+    if (remaining < 200) { omitted++; continue; }
+    const patch = await git(root, ['--literal-pathspecs', 'diff', '--no-color', '--no-ext-diff', '--no-textconv', '--no-renames', base, '--', name]);
+    if (patch.length > remaining) { chunks.push(`${patch.slice(0, Math.max(0, remaining - 100))}\n[Изменения файла обрезаны; требуется дополнительное чтение]`); remaining = 0; }
+    else { chunks.push(patch); remaining -= patch.length + 2; }
+  }
+  for (const name of untracked) {
+    if (remaining < 200) { omitted++; continue; }
+    const full = await contained(root, path.join(root, name));
+    const stat = await fs.lstat(path.join(root, name));
+    if (!stat.isFile() || stat.isSymbolicLink()) { chunks.push(`${name}: [не обычный файл]`); remaining -= name.length + 40; continue; }
+    // Read only the available budget, even for a very large untracked file.
+    const handle = await fs.open(full, 'r');
+    const bytes = Buffer.alloc(Math.min(stat.size, Math.max(0, remaining - name.length - 150)));
+    try { await handle.read(bytes, 0, bytes.length, 0); } finally { await handle.close(); }
+    const text = bytes.includes(0) ? '[двоичный файл; содержимое не передано]' : bytes.toString('utf8');
+    const chunk = `Новый файл ${name}:\n${text}${stat.size > bytes.length ? '\n[Содержимое обрезано]' : ''}`;
+    chunks.push(chunk); remaining -= chunk.length + 2;
+  }
+  if (omitted) chunks.push(`[Не поместилось файлов: ${omitted}; требуется дополнительное чтение]`);
+  return chunks.join('\n\n');
 }
 async function sourceContext(space, contract, root) {
   // Tool-free executors receive only explicitly scoped tracked text. They do
@@ -173,7 +209,12 @@ async function runJobUnlocked(space, { taskId, role: roleId, executor = null, po
     const work = writable ? await ensureWorktree(space, taskId) : { path: t.repo };
     job.worktree = writable ? work.path : null;
     const knowledge = await knowledgeContext(space, taskId);
-    const context = ['gemini-cli','gemini-api','openai-compat'].includes(e.kind) ? `${await sourceContext(space,t.contract,work.path)}\n\n${knowledge??''}` : knowledge;
+    const sources = ['gemini-cli','gemini-api','openai-compat'].includes(e.kind) ? await sourceContext(space,t.contract,work.path) : null;
+    // A read-only role must see what it reviews even when its sandbox refuses
+    // every shell command (codex read-only on Windows): the task's diff from its base.
+    const diff = role.authority !== 'workspace-write' ? await taskDiff(work.path, t.contract, space) : null;
+    const fullContext = [diff, sources, knowledge].filter(Boolean).join('\n\n');
+    const context = fullContext.length > TASK_CONTEXT_LIMIT ? `${fullContext.slice(0, TASK_CONTEXT_LIMIT - 100)}\n[Остальной контекст не поместился; требуется дополнительное чтение]` : fullContext || null;
     const prompt = await buildPrompt({ role, contract: t.contract, lens, skills, checks: await currentChecks(space, t), context,
       materials, handoff, imagePath: role.output === 'image' && !['openai-compat', 'gemini-api'].includes(e.kind) ? imagePath : null });
     const leaks = outboundFindings(prompt, space.settings.privacy, { shipped: await shippedLines({ role, skills }) }).filter(f => f.action === 'block');

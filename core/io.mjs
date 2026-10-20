@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { execFile } from 'node:child_process';
+import { execFile, spawn } from 'node:child_process';
 import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
 
@@ -48,15 +48,99 @@ export async function atomicWrite(file, text, { mode = 0o600 } = {}) {
   }
 }
 export const atomicJSON = (file, value) => atomicWrite(file, JSON.stringify(value, null, 2) + '\n');
-export async function git(cwd, args, options = {}) {
-  return (await exec('git', ['-C', cwd, ...args], { windowsHide: true, maxBuffer: 64 * 1024 * 1024, ...options })).stdout;
-}
-/** True when `dir` is the top level of a Git working tree. */
-export async function isGitRoot(dir) {
+/** Git ran and answered with a non-zero exit: a real answer, never retried. */
+export class GitExitError extends Error {}
+/** Git launch/lifecycle failure; it does not establish a repository defect. */
+export class GitSpawnError extends Error {}
+export const GIT_TIMEOUT_MS = 60_000;
+// NTSTATUS can arrive signed or unsigned; POSIX exit 5 is an ordinary failure.
+export const gitCrashed = code => typeof code === 'number' && (code >>> 0) >= 0xC0000000;
+export function killTree(child, { platform = process.platform, spawnImpl = spawn, graceMs = 1000 } = {}) {
+  if (!child.pid) return;
+  const fallback = () => { try { child.kill('SIGKILL'); } catch { /* already gone */ } };
+  if (platform !== 'win32') {
+    try { process.kill(-child.pid, 'SIGKILL'); } catch { fallback(); }
+    return;
+  }
+  // taskkill itself can fail or hang. Never let it keep this process alive.
+  let killer;
+  const timer = setTimeout(() => { fallback(); try { killer?.kill(); } catch { /* gone */ } }, graceMs);
+  timer.unref();
   try {
-    const top = (await git(dir, ['rev-parse', '--show-toplevel'])).trim();
+    killer = spawnImpl('taskkill.exe', ['/PID', String(child.pid), '/T', '/F'], { windowsHide: true, stdio: 'ignore' });
+    killer.unref?.();
+    killer.once('error', () => { clearTimeout(timer); fallback(); });
+    killer.once('exit', code => { clearTimeout(timer); if (code !== 0) fallback(); });
+  } catch { clearTimeout(timer); fallback(); }
+}
+function runGitOnce(argv, { timeout, env, input, maxBuffer, signal, command = 'git' }) {
+  return new Promise((resolve, reject) => {
+    let child, timer, reapTimer, done = false, size = 0;
+    const out = [], err = [];
+    const diagnostic = (message, reason, cause) => Object.assign(new GitSpawnError(`${message}${err.length ? `\n${Buffer.concat(err).toString('utf8').trim()}` : ''}`, { cause }), { reason, code: cause?.code });
+    const finish = (fn, value) => {
+      if (done) return;
+      done = true; clearTimeout(timer); clearTimeout(reapTimer);
+      signal?.removeEventListener('abort', abort);
+      fn(value);
+    };
+    const stop = (reason, message) => {
+      killTree(child);
+      // Even inherited pipes or a failed taskkill must not cause an unbounded wait.
+      reapTimer ??= setTimeout(() => {
+        child.stdout?.destroy(); child.stderr?.destroy(); child.stdin?.destroy(); child.unref();
+        finish(reject, diagnostic(message, reason));
+      }, 1500);
+      finishError = () => diagnostic(message, reason);
+    };
+    let finishError = null;
+    const abort = () => stop('aborted', 'Git отменён');
+    if (signal?.aborted) { reject(diagnostic('Git отменён', 'aborted')); return; }
+    try {
+      const [exe, ...prefix] = [].concat(command);
+      child = spawn(exe, [...prefix, ...argv], { env, windowsHide: true, shell: false, detached: process.platform !== 'win32', stdio: [input === undefined ? 'ignore' : 'pipe', 'pipe', 'pipe'] });
+    } catch (e) { reject(diagnostic(`Не удалось запустить git: ${e.message}`, 'spawn', e)); return; }
+    signal?.addEventListener('abort', abort, { once: true });
+    timer = setTimeout(() => stop('timeout', `Git не ответил за ${timeout} мс; запрошено завершение дерева процессов`), timeout);
+    const collect = sink => chunk => {
+      size += chunk.length;
+      if (size > maxBuffer) { if (!finishError) stop('overflow', `Вывод Git больше ${maxBuffer} байт`); }
+      else sink.push(chunk);
+    };
+    child.stdout.on('data', collect(out)); child.stderr.on('data', collect(err));
+    child.on('error', e => finish(reject, diagnostic(`Не удалось запустить git: ${e.message}`, 'spawn', e)));
+    if (input !== undefined) { child.stdin.on('error', () => {}); child.stdin.end(input); }
+    child.on('close', (code, killedBy) => {
+      const stdout = Buffer.concat(out).toString('utf8'), stderr = Buffer.concat(err).toString('utf8').trim();
+      if (finishError) return finish(reject, finishError());
+      if (killedBy || gitCrashed(code)) return finish(reject, diagnostic(`Git аварийно завершился (${killedBy || `0x${(code >>> 0).toString(16)}`}): git ${argv.join(' ')}`, 'crash'));
+      if (code !== 0) return finish(reject, Object.assign(new GitExitError(`Команда завершилась с ошибкой (${code}): git ${argv.join(' ')}${stderr ? `\n${stderr}` : ''}`), { code, stdout, stderr }));
+      finish(resolve, stdout);
+    });
+  });
+}
+// Conservative allowlist: no config/global options, aliases, writes or network mutations.
+const READ_ONLY_GIT = new Set(['status', 'diff', 'rev-parse', 'ls-files', 'ls-tree', 'show', 'log', 'cat-file', 'check-ignore']);
+export async function git(cwd, args, { timeout = GIT_TIMEOUT_MS, retries = 2, env, input, maxBuffer = 64 * 1024 * 1024, command, signal } = {}) {
+  assert(Number.isFinite(timeout) && timeout > 0, 'Таймаут Git должен быть положительным');
+  for (let attempt = 0; ; attempt++) {
+    try { return await runGitOnce(['-C', cwd, ...args], { timeout, env, input, maxBuffer, command, signal }); }
+    catch (e) {
+      const transient = e.reason === 'crash' || e.reason === 'spawn' && ['EAGAIN', 'EBUSY', 'ENOMEM'].includes(e.code);
+      if (!READ_ONLY_GIT.has(args[0]) || !transient || signal?.aborted || attempt >= retries) throw e;
+      await new Promise(r => setTimeout(r, 100 * (attempt + 1)));
+    }
+  }
+}
+/** Only Git's explicit non-repository answer means false; infrastructure errors propagate. */
+export async function isGitRoot(dir, options) {
+  try {
+    const top = (await git(dir, ['rev-parse', '--show-toplevel'], options)).trim();
     return (await fs.realpath(top)) === (await fs.realpath(dir));
-  } catch { return false; }
+  } catch (e) {
+    if (e instanceof GitExitError && /not a git repository/i.test(e.stderr)) return false;
+    throw e;
+  }
 }
 /** One writer at a time inside a space's private state directory. */
 export async function withLock(stateDir, fn) {

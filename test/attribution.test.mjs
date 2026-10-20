@@ -20,7 +20,7 @@ test('Borshkit credits every source it uses: the attribution check passes on its
 test('Borshkit\'s own README passes its images-and-links check', async () => {
   const r = await readmeAssetsCheck({ project: ROOT }, null, {});
   assert.equal(r.status, 'PASS', r.log);
-  assert.match(r.log, /banner\.ru\.svg/);
+  assert.match(r.log, /локальных ссылок проверено: [1-9]/);
 });
 
 test('attribution fails on a missing credit, a copy without license, copying an unlicensed source and a missing support link', async t => {

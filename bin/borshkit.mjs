@@ -43,7 +43,7 @@ const SUB = { добавить: 'add', список: 'list', обновить: '
   проверить: 'probe', запустить: 'run', продолжить: 'resume', ответить: 'answer', собрать: 'build', найти: 'search', контекст: 'context', урок: 'lesson', экспорт: 'export', контрибьюторы: 'contributors', картинки: 'assets', план: 'plan', записать: 'record', оценить: 'qualify', отпечаток: 'fingerprint' };
 const MODES = { умеренный: 'moderate', строгий: 'strict', эксперимент: 'experiment' };
 const TASK = { новая: 'new', анализ: 'check', проверить: 'verify', отзыв: 'review', подтвердить: 'confirm', итог: 'converge', принять: 'accept', обновить: 'update' };
-const FLAGS = { цель: 'goal', вид: 'kind', папка: 'folder', проект: 'project', 'только-локально': 'local-only', исполнитель: 'executor', результат: 'result',
+const FLAGS = { цель: 'goal', вид: 'kind', база: 'base', папка: 'folder', проект: 'project', 'только-локально': 'local-only', исполнитель: 'executor', результат: 'result',
   текст: 'text', название: 'title', да: 'yes', 'ключи-отозваны': 'revoked', от: 'from', причина: 'reason', через: 'via', манифест: 'manifest', readme: 'readme',
   роль: 'role', роли: 'roles', срок: 'until', пул: 'pool', клоны: 'clones', к: 'to', скрытые: 'hidden', порог: 'threshold', сколько: 'limit', удалённый: 'remote', линза: 'lens', файл: 'file', следить: 'watch', строка: 'line', команда: 'command', семейство: 'provider', данные: 'data', модель: 'model', навыки: 'skills', 'в-папке': 'in-place', диалог: 'interactive', мастер: 'wizard', открыть: 'open' };
 const LONE = ['json', 'local-only', 'yes', 'revoked', 'help', 'watch', 'line', 'in-place', 'interactive', 'wizard', 'trusted-proxy', 'suggest', 'open'];
@@ -102,7 +102,7 @@ const HELP = `Borshkit — Modular AI Workspace
   borshkit сохранить "что изменилось"   точка возврата в истории пространства
   borshkit поддержать [--открыть]       поддержать проект донатом: ссылка и страница в браузере
 
-  borshkit задача новая <имя> --цель "что должно получиться" [--вид feature|bug|maintenance|research]
+  borshkit задача новая <имя> --цель "что должно получиться" [--вид feature|bug|maintenance|research] [--база <коммит|ветка>]
   borshkit задача анализ <имя>          понятно ли описаны цели и критерии
   borshkit задача проверить <имя> [проверка …]   запустить автоматические проверки
   borshkit задача отзыв <имя> --результат файл.json --исполнитель codex [--семейство openai]   импорт: PASS остаётся за тобой
@@ -265,7 +265,7 @@ async function task(positional, flags) {
   assert(taskId, 'Укажи имя задачи');
   const space = await open(flags);
   if (sub === 'new') {
-    const r = await newTask(space, { taskId, goal: flags.goal, kind: flags.kind });
+    const r = await newTask(space, { taskId, goal: flags.goal, kind: flags.kind, base: typeof flags.base === 'string' ? flags.base : null });
     return print(flags, r, `Задача «${taskId}» создана: ${path.relative(process.cwd(), r.file)}\nОпиши в ней цели, критерии и проверки, затем: borshkit задача анализ ${taskId}`);
   }
   if (sub === 'check') {

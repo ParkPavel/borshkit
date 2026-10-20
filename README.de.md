@@ -1,155 +1,34 @@
-<p align="center">
-  <img src="assets/diagrams/banner.de.svg" alt="Borshkit — Modular AI Workspace: Aufgaben, Nachweise, Abnahme, Wissen" width="100%">
-</p>
-
-<p align="center">
-  <a href="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml"><img src="https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml/badge.svg" alt="CI: Linux, Windows und macOS"></a>
-  <img src="https://img.shields.io/badge/version-0.12.0-b3261e" alt="Version 0.12.0">
-  <a href="https://github.com/ParkPavel/borshkit/releases"><img src="https://img.shields.io/github/downloads/ParkPavel/borshkit/total?label=Downloads&color=b3261e" alt="Downloads des Release-Archivs"></a>
-  <img src="https://img.shields.io/badge/node-%E2%89%A522-2b1d1d" alt="Node.js 22 oder neuer">
-  <img src="https://img.shields.io/badge/dependencies-0-2e7d32" alt="keine Abhängigkeiten">
-  <img src="https://img.shields.io/badge/Claude%20Code-plugin-8c1c13" alt="Claude-Code-Plugin">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-6b5757" alt="Lizenz Apache-2.0"></a>
-  <a href="https://t.me/parkpavel_chigon"><img src="https://img.shields.io/badge/Telegram-Kanal%20des%20Autors-26a5e4?logo=telegram&logoColor=white" alt="Telegram-Kanal des Autors"></a>
-  <a href="https://web.tribute.tg/d/Sh8"><img src="https://img.shields.io/badge/Tribute-unterst%C3%BCtzen-e8554e?logo=telegram&logoColor=white" alt="Projekt unterstützen"></a>
-</p>
-
-<p align="center">
-  <a href="README.md">Русский</a> · <a href="README.en.md">English</a> · <b>Deutsch</b> · <a href="README.ko.md">한국어</a> · <a href="README.zh-TW.md">繁體中文</a> · <a href="README.fr.md">Français</a>
-</p>
-
 # Borshkit
 
-**Modular AI Workspace** – ein Arbeitsplatz für KI-Agenten in jedem Projekt: einer Web-App, einem Plugin, einer Bibliothek, einer Mobile-App oder einer Forschungsarbeit.
+**Eine portable Grundlage für KI beim Programmieren.**
 
-Du sagst, was herauskommen soll. Die Agenten arbeiten. Borshkit zeigt, was Prüfungen **belegt** haben und was du dir selbst ansehen musst. Dem Wort eines Modells glaubt Borshkit nur, wo du das für diese Art von Kriterium erlaubt hast und eine Messung es stützt.
+Beschreibe das Ergebnis. Lass einen Agenten arbeiten. Erhalte Nachweise zum genauen Dateistand und eine klare Checkliste für deine Prüfung.
 
-> **Paketversion: 0.12.0.** Tests verwenden Fake-Ausführer; CI ist für Linux, Windows und macOS eingerichtet. Die Qualität echter Modelle und zukünftige Funktionen gelten nicht als nachgewiesen. [Grenzen](#grenzen).
+<a href="README.md">ru</a> · <a href="README.en.md">en</a> · <a href="README.de.md">de</a> · <a href="README.ko.md">ko</a> · <a href="README.zh-TW.md">zh-TW</a> · <a href="README.fr.md">fr</a>
 
-## Ein sichtbares Team
+## Starten
 
-<p align="center"><img src="assets/diagrams/team.de.svg" alt="Aufgabe → Rolle → Ausführer → Modell/API → Ergebnis → unabhängiges Review; Vorschlag, Anwendung, Start, Prüfung und Abnahme sind getrennt" width="100%"></p>
-
-`borshkit team` zeigt Modelle, Aktualität der Verbindung, Rollenbewertungen, zugewiesene Pools und bekannte Ressourcen. `borshkit team plan <aufgabe>` erklärt Kandidaten und reserviert eine Modellfamilie für unabhängiges Review. `team propose` speichert einen Vorschlag; Anwendung und Arbeitsstart sind getrennte Aktionen. Veraltete Daten verhindern die Anwendung. Kostenloser API-Zugang muss im Konto geprüft werden; unbekannte Restwerte bleiben sichtbar.
-
-Die neue Rolle `design-prompter` erstellt ein Briefing für visuelles Design. Die Modellwahl beruht auf der Rollenbewertung. [Befehle und Formate](docs/reference/team-resources.md) · [Architektur und nächste Etappen](docs/concepts/team-workspace.md) · [Audit](docs/discussions/modernization-2026-10-08.md) (russische Dokumentation).
-
-`borshkit setup` speichert Umgebung, Datenschutz, konkrete Modelle und Rollen. `--interactive` öffnet den Terminaldialog; Schrittbefehle funktionieren aus der App. [Anleitung](docs/guide/setup.md) (Russisch). Kompatibilität und Rollenqualität sind getrennt; ein Vorschlag wendet keine Einstellungen an und startet keine Arbeit.
-
-<p align="center"><img src="assets/diagrams/setup.de.svg" alt="Einrichtung: Umgebung, Datenschutz, Modelle, Aufgaben und Vorschlag; Anwendung, Bewertung, Zuordnung und Start sind getrennt" width="100%"></p>
-
-Passkey-Bestätigung für Einstellungen und kritische Fragen ist nach vertrauenswürdiger Kopplung implementiert. Dazu kommen `assessment`, gemeinsames Budget/WIP, Abhängigkeiten und Checkpoints, explizites `monitor start/stop`, Gemini CLI/API, ein lokales VSIX und Dateiübertragung mit erneuter Prüfung. Copilot/Roo/Cline erhalten exportierte Anweisungen; native Ausführungsadapter werden nicht behauptet. Autopilot bleibt aus.
-
-[Betrieb und Sicherheitsgrenzen](docs/guide/team-operations.md) · [Implementierungsprüfung](docs/discussions/modernization-2026-10-09.md) (Russisch). Lokale Tests ersetzen keine Prüfung echter Modelle, des Telefonbrowsers, von VS Code oder des exakten CI-Commits.
-
-<p align="center"><img src="assets/diagrams/operations.de.svg" alt="Team: Bewertung, Budget, Vorschlag, Passkey und separater Start; Monitor schlägt vor, Übertragung verlangt neue Prüfungen" width="100%"></p>
->
-> **Hinweis zur Sprache:** Die Meldungen von Borshkit sind vorerst auf Russisch. Jeder Befehl und jedes Flag hat auch einen englischen Namen, und dieses README verwendet sie.
-
-## Die Grundidee
-
-<p align="center"><img src="assets/diagrams/flow.de.svg" alt="Weg einer Aufgabe: Ziel und Kriterien → Agent arbeitet in einer eigenen Projektkopie → Prüfungen → Review durch einen anderen Ausführer → Abnahmeblatt; Ergebnisse: Korrektur nötig, ungeprüft, wartet auf dich, abgenommen; danach Merge in main und Push" width="100%"></p>
-
-Ein Modell sagt „fertig“. Das ist noch keine Abnahme:
-- jeder Nachweis ist an den genauen Zustand der Dateien gebunden;
-- was sich automatisch prüfen lässt, wird automatisch geprüft;
-- was nicht, wird zu einer kurzen Anleitung für dich;
-- was nicht geprüft wurde, heißt genau so: **nicht geprüft**.
-
-## Installation
-
-Du brauchst Node.js 22+ und Git. Externe Abhängigkeiten gibt es nicht.
-
-**Als Claude-Code-Plugin:**
-
-```
-/plugin marketplace add ParkPavel/borshkit
-/plugin install borshkit@borshkit
-```
-
-Das Plugin gibt dem Agenten den Borshkit-Skill, schützende Hooks und die Befehle `borshkit` und `borsch` im Terminal von Claude Code. Willst du sie auch in deinem eigenen Terminal nutzen, installiere zusätzlich den Befehl wie unten beschrieben.
-
-**Als Befehl im Terminal:**
+Node.js 22+ · Git
 
 ```sh
 git clone https://github.com/ParkPavel/borshkit.git
-cd borshkit && npm link        # fügt die Befehle borshkit und borsch hinzu
+cd borshkit
+npm link
 ```
 
-Oder mit einem Befehl aus dem neuesten Release, ohne Klonen:
+[Quickstart](docs/guide/quickstart.md) · [Guide](docs/guide/workflow.md) · [Commands](docs/reference/commands.md) · [Website](https://parkpavel.github.io/borshkit/)
 
-```sh
-npm install -g https://github.com/ParkPavel/borshkit/releases/latest/download/borshkit.tgz
-```
+## Heute verfügbar
 
-Auf npm gibt es das Paket noch nicht. Der Download-Zähler oben zählt nur dieses Archiv: Installationen als Plugin und per `git clone` sind nicht enthalten.
+CLI und Claude-Code-Plugin; Ausführung über Claude Code, Codex, Gemini und APIs. Copilot, Roo und Cline erhalten exportierte Anweisungen. Export, Ausführung und vollständige Integration sind unterschiedliche Stufen.
 
-## Deine erste Aufgabe
+PASS / FAIL / UNKNOWN: evidence follows the exact file state. A model response alone does not accept a task. CLI messages are currently in Russian; commands also have English aliases.
 
-```sh
-cd my-project
-borshkit init                                     # Ordner borshkit/ im Projektstamm, taucht nicht in der Projekthistorie auf
-borshkit executor add claude                      # Claude Code mit deinem Abo; du bestätigst im Terminal
-borshkit task new theme --goal "Dark theme in settings"
-borshkit job run theme --role architect --executor claude     # schlägt Ziele und Kriterien vor
-borshkit job run theme --role implementer --executor claude   # schreibt Code in einer eigenen Kopie
-borshkit task verify theme                        # Tests, Build, Linter
-borshkit job run theme --role reviewer --executor codex       # Review durch eine andere Modellfamilie
-borshkit task converge theme                      # Abnahmeblatt: was belegt ist, was auf dich wartet
-borshkit task confirm theme C3 yes "saw the dark theme after a restart"
-borshkit merge theme && borshkit push             # in die Hauptversion und zu GitHub – erst nach deinem „Ja“
-```
+[Architecture](docs/architecture.md) · [Roadmap](docs/roadmap.md) · [Details und Grenzen](docs/reference/overview.de.md) · [Context handoff](docs/guide/handoff.md)
 
-Alle Befehle: [Befehlsreferenz](docs/reference/commands.md) (russische und englische Namen nebeneinander). Schritt für Schritt (auf Russisch): [Schnellstart](docs/guide/quickstart.md).
+<details>
+<summary>Credits / Источники</summary>
 
-## So funktioniert es
-
-<p align="center"><img src="assets/diagrams/architecture.de.svg" alt="Aufbau: du, Claude Code und Codex rufen denselben Befehl borshkit auf; Kernmodule in core/; Dateien in borshkit/, .state/ und in einer separaten Aufgabenkopie auf eigenem Branch; Ausführer über Adapter" width="100%"></p>
-
-**Woraus es besteht.** Du, Claude Code und Codex rufen alle denselben Befehl `borshkit` auf. Der Kern sind die Module in `core/`. Der gesamte Zustand liegt als normale Dateien in `borshkit/` und `.state/`, und der Agent arbeitet in einer separaten Projektkopie auf eigenem Branch. Ausführer werden über Adapter angebunden. [Mehr](docs/concepts/space.md)
-
-<p align="center"><img src="assets/diagrams/evidence.de.svg" alt="Zustands-Fingerabdruck: Commit und Dateien, Vertrag, Einstellungen, Materialien und Borshkit-Code; ein Nachweis speichert diesen Fingerabdruck und veraltet bei jeder Abweichung" width="100%"></p>
-
-**Nachweise veralten.** Borshkit merkt sich den genauen Zustand, auf dem eine Prüfung bestanden hat: den Commit und einen Hash jeder Datei, nicht committete Änderungen eingeschlossen. Ändert sich auch nur ein Byte, muss die Prüfung neu laufen. [Mehr](docs/concepts/evidence.md)
-
-<p align="center"><img src="assets/diagrams/pool.de.svg" alt="Auswahl des Ausführers: Kandidaten durchlaufen die Filter Datenschutz, Fähigkeiten, „Reviewer ist nicht der Autor“ und Wechsellimit; bei Limit oder Fehler geht die Arbeit an den nächsten, ohne Kandidaten folgt ein kritischer Stopp mit Bericht, der auf dich wartet" width="100%"></p>
-
-**Ein Limit ist kein Stopp.** Ein Pool ist eine Warteschlange von Ausführern: Claude Code, Codex, kostenlose und lokale APIs. Erreicht einer ein Limit, geht der Auftrag an den nächsten, den der Datenschutzmodus erlaubt und der die Arbeit kann. Kritische Fragen warten auf dich und nur auf dich. [Mehr](docs/concepts/executors.md)
-
-<p align="center"><img src="assets/diagrams/kb.de.svg" alt="Wissen: Code, Tests, Dokumente, Aufgaben und Lektionen werden zu Notizen in knowledge/_generated/ und einem Index in .state/kb.sqlite; Arbeitskontext, SQL-Abfragen und der Obsidian-Export lesen daraus" width="100%"></p>
-
-**Wissen besteht aus Notizen, nicht aus einer Blackbox.** Das Projekt wird zu Notizen mit `[[links]]` für Obsidian, darüber liegt ein SQL-Index. Jeder Auftrag bekommt seinen eigenen Ausschnitt des Kontexts. Diese Dokumentation funktioniert genauso: Ihren [Dokumentationsgraphen](docs/graph/README.md) hat Borshkit selbst gebaut.
-
-## Was Borshkit kann
-
-| Bereich | Was du bekommst |
-|---|---|
-| **Abnahme nach Zielen** | Kriterien `auto` / `model` / `manual`, ein Abnahmeblatt, Vertrauensziele für Modelle, durch Messung bestätigt |
-| **Arbeitsbereich** | der Ordner `borshkit/` ist ein Obsidian-Vault mit eigener Historie; die `.gitignore`-Regel wird automatisch eingetragen und geprüft |
-| **Ausführer** | Claude Code, Codex (mit GPT Image), jede OpenAI-kompatible API, deine eigenen Programme; Pools mit Fallback |
-| **21 Rollen** | Architekt, Entwickler, Reviewer, Tester, Rechercheur, Designer, Design-Prompt-Autor, README-Illustrator… |
-| **Autopilot** | Routinefragen bekommen nach einer Minute ihre Standardantwort; bei kritischen hält er an, mit Bericht und Übergabe des Kontexts |
-| **Leitstand** | wer den Auftrag bekommen hat, wer arbeitet, was auf dich wartet: im Terminal, in `STATUS.md` und in der Statuszeile von Claude Code |
-| **Recherche** | Quellen werden als Kopien gespeichert; die Prüfung `citations` gleicht jedes Zitat Wort für Wort ab |
-| **Datenschutz** | drei Modi; das Aufgabenpaket für den Agenten wird vor dem Senden auf Schlüssel und personenbezogene Daten geprüft; Einstellungen ändern sich nur über Vorschläge |
-| **Git für Einsteiger** | „was hat sich geändert“, „wer hat das geändert“, „stell es wieder her“ – in einfachen Worten, ohne zerstörerische Befehle |
-| **Danksagungen** | die Prüfungen `attribution` und `readme-assets`, die vollständige Liste der Mitwirkenden jeder Quelle |
-
-## Frontend, Design und iOS
-
-Borshkit hat Rollen für Oberflächen, und jede bekommt nur ihre eigenen Skills:
-
-| Rolle | Was sie tut | Skills und Primärquellen |
-|---|---|---|
-| `ui-engineer` | baut die Oberfläche: alle Zustände, Animation, Tastatur | Emil Kowalski, ECC; Vercel Web Interface Guidelines, shadcn/ui, Radix, React Aria, WCAG |
-| `ios-designer` | prüft Oberflächen für iPhone und iPad | `apple-design`, Liquid Glass, SwiftUI; Apple HIG, SF Symbols |
-| `motion-reviewer` | prüft Animationen streng | `review-animations`, `animation-vocabulary`, `motion-foundations` |
-| `a11y-reviewer` | prüft die Barrierefreiheit nach WCAG 2.2 AA | ECC `accessibility`, `frontend-a11y`; WAI-ARIA APG, axe-core |
-| `designer` | macht die Oberfläche mit Worst-Case-Daten kaputt | `break-ui` |
-
-Die [Bibliothek](library/README.md) enthält 3 Skill-Pakete (25 Skills) und 63 geprüfte Links: Komponenten, Animation, Designsysteme, Barrierefreiheit, Icons, Schriften, Qualitätswerkzeuge. Im Terminal: `borshkit skills` und `borshkit library`.
-
-## Das Rezept
 
 Borshkit ist ein Borschtsch: gekocht aus den besten Zutaten, die andere angebaut und offen geteilt haben.
 
@@ -171,43 +50,9 @@ Borshkit ist ein Borschtsch: gekocht aus den besten Zutaten, die andere angebaut
 
 Das vollständige Rezept mit Versionen und Lizenzen steht in [docs/ingredients.md](docs/ingredients.md) (auf Russisch). **Alle Mitwirkenden** dieser Projekte, 1262 Einträge: [CONTRIBUTORS-REFERENCES.md](CONTRIBUTORS-REFERENCES.md). Danke an jede und jeden von euch!
 
-## Grenzen
 
-- Borshkit prüft das Aufgabenpaket, das es selbst an einen Agenten schickt. Was Claude Code oder Codex danach aus den Dateien der Projektkopie lesen, sieht es nicht: Ignorierte Dateien (`.env`) sind nicht in der Kopie, alle anderen kann der Agent lesen.
-- Prüfungen der Aufgaben (Tests, Build) laufen mit deiner Umgebung, weil Tests manchmal Schlüssel brauchen. Der Umgebungsfilter gilt nur für Ausführer.
-- Die Wissenskarte versteht Verknüpfungen in JS/TS-Code und Markdown. Swift, Python, Go und andere Sprachen werden noch nicht erfasst; die Abnahme hängt davon nicht ab.
-- Die Adapter für Claude Code, Codex und Gemini sind gegen Fake-Programme mit demselben Ereignisformat getestet. Die Flags eines installierten Claude Code wurden geprüft. Die CI startet keine echten Modelle.
-- Bilder über Codex (GPT Image) sind noch nicht getestet: `borshkit executor probe codex` zeigt dir das mit deinem Abo.
-- Ob der Obsidian-Graph Links aus den Eigenschaften von Notizen anzeigt, ist nicht getestet. Deshalb stehen die Links zusätzlich als normale Links im Text.
-- Die Meldungen von Borshkit gibt es vorerst nur auf Russisch; Befehle und Flags auf Russisch und Englisch.
-- `node:sqlite` ist in Node 22 noch experimentell.
-- Die musterbasierte Erkennung von Schlüsseln und personenbezogenen Daten findet nicht alles.
+</details>
 
-## Dokumentation
+Apache-2.0 · [LICENSE](LICENSE) · [NOTICE](NOTICE) · [Security](SECURITY.md)
 
-Die Dokumentation ist vorerst auf Russisch:
-- [Übersicht der Dokumentation](docs/README.md) – Schnellstart, Konzepte, Referenz.
-- [Spezifikation](docs/spec.md) – die ursprüngliche Analyse und die Entscheidungen D1–D22.
-- [Changelog](CHANGELOG.md) · [Mitwirken](CONTRIBUTING.md) · [Sicherheit](SECURITY.md) · [Für Entwickler-Agenten](AGENTS.md)
-
-## Entwicklung
-
-```sh
-npm run verify   # statische Prüfungen und alle Tests; die CI führt sie unter Linux, Windows und macOS aus
-```
-
-## Autor
-
-**Pavel Park** — [GitHub](https://github.com/ParkPavel) · [Telegram-Kanal](https://t.me/parkpavel_chigon)
-
-## Projekt unterstützen
-
-Borshkit ist kostenlos und quelloffen. Wenn es dir hilft, unterstütze die Entwicklung mit einer Spende über Tribute.
-
-<p><a href="https://web.tribute.tg/d/Sh8"><img src="https://img.shields.io/badge/Tribute-Spenden-e8554e?style=for-the-badge&logo=telegram&logoColor=white" alt="Spenden"></a></p>
-
-Im Terminal: `borshkit support` zeigt den Link und bietet an, ihn im Browser zu öffnen. Ein Stern auf GitHub und eine Empfehlung an Kollegen helfen ebenfalls sehr.
-
-## Lizenz
-
-Apache-2.0 – siehe [LICENSE](LICENSE) und [NOTICE](NOTICE). Die Skills in `packs/` stehen unter MIT, jedes Paket mit der Lizenz seines Autors.
+Pavel Park · [GitHub](https://github.com/ParkPavel) · [Telegram](https://t.me/parkpavel_chigon) · [Support / Поддержать](https://web.tribute.tg/d/Sh8)
