@@ -2,3 +2,9 @@ node_modules/
 *.tmp
 # Borshkit local workspace (auto)
 /borshkit/
+
+# Local space artifacts accidentally included by a user branch
+/.state/
+/settings/
+/journal.md
+/START-HERE.md

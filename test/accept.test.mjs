@@ -172,3 +172,16 @@ test('a change outside the task scope fails convergence; edits that predate the 
   await verifyAll(s, 'scope');
   assert.deepEqual((await converge(s, 'scope')).scopeViolations, ['README.md', 'notes.txt']);
 });
+
+test('failed launch is UNKNOWN while a check reporting a defect is FAIL', async t => {
+  const s = await space(t);
+  await task(s, 'infra', contract({ checks: [{ id: 'tests', command: path.join(s.project, 'missing-check'), args: [], criteria: ['C1'] }] }));
+  const [missing] = await verifyAll(s, 'infra');
+  assert.equal(missing.status, 'UNKNOWN');
+  const file = path.join(s.tasks, 'infra', 'contract.json');
+  const c = await readJSON(file);
+  c.checks[0] = { id: 'tests', ...FAILING, criteria: ['C1'] };
+  await atomicJSON(file, c);
+  const [defect] = await verifyAll(s, 'infra');
+  assert.equal(defect.status, 'FAIL');
+});
