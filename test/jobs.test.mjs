@@ -214,7 +214,10 @@ test('the CLI runs a job, lists it and shows the one-line status', async t => {
   const { execFile } = await import('node:child_process');
   const { promisify } = await import('node:util');
   const run = promisify(execFile);
-  const cli = (...args) => run(process.execPath, [path.join(ROOT, 'bin', 'borshkit.mjs'), ...args], { cwd: s.project, windowsHide: true });
+  const cli = async (...args) => {
+    try { return await run(process.execPath, [path.join(ROOT, 'bin', 'borshkit.mjs'), ...args], { cwd: s.project, windowsHide: true }); }
+    catch (e) { e.message += `\nstdout: ${e.stdout ?? ''}\nstderr: ${e.stderr ?? ''}`; throw e; }
+  };
   const s = await space(t);
   await configure(s, { local: fake('review-pass') });
   await task(s, 'cli', reviewTask);
@@ -223,4 +226,23 @@ test('the CLI runs a job, lists it and shows the one-line status', async t => {
   assert.match((await cli('статус', '--строка')).stdout, /^Borshkit · умеренный · работ: 0/);
   assert.match((await cli('исполнители')).stdout, /local · command · local · данные: local/);
   assert.match((await cli('вопросы')).stdout, /Открытых вопросов нет/);
+});
+
+test('the reviewer can launch when its real commit id starts with twelve digits', async t => {
+  const { createHash } = await import('node:crypto');
+  const s = await space(t);
+  await configure(s, { local: fake('review-pass') });
+  const tree = (await git(s.project, ['rev-parse', 'HEAD^{tree}'])).trim();
+  let body, head;
+  for (let n = 0; n < 100000; n++) {
+    body = `tree ${tree}\nauthor Test <test@example.invalid> 1700000000 +0000\ncommitter Test <test@example.invalid> 1700000000 +0000\n\nnumeric prefix ${n}\n`;
+    head = createHash('sha1').update(`commit ${Buffer.byteLength(body)}\0${body}`).digest('hex');
+    if (/^\d{12}/.test(head)) break;
+  }
+  assert.match(head, /^\d{12}/);
+  assert.equal((await git(s.project, ['hash-object', '-t', 'commit', '-w', '--stdin'], { input: body })).trim(), head);
+  await git(s.project, ['update-ref', 'HEAD', head]);
+  await task(s, 'numeric-base', reviewTask);
+  const job = await runJob(s, { taskId: 'numeric-base', role: 'reviewer', executor: 'local', ...fast });
+  assert.equal(job.status, 'COMPLETED', JSON.stringify(job.attempts));
 });

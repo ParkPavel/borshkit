@@ -93,7 +93,7 @@ export async function taskDiff(root, contract, space = { folder: 'borshkit' }) {
   const scoped = names => names.split('\0').filter(name => name && allowedWrite(space, contract, name));
   const names = scoped(await git(root, ['diff', '--name-only', '-z', '--no-renames', base]));
   const untracked = scoped(await git(root, ['ls-files', '-z', '--others', '--exclude-standard']));
-  const chunks = [`Изменения задачи от базы ${base.slice(0, 12)}. Только paths; неполный пакет не доказывает отсутствие ошибок.`];
+  const chunks = [`Изменения задачи от базы git:${base.slice(0, 12)}. Только paths; неполный пакет не доказывает отсутствие ошибок.`];
   let remaining = DIFF_LIMIT - chunks[0].length, omitted = 0;
   for (const name of names) {
     if (remaining < 200) { omitted++; continue; }
