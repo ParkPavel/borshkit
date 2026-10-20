@@ -27,7 +27,12 @@ test('the plugin manifest, marketplace entry and hooks point at real files', asy
 test('the plugin puts borshkit and borsch on the PATH of Claude Code\'s Bash tool', async () => {
   const modes = await run('git', ['-C', ROOT, 'ls-files', '-s', 'bin/borshkit', 'bin/borsch']);
   for (const line of modes.stdout.trim().split('\n')) assert.match(line, /^100755 /, line);
-  for (const name of ['borshkit', 'borsch']) assert.match(await fs.readFile(path.join(ROOT, 'bin', name), 'utf8'), /^#!\/bin\/sh\n[\s\S]*exec node "\$\(dirname "\$0"\)\/borshkit\.mjs" "\$@"/);
+  for (const name of ['borshkit', 'borsch']) {
+    const text = await fs.readFile(path.join(ROOT, 'bin', name), 'utf8');
+    assert.match(text, /^#!\/bin\/sh\n[\s\S]*exec node "\$here\/borshkit\.mjs" "\$@"/);
+    // Only shell built-ins: dirname/sed are processes that can fail to start under Git Bash.
+    assert.doesNotMatch(text, /\$\(|`/);
+  }
   if (process.platform !== 'win32') assert.match((await run(path.join(ROOT, 'bin', 'borshkit'), ['помощь'])).stdout, /^Borshkit — Modular AI Workspace/);
 });
 

@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { execFile } from 'node:child_process';
+import { execFile, spawn } from 'node:child_process';
 import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
 
@@ -48,15 +48,71 @@ export async function atomicWrite(file, text, { mode = 0o600 } = {}) {
   }
 }
 export const atomicJSON = (file, value) => atomicWrite(file, JSON.stringify(value, null, 2) + '\n');
-export async function git(cwd, args, options = {}) {
-  return (await exec('git', ['-C', cwd, ...args], { windowsHide: true, maxBuffer: 64 * 1024 * 1024, ...options })).stdout;
-}
-/** True when `dir` is the top level of a Git working tree. */
-export async function isGitRoot(dir) {
+/** Git ran and answered with a non-zero exit: a real answer, never retried. */
+export class GitExitError extends Error {}
+/** Git could not be started, crashed, was killed or timed out: the environment, not the repository. */
+export class GitSpawnError extends Error {}
+export const GIT_TIMEOUT_MS = 60_000;
+// Windows NTSTATUS crash codes (0xC0000005 access violation, 0xC0000142 dll init
+// failed, …) mean the process never really ran; Git's own exits are small numbers.
+const crashed = code => typeof code === 'number' && code >= 0xC0000000;
+export function killTree(child) {
+  if (!child.pid) return;
   try {
-    const top = (await git(dir, ['rev-parse', '--show-toplevel'])).trim();
+    if (process.platform === 'win32') spawn('taskkill.exe', ['/PID', String(child.pid), '/T', '/F'], { windowsHide: true, stdio: 'ignore' }).on('error', () => {});
+    else process.kill(-child.pid, 'SIGKILL');
+  } catch { try { child.kill('SIGKILL'); } catch { /* gone */ } }
+}
+function runGitOnce(argv, { timeout, env, input, maxBuffer, command = 'git' }) {
+  return new Promise((resolve, reject) => {
+    let child;
+    try { const [exe, ...prefix] = [].concat(command); child = spawn(exe, [...prefix, ...argv], { env, windowsHide: true, shell: false, detached: process.platform !== 'win32', stdio: [input === undefined ? 'ignore' : 'pipe', 'pipe', 'pipe'] }); }
+    catch (e) { reject(new GitSpawnError(`не удалось запустить git: ${e.message}`)); return; }
+    const out = [], err = []; let size = 0, done = false, timedOut = false, overflow = false;
+    const finish = (fn, value) => { if (done) return; done = true; clearTimeout(timer); fn(value); };
+    const timer = setTimeout(() => { timedOut = true; killTree(child); }, timeout);
+    const collect = sink => chunk => { size += chunk.length; if (size > maxBuffer) { overflow = true; killTree(child); } else sink.push(chunk); };
+    child.stdout.on('data', collect(out)); child.stderr.on('data', collect(err));
+    child.on('error', e => finish(reject, new GitSpawnError(`не удалось запустить git: ${e.message}`)));
+    if (input !== undefined) { child.stdin.on('error', () => {}); child.stdin.end(input); }
+    child.on('close', (code, signal) => {
+      const stdout = Buffer.concat(out).toString('utf8'), stderr = Buffer.concat(err).toString('utf8').trim();
+      const what = `git ${argv.join(' ')}`;
+      if (overflow) return finish(reject, new GitExitError(`${what}: вывод больше ${maxBuffer} байт`));
+      if (timedOut) return finish(reject, new GitSpawnError(`${what}: не ответил за ${Math.round(timeout / 1000)} с, процесс остановлен`));
+      if (signal || crashed(code)) return finish(reject, new GitSpawnError(`не удалось запустить git (${signal || `код 0x${code.toString(16).toUpperCase()}`}): ${what}${stderr ? `\n${stderr}` : ''}`));
+      if (code !== 0) { const e = new GitExitError(`Команда завершилась с ошибкой (${code}): ${what}${stderr ? `\n${stderr}` : ''}`); Object.assign(e, { code, stdout, stderr }); return finish(reject, e); }
+      finish(resolve, stdout);
+    });
+  });
+}
+/**
+ * Run git with a timeout (the whole process tree is killed when it passes),
+ * up to two retries when git could not be started or crashed — never when it
+ * really ran and failed — and git's stderr in the error message.
+ */
+export async function git(cwd, args, { timeout = GIT_TIMEOUT_MS, retries = 2, env, input, maxBuffer = 64 * 1024 * 1024, command } = {}) {
+  for (let attempt = 0; ; attempt++) {
+    try { return await runGitOnce(['-C', cwd, ...args], { timeout, env, input, maxBuffer, command }); }
+    catch (e) {
+      if (!(e instanceof GitSpawnError) || attempt >= retries) throw e;
+      await new Promise(r => setTimeout(r, 500 * (attempt + 1)));
+    }
+  }
+}
+/**
+ * True when `dir` is the top level of a Git working tree. Git answering "no"
+ * is false; git failing to start is reported, never mistaken for "not Git" —
+ * unless there is no `.git` at all, which already answers the question.
+ */
+export async function isGitRoot(dir, options) {
+  try {
+    const top = (await git(dir, ['rev-parse', '--show-toplevel'], options)).trim();
     return (await fs.realpath(top)) === (await fs.realpath(dir));
-  } catch { return false; }
+  } catch (e) {
+    if (e instanceof GitSpawnError && await exists(path.join(dir, '.git'))) throw new Error(`Не удалось запустить git, поэтому неизвестно, Git ли проект. Повтори команду. ${e.message}`);
+    return false;
+  }
 }
 /** One writer at a time inside a space's private state directory. */
 export async function withLock(stateDir, fn) {
