@@ -1,3 +1,4 @@
+import { CODE_FILE, TEST_FILE, mapCode } from './code-map.mjs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { assert, atomicWrite, exists, git, isGitRoot, readJSON, sha } from './io.mjs';
@@ -10,8 +11,8 @@ import { journal } from './space.mjs';
 // index. Generated notes (EXTRACTED) live in knowledge/_generated and are
 // rewritten whole; notes a person or an agent wrote (DECLARED) are never touched.
 export const RELATIONS = ['imports', 'imported-by', 'tests', 'tested-by', 'documents', 'documented-by', 'references', 'decided-in', 'about', 'related'];
-const CODE = /\.(?:[cm]?[jt]sx?)$/i, DOC = /\.(?:md|markdown)$/i;
-const TEST = /(^|\/)(test|tests|__tests__)\/|\.(test|spec)\.[cm]?[jt]sx?$/i;
+const CODE = CODE_FILE, DOC = /\.(?:md|markdown)$/i;
+const TEST = TEST_FILE;
 const MAX_PARSE = 1024 * 1024;
 const GEN = 'knowledge/_generated';
 const notePath = (kind, rel) => `${GEN}/${kind}/${rel}.md`;
@@ -58,16 +59,6 @@ async function projectFiles(space) {
   await walk(space.project, '');
   return out.sort();
 }
-const IMPORT = /(?:import\s[^'"`]*?from\s*|import\s*\(\s*|require\s*\(\s*|export\s[^'"`]*?from\s*|import\s+)['"]([^'"]+)['"]/g;
-const EXPORT = /export\s+(?:default\s+)?(?:async\s+)?(?:function\*?|class|const|let|var)\s+([A-Za-z0-9_$]+)/g;
-function resolveImport(from, spec, files) {
-  if (!spec.startsWith('.')) return null;
-  const base = path.posix.normalize(path.posix.join(path.posix.dirname(from), spec));
-  for (const c of [base, ...['.js', '.mjs', '.cjs', '.ts', '.tsx', '.jsx', '.mts'].map(e => base + e), ...['index.js', 'index.ts', 'index.mjs'].map(i => `${base}/${i}`)]) if (files.has(c)) return c;
-  if (/\.js$/.test(base) && files.has(base.replace(/\.js$/, '.ts'))) return base.replace(/\.js$/, '.ts');
-  return null;
-}
-
 /**
  * Rebuild the generated notes and the SQL index from the project, the space's
  * own notes and the accepted tasks. Deterministic: the same state gives the
@@ -78,23 +69,24 @@ export async function buildKnowledge(space) {
   const nodes = new Map(), edges = [];
   const node = (id, props) => nodes.set(id, { ...(nodes.get(id) ?? {}), ...props });
   const edge = (src, dst, rel, provenance = 'EXTRACTED') => { if (src !== dst) edges.push({ src, dst, rel, provenance }); };
-  const texts = new Map();
+  const texts = new Map(), skipped = [];
+  const goFile = path.join(space.project, 'go.mod');
+  const goStat = await fs.lstat(goFile).catch(e => { if (e.code === 'ENOENT') return null; throw e; });
+  const goModule = goStat?.isFile() && !goStat.isSymbolicLink() && goStat.size <= MAX_PARSE ? (await fs.readFile(goFile, 'utf8')).match(/^module\s+(\S+)/m)?.[1] ?? '' : '';
   for (const rel of files) {
-    if (!CODE.test(rel) && !DOC.test(rel) && !['package.json', 'manifest.json'].includes(path.posix.basename(rel))) continue;
+    if (!CODE.test(rel) && !DOC.test(rel) && !['package.json', 'manifest.json', 'go.mod', 'pyproject.toml', 'Package.swift'].includes(path.posix.basename(rel))) continue;
+    const stat = await fs.lstat(path.join(space.project, rel)).catch(() => null);
+    if (!stat?.isFile() || stat.isSymbolicLink() || stat.size > MAX_PARSE) { skipped.push({ path: rel, reason: 'not-regular-or-too-large' }); continue; }
     const bytes = await fs.readFile(path.join(space.project, rel)).catch(() => null);
-    if (!bytes || bytes.length > MAX_PARSE || bytes.includes(0)) continue;
+    if (!bytes || bytes.length > MAX_PARSE || bytes.includes(0)) { skipped.push({ path: rel, reason: 'unreadable-or-binary' }); continue; }
     const text = bytes.toString('utf8'); texts.set(rel, text);
     const kind = CODE.test(rel) ? 'code' : DOC.test(rel) ? 'docs' : 'manifest';
     const id = notePath(kind, rel);
     node(id, { type: kind === 'code' ? (TEST.test(rel) ? 'test' : 'module') : kind === 'docs' ? 'doc' : 'manifest', path: rel, title: rel, provenance: 'EXTRACTED', source: 'borshkit-kb@1', digest: sha(bytes) });
     if (kind === 'code') {
-      const exportsList = [...text.matchAll(EXPORT)].map(m => m[1]);
-      node(id, { exports: [...new Set(exportsList)] });
-      for (const m of text.matchAll(IMPORT)) {
-        const target = resolveImport(rel, m[1], set);
-        if (!target) continue;
-        edge(id, notePath('code', target), TEST.test(rel) ? 'tests' : 'imports');
-      }
+      const mapped = mapCode(rel, text, set, { goModule });
+      node(id, mapped);
+      for (const target of mapped.imports) edge(id, notePath('code', target), TEST.test(rel) ? 'tests' : 'imports');
     } else if (kind === 'docs') {
       // A project document may carry Borshkit frontmatter: `bk-type` and typed
       // relations as paths relative to the document (GitHub shows them as a
@@ -170,13 +162,15 @@ export async function buildKnowledge(space) {
   for (const [id, n] of nodes) {
     if (n.human) continue;
     const out = unique.filter(e => e.src === id);
-    const fm = { 'bk-type': n.type, 'bk-kind': n.kind ?? undefined, 'bk-id': n.path, 'bk-provenance': n.provenance, 'bk-source': n.source, 'bk-digest': n.digest };
+    const fm = { 'bk-type': n.type, 'bk-kind': n.kind ?? undefined, 'bk-id': n.path, 'bk-provenance': n.provenance, 'bk-source': n.source, 'bk-digest': n.digest, 'bk-language': n.language, 'bk-parser': n.parser };
     for (const rel of RELATIONS) fm[rel] = out.filter(e => e.rel === rel).map(e => link(e.dst, nodes.get(e.dst)?.path ?? e.dst));
     const body = [`# ${n.title}`, ''];
     if (n.type === 'decision') {
       body.push(`**Цель:** ${n.task.contract.goal}`, '', `**Принято:** ${n.task.decision.decidedAt}`, '', '| Критерий | Чем решено |', '|---|---|', ...n.task.decision.criteria.map(c => `| ${c.id} | ${c.decidedBy} |`), '');
     } else {
       if (n.path && !n.path.startsWith('knowledge/')) body.push(`Файл проекта: \`${n.path}\``, '');
+      if (n.language) body.push(`**Язык:** ${n.language}; разбор: ${n.parser}. Связи статические; динамические импорты и условия могут быть неизвестны.`, '');
+      if (n.unresolved?.length) body.push('**Импорты без локального разрешения:** ' + n.unresolved.map(x => `\`${x}\``).join(', '), '');
       if (n.exports?.length) body.push('**Экспортирует:** ' + n.exports.map(x => `\`${x}\``).join(', '), '');
       if (n.headings?.length) body.push('**Разделы:**', ...n.headings.map(h => `- ${h}`), '');
       if (n.scripts?.length) body.push('**Скрипты:** ' + n.scripts.map(x => `\`${x}\``).join(', '), '');
@@ -196,7 +190,7 @@ export async function buildKnowledge(space) {
 
   await writeIndex(space, nodes, unique, texts);
   await journal(space, `База знаний собрана: заметок ${nodes.size}, связей ${unique.length}.`);
-  return { notes: nodes.size, links: unique.length, generated: [...nodes.values()].filter(n => !n.human).length, human: human.length,
+  return { notes: nodes.size, links: unique.length, skipped, generated: [...nodes.values()].filter(n => !n.human).length, human: human.length,
     stale: [...nodes.entries()].filter(([, n]) => n.status === 'stale').map(([id]) => id) };
 }
 function normaliseTarget(target) {

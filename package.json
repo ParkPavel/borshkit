@@ -1,9 +1,8 @@
 {
   "name": "borshkit",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "description": "Borshkit — Modular AI Workspace: AI agents work, evidence bound to the exact file state decides acceptance, and whatever cannot be proven comes to you as a short manual checklist.",
   "type": "module",
-  "private": true,
   "engines": {
     "node": ">=22"
   },
@@ -56,7 +55,8 @@
     "scripts/provenance.mjs",
     "integrations",
     "Dockerfile",
-    ".devcontainer"
+    ".devcontainer",
+    "scripts/live-check.mjs"
   ],
   "keywords": [
     "ai-agents",

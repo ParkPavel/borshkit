@@ -8,6 +8,11 @@ related: ["guide/quickstart.md", "concepts/glossary.md", "graph/README.md", "ing
 
 [Настрой команду](guide/setup.md), затем используй [операционное руководство](guide/team-operations.md): компетенции моделей, WIP и бюджет, зависимости, passkey с телефона, монитор, Gemini/VS Code и перенос. [Контроль реализации](discussions/modernization-2026-10-09.md) отделяет исходники, испытания и выпуск.
 
+## Выпуск 0.13
+
+- [Нативные интеграции](guide/native-integrations.md) — реальные API и границы отмены/статуса.
+- [Выпуск и установка](release.md) — архивы, checksum, provenance и живые проверки.
+
 ## Основные документы
 
 - [Руководство](guide/workflow.md) — рабочий цикл и разбор неизвестного.

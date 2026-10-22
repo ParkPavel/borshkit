@@ -144,7 +144,10 @@ export async function runJob(space, options = {}) {
   // Two writers in one task's copy would mix their changes and commits.
   assert(ID.test(options.taskId ?? ''), `Недопустимое имя задачи «${options.taskId}»`);
   const release = await acquireLock(path.join(space.state, 'locks', `writer-${options.taskId}.lock`), { busy: `В копии задачи «${options.taskId}» уже работает другая пишущая работа — дождись её или останови` });
-  try { return await runJobUnlocked(space, options); } finally { await release(); }
+  try {
+    assert(!await exists(path.join(space.tasks, options.taskId, 'native-active.json')), 'В задаче есть нативная работа. Сначала останови её в среде и выполни интеграция finish');
+    return await runJobUnlocked(space, options);
+  } finally { await release(); }
 }
 async function runJobUnlocked(space, { taskId, role: roleId, executor = null, pool = null, lens = null, skills = [], imagePath = null, resumeOf = null, inPlace = false,
   fetchImpl = globalThis.fetch, silenceMs = space.settings.silenceSeconds * 1000, tickMs = 500, env = process.env, estimate = null } = {}) {

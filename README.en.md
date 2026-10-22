@@ -8,7 +8,7 @@ Describe the outcome. Let an agent work. Get evidence tied to the exact file sta
 
 ## Get started
 
-Node.js 22+ · Git
+0.13.0 · Node.js 22+ · Git
 
 ```sh
 git clone https://github.com/ParkPavel/borshkit.git
@@ -20,7 +20,7 @@ npm link
 
 ## Available today
 
-CLI and Claude Code plugin; Claude Code, Codex, Gemini and API executors. Copilot, Roo and Cline receive exported instructions. Instruction export, execution and full harness integration are separate support levels.
+CLI, Claude Code plugin and VSIX. Claude Code, Codex, Gemini and API executors; native Copilot/Roo/Cline APIs from VS Code with explicit capability limits. Task handoff and static JS/TS, Python, Go and Swift maps. [Native support and limits](docs/guide/native-integrations.md).
 
 PASS / FAIL / UNKNOWN: evidence follows the exact file state. A model response alone does not accept a task. CLI messages are currently in Russian; commands also have English aliases.
 
@@ -56,3 +56,6 @@ The full recipe with versions and licenses is in [docs/ingredients.md](docs/ingr
 Apache-2.0 · [LICENSE](LICENSE) · [NOTICE](NOTICE) · [Security](SECURITY.md)
 
 Pavel Park · [GitHub](https://github.com/ParkPavel) · [Telegram](https://t.me/parkpavel_chigon) · [Support / Поддержать](https://web.tribute.tg/d/Sh8)
+
+
+API references (no copied code): [VS Code Language Model API](https://github.com/microsoft/vscode) · [Roo Code API](https://github.com/RooCodeInc/Roo-Code) · [Cline API](https://github.com/cline/cline)

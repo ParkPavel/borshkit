@@ -8,7 +8,7 @@
 
 ## Начать
 
-Node.js 22+ · Git
+0.13.0 · Node.js 22+ · Git
 
 ```sh
 git clone https://github.com/ParkPavel/borshkit.git
@@ -20,7 +20,7 @@ npm link
 
 ## Что работает сейчас
 
-CLI и плагин Claude Code; запуск Claude Code, Codex, Gemini и API-исполнителей. Для Copilot, Roo и Cline — экспорт инструкций. Экспорт, запуск и полноценная интеграция — разные уровни поддержки.
+CLI, плагин Claude Code и VSIX. Запуск Claude Code, Codex, Gemini и API-исполнителей; нативные API Copilot/Roo/Cline из VS Code с явными ограничениями. Передача задачи между средами и статическая карта JS/TS, Python, Go, Swift. [Нативные возможности и границы](docs/guide/native-integrations.md).
 
 Ответ «готово» не принимает задачу. Проверки, независимое ревью и решения человека сохраняются отдельно. Изменение файлов делает старые доказательства устаревшими.
 
@@ -56,3 +56,6 @@ Borshkit — это борщ: собран из лучших ингредиен�
 Apache-2.0 · [LICENSE](LICENSE) · [NOTICE](NOTICE) · [Безопасность](SECURITY.md)
 
 Pavel Park · [GitHub](https://github.com/ParkPavel) · [Telegram](https://t.me/parkpavel_chigon) · [Support / Поддержать](https://web.tribute.tg/d/Sh8)
+
+
+API references (no copied code): [VS Code Language Model API](https://github.com/microsoft/vscode) · [Roo Code API](https://github.com/RooCodeInc/Roo-Code) · [Cline API](https://github.com/cline/cline)

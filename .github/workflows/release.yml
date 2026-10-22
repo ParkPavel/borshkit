@@ -1,10 +1,8 @@
 name: Release archive
-# Прикладывает borshkit.tgz к релизу. Ставится одной командой:
+# Собирает и проверяет артефакты заранее созданного draft-релиза. Публикация — после успешной сборки. Ставится одной командой:
 #   npm install -g https://github.com/ParkPavel/borshkit/releases/latest/download/borshkit.tgz
 # Скачивания этого файла и показывает счётчик в README.
 on:
-  release:
-    types: [published]
   workflow_dispatch:
     inputs:
       tag:
@@ -18,7 +16,7 @@ jobs:
   archive:
     runs-on: ubuntu-latest
     env:
-      TAG: ${{ github.event.release.tag_name || inputs.tag }}
+      TAG: ${{ inputs.tag }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -42,6 +40,7 @@ jobs:
           npm pack --pack-destination "$release_dir"
           mv "$release_dir"/borshkit-*.tgz "$release_dir/borshkit.tgz"
           node scripts/vsix.mjs "$release_dir/borshkit.vsix"
+          node scripts/verify-release.mjs "$release_dir/borshkit.tgz" "$release_dir/borshkit.vsix" "$release_dir/release-smoke.json"
           node scripts/provenance.mjs "$release_dir/borshkit.tgz" "$release_dir/borshkit.vsix"
       - name: Подписанное происхождение архивов GitHub
         uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v3, verified ref 2026-10-09
@@ -54,4 +53,4 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           release_dir="$RUNNER_TEMP/borshkit-release"
-          gh release upload "$TAG" "$release_dir/borshkit.tgz" "$release_dir/borshkit.vsix" "$release_dir/SHA256SUMS" "$release_dir/build-provenance.json" --repo "$GITHUB_REPOSITORY"
+          gh release upload "$TAG" "$release_dir/borshkit.tgz" "$release_dir/borshkit.vsix" "$release_dir/SHA256SUMS" "$release_dir/build-provenance.json" "$release_dir/release-smoke.json" --repo "$GITHUB_REPOSITORY"

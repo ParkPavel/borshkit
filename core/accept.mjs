@@ -259,6 +259,7 @@ export async function converge(space, taskId) {
       else if (review?.status === 'FAIL') { status = 'FAIL'; decidedBy = `model:${review.executor}`; }
       else if (review?.status === 'PASS' && review.origin !== 'job') { status = 'WAITING'; reason = `ревью ${review.executor} импортировано из файла: Borshkit не видел, на каком состоянии и кем оно сделано`; }
       else if (review?.status === 'PASS' && !review.provider) { status = 'WAITING'; reason = `семейство моделей ревьюера ${review.executor} неизвестно — независимость от автора не установлена`; }
+      else if (review?.status === 'PASS' && authors.includes('unknown')) { status = 'WAITING'; reason = 'семейство автора нативной или перенесённой работы неизвестно — независимость не установлена'; }
       else if (review?.status === 'PASS' && authors.includes(review.provider)) { status = 'WAITING'; reason = `ревьюер ${review.executor} из того же семейства моделей (${review.provider}), что и автор, — независимой проверки нет`; }
       else if (review?.status === 'PASS' && trusted(space.settings, c.tag, review.provider)) { status = 'PASS'; decidedBy = `trusted-model:${review.executor}`; }
       else if (review?.status === 'PASS') { status = 'WAITING'; reason = `модель ${review.executor} считает критерий выполненным, но цель доверия для этого типа не подтверждена измерением`; }

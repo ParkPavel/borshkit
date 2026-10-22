@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import { prepareNative, finishNative } from '../core/native.mjs';
+import { exportHandoff, importHandoff } from '../core/handoff.mjs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { ROOT, assert, contained, readJSON, sha } from '../core/io.mjs';
@@ -37,7 +39,7 @@ import { exportInstructions } from '../core/integrations.mjs';
 const COMMANDS = { начать: 'init', статус: 'status', задача: 'task', сохранить: 'save', доктор: 'doctor', помощь: 'help', материал: 'material', приватность: 'privacy', настройки: 'settings', эксперимент: 'experiment',
   исполнители: 'executors', исполнитель: 'executor', работа: 'job', вопрос: 'question', вопросы: 'question', роли: 'roles', знания: 'knowledge', атрибуция: 'attribution',
   оценка: 'eval', hook: 'hook', история: 'history', 'что-изменилось': 'changes', 'кто-что': 'who', вернуть: 'restore', 'сохранить-проект': 'save-project', собрать: 'merge', отправить: 'push',
-  навыки: 'skills', библиотека: 'library', команда: 'team', ресурсы: 'resources', мастер: 'setup', стенд: 'assessment', бюджет: 'budget', координация: 'coordination', подтверждение: 'approval', монитор: 'monitor', перенос:'portable', интеграция:'integration', поддержать: 'support' };
+  навыки: 'skills', библиотека: 'library', команда: 'team', ресурсы: 'resources', мастер: 'setup', стенд: 'assessment', бюджет: 'budget', координация: 'coordination', подтверждение: 'approval', монитор: 'monitor', перенос:'portable', интеграция:'integration', передача: 'handoff', поддержать: 'support' };
 const WHICH = { проект: 'project', пространство: 'space', project: 'project', space: 'space' };
 const SUB = { добавить: 'add', список: 'list', обновить: 'refresh', показать: 'show', предложить: 'propose', применить: 'apply', принять: 'accept', вернуть: 'revert', начать: 'start', ключ: 'key', завершить: 'end',
   проверить: 'probe', запустить: 'run', продолжить: 'resume', ответить: 'answer', собрать: 'build', найти: 'search', контекст: 'context', урок: 'lesson', экспорт: 'export', контрибьюторы: 'contributors', картинки: 'assets', план: 'plan', записать: 'record', оценить: 'qualify', отпечаток: 'fingerprint' };
@@ -99,6 +101,8 @@ const HELP = `Borshkit — Modular AI Workspace
   borshkit portable export --file список-файлов.json --out набор.json | import --file набор.json
   borshkit статус                       что происходит и что ждёт тебя
   borshkit доктор                       проверить окружение и пространство
+  borshkit передача export|import <задача> --файл пакет.json [--budget 12000]
+  borshkit интеграция prepare <задача> --host copilot|roo|cline
   borshkit сохранить "что изменилось"   точка возврата в истории пространства
   borshkit поддержать [--открыть]       поддержать проект донатом: ссылка и страница в браузере
 
@@ -547,10 +551,19 @@ export async function main(argv = process.argv.slice(2)) {
     }
     return print(flags, report, lines.join('\n'));
   }
+  if (command === 'handoff') {
+    const sub = SUB[positional[1]] ?? positional[1], taskId = positional[2];
+    assert(['export', 'import'].includes(sub) && typeof flags.file === 'string', 'Передача: export|import <задача> --файл <пакет.json> [--budget 12000]');
+    const space = await open(flags);
+    const result = sub === 'export' ? await exportHandoff(space, taskId, flags.file, { budget: Number(flags.budget ?? 12000) }) : await importHandoff(space, flags.file, taskId);
+    return print(flags, result, JSON.stringify(result, null, 2));
+  }
   if (command === 'support') return supportCommand(flags);
   if (command === 'setup') return setupCommand(await open(flags), positional.slice(1), flags);
   if (command === 'integration') {
-    assert(positional[1]==='export','Интеграция: export --host <среда>');
+    if (positional[1] === 'finish') { const ok = await confirmPerson('Нативные работы остановлены в среде? Освободить копию для нового писателя?', 'да, остановлены'); const r = await finishNative(await open(flags), positional[2], { confirmedByPerson: ok }); return print(flags, r, JSON.stringify(r, null, 2)); }
+    if (positional[1] === 'prepare') { const r = await prepareNative(await open(flags), positional[2], flags.host); return print(flags, r, JSON.stringify(r, null, 2)); }
+    assert(positional[1]==='export','Интеграция: export --host <среда> или prepare <задача> --host copilot|roo|cline');
     const r=await exportInstructions(await open(flags),flags.host);return print(flags,r,`${r.file}\n${r.note}`);
   }
   if (command === 'portable') {
