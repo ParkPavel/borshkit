@@ -1,19 +1,22 @@
 # Borshkit
 
-**AI 程式開發的可攜基礎層.**
+**AI 程式開發的任務、可攜情境與可驗證成果。**
 
 說明預期成果，交給代理執行，再取得綁定確切檔案狀態的證據與人工驗收清單。
 
 <a href="README.md">ru</a> · <a href="README.en.md">en</a> · <a href="README.de.md">de</a> · <a href="README.ko.md">ko</a> · <a href="README.zh-TW.md">zh-TW</a> · <a href="README.fr.md">fr</a>
 
+[發行版本 0.13.0](https://github.com/ParkPavel/borshkit/releases/tag/0.13.0) · [CI](https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml) · [文件（俄文）](docs/README.md)
+
 ## 開始使用
 
 0.13.0 · Node.js 22+ · Git
 
+請安裝已驗證的 GitHub Release 壓縮檔。套件尚未發布至 npm 登錄庫。修改原始碼請用 [git clone 和 npm link](docs/release.md)。
+
 ```sh
-git clone https://github.com/ParkPavel/borshkit.git
-cd borshkit
-npm link
+npm install -g https://github.com/ParkPavel/borshkit/releases/download/0.13.0/borshkit.tgz
+borshkit help
 ```
 
 [Quickstart](docs/guide/quickstart.md) · [Guide](docs/guide/workflow.md) · [Commands](docs/reference/commands.md) · [Website](https://parkpavel.github.io/borshkit/)
@@ -22,7 +25,7 @@ npm link
 
 提供 CLI、Claude Code 外掛與 VSIX，支援 Claude Code、Codex、Gemini、API 執行器，以及 VS Code 中的 Copilot、Roo、Cline 原生 API，並明確標示限制。提供任務交接及 JS/TS、Python、Go、Swift 靜態程式地圖。[支援範圍與限制](docs/guide/native-integrations.md)。
 
-PASS / FAIL / UNKNOWN: evidence follows the exact file state. A model response alone does not accept a task. CLI messages are currently in Russian; commands also have English aliases.
+PASS：檢查通過。FAIL：檢查未通過。UNKNOWN：缺少證據。實際模型與裝置測試正等待使用者回饋。CLI 訊息和大部分指南為俄文，命令另有英文別名。
 
 [Architecture](docs/architecture.md) · [Roadmap](docs/roadmap.md) · [詳細資料與限制](docs/reference/overview.zh-TW.md) · [Context handoff](docs/guide/handoff.md)
 
@@ -51,11 +54,10 @@ Borshkit 就是一鍋羅宋湯：用別人親手種出、公開分享的最好�
 完整食譜（含版本與授權）見 [docs/ingredients.md](docs/ingredients.md)（俄文）。這些專案的**所有貢獻者**，共 1262 筆：[CONTRIBUTORS-REFERENCES.md](CONTRIBUTORS-REFERENCES.md)。謝謝你們每一位！
 
 
+API 參考（未複製程式碼）: [VS Code Language Model API](https://github.com/microsoft/vscode) · [Roo Code API](https://github.com/RooCodeInc/Roo-Code) · [Cline API](https://github.com/cline/cline)
+
 </details>
 
 Apache-2.0 · [LICENSE](LICENSE) · [NOTICE](NOTICE) · [Security](SECURITY.md)
 
 Pavel Park · [GitHub](https://github.com/ParkPavel) · [Telegram](https://t.me/parkpavel_chigon) · [Support / Поддержать](https://web.tribute.tg/d/Sh8)
-
-
-API references (no copied code): [VS Code Language Model API](https://github.com/microsoft/vscode) · [Roo Code API](https://github.com/RooCodeInc/Roo-Code) · [Cline API](https://github.com/cline/cline)

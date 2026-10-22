@@ -1,19 +1,22 @@
 # Borshkit
 
-**A portable foundation for AI coding.**
+**Tasks, portable context and verifiable results for AI coding.**
 
 Describe the outcome. Let an agent work. Get evidence tied to the exact file state and a clear checklist for human review.
 
 <a href="README.md">ru</a> · <a href="README.en.md">en</a> · <a href="README.de.md">de</a> · <a href="README.ko.md">ko</a> · <a href="README.zh-TW.md">zh-TW</a> · <a href="README.fr.md">fr</a>
 
+[Release 0.13.0](https://github.com/ParkPavel/borshkit/releases/tag/0.13.0) · [CI](https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml) · [Documentation (Russian)](docs/README.md)
+
 ## Get started
 
 0.13.0 · Node.js 22+ · Git
 
+Install the verified GitHub Release archive. The package is not published to the npm registry. To edit the source, use [git clone and npm link](docs/release.md).
+
 ```sh
-git clone https://github.com/ParkPavel/borshkit.git
-cd borshkit
-npm link
+npm install -g https://github.com/ParkPavel/borshkit/releases/download/0.13.0/borshkit.tgz
+borshkit help
 ```
 
 [Quickstart](docs/guide/quickstart.md) · [Guide](docs/guide/workflow.md) · [Commands](docs/reference/commands.md) · [Website](https://parkpavel.github.io/borshkit/)
@@ -22,7 +25,7 @@ npm link
 
 CLI, Claude Code plugin and VSIX. Claude Code, Codex, Gemini and API executors; native Copilot/Roo/Cline APIs from VS Code with explicit capability limits. Task handoff and static JS/TS, Python, Go and Swift maps. [Native support and limits](docs/guide/native-integrations.md).
 
-PASS / FAIL / UNKNOWN: evidence follows the exact file state. A model response alone does not accept a task. CLI messages are currently in Russian; commands also have English aliases.
+PASS: a check passed. FAIL: a check did not pass. UNKNOWN: evidence is missing. Live model and device trials await community reports. CLI messages and most guides are in Russian; commands have English aliases.
 
 [Architecture](docs/architecture.md) · [Roadmap](docs/roadmap.md) · [Details and limitations](docs/reference/overview.en.md) · [Context handoff](docs/guide/handoff.md)
 
@@ -51,11 +54,10 @@ Borshkit is borscht: it is cooked from the best ingredients that other people gr
 The full recipe with versions and licenses is in [docs/ingredients.md](docs/ingredients.md) (Russian). **All contributors** of these projects, 1262 entries: [CONTRIBUTORS-REFERENCES.md](CONTRIBUTORS-REFERENCES.md). Thank you, every one of you!
 
 
+API references (no copied code): [VS Code Language Model API](https://github.com/microsoft/vscode) · [Roo Code API](https://github.com/RooCodeInc/Roo-Code) · [Cline API](https://github.com/cline/cline)
+
 </details>
 
 Apache-2.0 · [LICENSE](LICENSE) · [NOTICE](NOTICE) · [Security](SECURITY.md)
 
 Pavel Park · [GitHub](https://github.com/ParkPavel) · [Telegram](https://t.me/parkpavel_chigon) · [Support / Поддержать](https://web.tribute.tg/d/Sh8)
-
-
-API references (no copied code): [VS Code Language Model API](https://github.com/microsoft/vscode) · [Roo Code API](https://github.com/RooCodeInc/Roo-Code) · [Cline API](https://github.com/cline/cline)

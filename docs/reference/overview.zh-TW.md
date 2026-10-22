@@ -2,7 +2,7 @@
 bk-type: reference
 related: ["../architecture.md", "../roadmap.md"]
 ---
-# 詳細資料與限制 — 0.12
+# 詳細資料與限制 — 0.13
 
 ## 看得見的團隊
 
@@ -16,7 +16,9 @@ related: ["../architecture.md", "../roadmap.md"]
 
 <p align="center"><img src="../../assets/diagrams/setup.zh-TW.svg" alt="設定：環境、隱私、模型、職責、提案；套用、評估、指派及啟動分開" width="100%"></p>
 
-可信任的初次配對後，可使用手機 passkey 確認設定與重要問題。已加入 `assessment`、共用預算/WIP、任務依賴及檢查點、明確的 `monitor start/stop`、Gemini CLI/API、本機 VSIX，以及需要重新驗證的檔案移轉。Copilot/Roo/Cline 使用匯出的指示；不宣稱提供原生執行轉接器。自動駕駛保持關閉。
+可信任的初次配對後，可使用手機 passkey 確認設定與重要問題。已加入 `assessment`、共用預算/WIP、任務依賴及檢查點、明確的 `monitor start/stop`、Gemini CLI/API、本機 VSIX，以及需要重新驗證的檔案移轉。
+
+0.13 支援指示匯出與 VSIX 原生入口：Copilot 只回傳文字、不使用工具；Roo 提供任務 ID、事件與取消；Cline 只能啟動，狀態未知。嚴格隱私模式會封鎖原生路徑。[功能、安裝與限制](../guide/native-integrations.md)（俄文）。 自動駕駛預設關閉。
 
 [操作及安全限制](../../docs/guide/team-operations.md) · [實作檢查](../../docs/discussions/modernization-2026-10-09.md)（俄文）。本機測試不能取代真實模型、手機瀏覽器、VS Code 及確切提交版本的 CI 驗證。
 
@@ -45,7 +47,7 @@ related: ["../architecture.md", "../roadmap.md"]
 /plugin install borshkit@borshkit
 ```
 
-外掛會為代理加上 Borshkit 技能、防護用的 hooks，並在 Claude Code 的終端機裡提供 `borshkit` 和 `borsch` 指令。若也想在自己的終端機使用，請另外依下方方式安裝指令。
+外掛提供 Claude Code 技能、斜線命令與防護 hooks，不會在 PATH 安裝全域命令。若要在終端機使用 `borshkit` 和 `borsch`，請另外依下方方式安裝 CLI。
 
 **作為終端機指令：**
 
@@ -60,7 +62,8 @@ cd borshkit && npm link        # 新增 borshkit 和 borsch 兩個指令
 npm install -g https://github.com/ParkPavel/borshkit/releases/latest/download/borshkit.tgz
 ```
 
-這個套件還沒有發布到 npm。頂部的下載次數只計算這個封存檔：外掛安裝與 `git clone` 不計入。
+套件尚未發布至 npm 登錄庫；上方命令直接安裝 GitHub 壓縮檔。
+
 
 ## 第一個任務
 

@@ -2,7 +2,7 @@
 bk-type: reference
 related: ["../architecture.md", "../roadmap.md"]
 ---
-# 상세 설명과 한계 — 0.12
+# 상세 설명과 한계 — 0.13
 
 ## 보이는 팀
 
@@ -16,7 +16,9 @@ related: ["../architecture.md", "../roadmap.md"]
 
 <p align="center"><img src="../../assets/diagrams/setup.ko.svg" alt="설정: 환경, 보안, 모델, 담당 업무, 제안; 적용, 평가, 배정, 실행은 별도 단계" width="100%"></p>
 
-신뢰할 수 있는 기기 등록 후 휴대폰 passkey로 설정과 중요 질문을 승인할 수 있습니다. `assessment`, 공유 예산/WIP, 작업 의존성 및 체크포인트, 명시적인 `monitor start/stop`, Gemini CLI/API, 로컬 VSIX와 재검증이 필요한 파일 이전을 구현했습니다. Copilot/Roo/Cline에는 지침을 내보내며 전용 실행 어댑터 지원을 주장하지 않습니다. 자동 운용은 꺼진 상태입니다.
+신뢰할 수 있는 기기 등록 후 휴대폰 passkey로 설정과 중요 질문을 승인할 수 있습니다. `assessment`, 공유 예산/WIP, 작업 의존성 및 체크포인트, 명시적인 `monitor start/stop`, Gemini CLI/API, 로컬 VSIX와 재검증이 필요한 파일 이전을 구현했습니다.
+
+0.13은 지침 내보내기와 VSIX 네이티브 실행을 제공합니다. Copilot은 도구 없이 텍스트를 반환하며 Roo는 작업 ID·이벤트·취소를 제공합니다. Cline은 실행만 가능하고 상태는 알 수 없습니다. 엄격한 개인정보 모드는 네이티브 경로를 차단합니다. [기능·설치·한계](../guide/native-integrations.md) (러시아어). 자동 운용은 기본적으로 꺼져 있습니다.
 
 [운영 및 보안 범위](../../docs/guide/team-operations.md) · [구현 점검](../../docs/discussions/modernization-2026-10-09.md) (러시아어). 로컬 테스트는 실제 모델, 휴대폰 브라우저, VS Code 및 해당 커밋의 CI 검증을 대신하지 않습니다.
 
@@ -45,7 +47,7 @@ Node.js 22+와 Git이 필요합니다. 외부 의존성은 없습니다.
 /plugin install borshkit@borshkit
 ```
 
-플러그인은 에이전트에게 Borshkit 스킬과 보호 훅을 주고, Claude Code 터미널에 `borshkit`·`borsch` 명령을 추가합니다. 자신의 터미널에서도 쓰려면 아래처럼 명령도 설치하세요.
+플러그인은 Claude Code 스킬, 슬래시 명령과 보호 훅을 제공합니다. PATH에 전역 명령을 설치하지 않습니다. 터미널의 `borshkit`·`borsch` 명령은 아래와 같이 CLI를 별도로 설치하세요.
 
 **터미널 명령으로 설치:**
 
@@ -60,7 +62,8 @@ cd borshkit && npm link        # borshkit, borsch 명령이 추가됩니다
 npm install -g https://github.com/ParkPavel/borshkit/releases/latest/download/borshkit.tgz
 ```
 
-아직 npm에는 패키지를 올리지 않았습니다. 상단의 다운로드 수는 이 아카이브만 셉니다. 플러그인 설치와 `git clone`은 포함되지 않습니다.
+아직 npm 레지스트리에 패키지를 게시하지 않았습니다. 위 명령은 GitHub 아카이브를 직접 설치합니다.
+
 
 ## 첫 작업
 

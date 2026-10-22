@@ -2,7 +2,7 @@
 bk-type: reference
 related: ["../architecture.md", "../roadmap.md"]
 ---
-# Details and limitations — 0.12
+# Details and limitations — 0.13
 
 ## A visible team
 
@@ -16,7 +16,9 @@ The new `design-prompter` role writes a visual design brief. Choose a model usin
 
 <p align="center"><img src="../../assets/diagrams/setup.en.svg" alt="Setup: host, privacy, models, responsibilities and proposal; application, assessments, routing and launch are separate" width="100%"></p>
 
-Passkey approval for settings and critical questions is implemented after trusted enrollment. The branch adds `assessment`, shared budget/WIP, dependencies and checkpoints, explicit `monitor start/stop`, Gemini CLI/API, a local VSIX and explicit source transfer with fresh verification. Copilot/Roo/Cline use instruction exports; native executors are not claimed. Autopilot stays off.
+Passkey approval for settings and critical questions is implemented after trusted enrollment. The release includes `assessment`, shared budget/WIP, dependencies and checkpoints, explicit `monitor start/stop`, Gemini CLI/API, a local VSIX and explicit source transfer with fresh verification.
+
+Version 0.13 supports instruction exports and native VSIX entry points: Copilot returns text without tools; Roo provides task IDs, events and cancellation; Cline provides launch only, with unknown status. Strict privacy blocks the native path. [Capabilities, installation and limits](../guide/native-integrations.md) (Russian). Autopilot is off by default.
 
 [Operations and security limits](../../docs/guide/team-operations.md) · [Implementation audit](../../docs/discussions/modernization-2026-10-09.md) (Russian). Local tests do not substitute for real model, phone browser, VS Code or exact-commit CI validation.
 
@@ -45,7 +47,7 @@ You need Node.js 22+ and Git. There are no external dependencies.
 /plugin install borshkit@borshkit
 ```
 
-The plugin gives the agent the Borshkit skill, protective hooks, and the `borshkit` and `borsch` commands inside Claude Code's terminal. To use them in your own terminal too, also install the command as shown below.
+The plugin adds the skill, slash commands and protective Claude Code hooks. It does not install global commands on PATH. Install the CLI separately for `borshkit` and `borsch` in a terminal, as shown below.
 
 **As a terminal command:**
 
@@ -60,7 +62,8 @@ Or with one command from the latest release, no clone needed:
 npm install -g https://github.com/ParkPavel/borshkit/releases/latest/download/borshkit.tgz
 ```
 
-The package is not on npm yet. The download counter at the top counts this archive only: plugin installs and `git clone` are not included.
+The package is not published to the npm registry; the command above installs the GitHub archive directly.
+
 
 ## Your first task
 
