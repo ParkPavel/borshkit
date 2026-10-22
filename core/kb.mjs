@@ -72,7 +72,7 @@ export async function buildKnowledge(space) {
   const texts = new Map(), skipped = [];
   const goFile = path.join(space.project, 'go.mod');
   const goStat = await fs.lstat(goFile).catch(e => { if (e.code === 'ENOENT') return null; throw e; });
-  const goModule = goStat?.isFile() && !goStat.isSymbolicLink() ? (await fs.readFile(goFile, 'utf8')).match(/^module\s+(\S+)/m)?.[1] ?? '' : '';
+  const goModule = goStat?.isFile() && !goStat.isSymbolicLink() && goStat.size <= MAX_PARSE ? (await fs.readFile(goFile, 'utf8')).match(/^module\s+(\S+)/m)?.[1] ?? '' : '';
   for (const rel of files) {
     if (!CODE.test(rel) && !DOC.test(rel) && !['package.json', 'manifest.json', 'go.mod', 'pyproject.toml', 'Package.swift'].includes(path.posix.basename(rel))) continue;
     const stat = await fs.lstat(path.join(space.project, rel)).catch(() => null);
