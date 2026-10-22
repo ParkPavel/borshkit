@@ -8,7 +8,7 @@
 
 ## 開始使用
 
-Node.js 22+ · Git
+0.13.0 · Node.js 22+ · Git
 
 ```sh
 git clone https://github.com/ParkPavel/borshkit.git
@@ -20,7 +20,7 @@ npm link
 
 ## 目前支援
 
-提供 CLI、Claude Code 外掛，以及 Claude Code、Codex、Gemini 和 API 執行器。Copilot、Roo、Cline 支援指令匯出。匯出指令、啟動執行器與完整整合是不同支援層級。
+提供 CLI、Claude Code 外掛與 VSIX，支援 Claude Code、Codex、Gemini、API 執行器，以及 VS Code 中的 Copilot、Roo、Cline 原生 API，並明確標示限制。提供任務交接及 JS/TS、Python、Go、Swift 靜態程式地圖。[支援範圍與限制](docs/guide/native-integrations.md)。
 
 PASS / FAIL / UNKNOWN: evidence follows the exact file state. A model response alone does not accept a task. CLI messages are currently in Russian; commands also have English aliases.
 
@@ -56,3 +56,6 @@ Borshkit 就是一鍋羅宋湯：用別人親手種出、公開分享的最好�
 Apache-2.0 · [LICENSE](LICENSE) · [NOTICE](NOTICE) · [Security](SECURITY.md)
 
 Pavel Park · [GitHub](https://github.com/ParkPavel) · [Telegram](https://t.me/parkpavel_chigon) · [Support / Поддержать](https://web.tribute.tg/d/Sh8)
+
+
+API references (no copied code): [VS Code Language Model API](https://github.com/microsoft/vscode) · [Roo Code API](https://github.com/RooCodeInc/Roo-Code) · [Cline API](https://github.com/cline/cline)

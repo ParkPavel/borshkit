@@ -173,5 +173,23 @@
     "commit": "77f32a4085ad93a9f354819a23a4caefbb1e802a",
     "via": "Claudex",
     "takes": "идея маршрутизации по Apple HIG; только ссылка"
+  },
+  {
+    "name": "VS Code Language Model API",
+    "url": "https://github.com/microsoft/vscode",
+    "license": "MIT",
+    "takes": "публичный Language Model API; код не копируется"
+  },
+  {
+    "name": "Roo Code API",
+    "url": "https://github.com/RooCodeInc/Roo-Code",
+    "license": "Apache-2.0",
+    "takes": "публичные startNewTask, cancelCurrentTask и события; код не копируется"
+  },
+  {
+    "name": "Cline API",
+    "url": "https://github.com/cline/cline",
+    "license": "Apache-2.0",
+    "takes": "публичный startNewTask; без автоматической имитации кнопок согласия, код не копируется"
   }
 ]

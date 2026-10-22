@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { git,ROOT,sha } from '../core/io.mjs';
 const files=process.argv.slice(2);
+if(process.env.GITHUB_ACTIONS==='true'&&(await git(ROOT,['status','--porcelain'])).trim())throw Error('Выпуск требует чистого checkout');
 if(!files.length)throw Error('Укажи архивы для checksum и сведений сборки');
 const pkg=JSON.parse(await fs.readFile(path.join(ROOT,'package.json')));
 const subjects=[];

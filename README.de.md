@@ -8,7 +8,7 @@ Beschreibe das Ergebnis. Lass einen Agenten arbeiten. Erhalte Nachweise zum gena
 
 ## Starten
 
-Node.js 22+ · Git
+0.13.0 · Node.js 22+ · Git
 
 ```sh
 git clone https://github.com/ParkPavel/borshkit.git
@@ -20,7 +20,7 @@ npm link
 
 ## Heute verfügbar
 
-CLI und Claude-Code-Plugin; Ausführung über Claude Code, Codex, Gemini und APIs. Copilot, Roo und Cline erhalten exportierte Anweisungen. Export, Ausführung und vollständige Integration sind unterschiedliche Stufen.
+CLI, Claude-Code-Plugin und VSIX. Ausführung über Claude Code, Codex, Gemini und APIs; native Copilot/Roo/Cline-APIs in VS Code mit klaren Grenzen. Aufgabenübergabe und statische Karten für JS/TS, Python, Go und Swift. [Funktionen und Grenzen](docs/guide/native-integrations.md).
 
 PASS / FAIL / UNKNOWN: evidence follows the exact file state. A model response alone does not accept a task. CLI messages are currently in Russian; commands also have English aliases.
 
@@ -56,3 +56,6 @@ Das vollständige Rezept mit Versionen und Lizenzen steht in [docs/ingredients.m
 Apache-2.0 · [LICENSE](LICENSE) · [NOTICE](NOTICE) · [Security](SECURITY.md)
 
 Pavel Park · [GitHub](https://github.com/ParkPavel) · [Telegram](https://t.me/parkpavel_chigon) · [Support / Поддержать](https://web.tribute.tg/d/Sh8)
+
+
+API references (no copied code): [VS Code Language Model API](https://github.com/microsoft/vscode) · [Roo Code API](https://github.com/RooCodeInc/Roo-Code) · [Cline API](https://github.com/cline/cline)

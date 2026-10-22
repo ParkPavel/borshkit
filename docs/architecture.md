@@ -10,7 +10,7 @@ Borshkit — локальная CLI на Node.js 22+, без зависимос�
 | Слой | Реализация | Граница |
 |---|---|---|
 | Контракт | `core/contract.mjs`, `core/snapshot.mjs` | цель, paths, критерии, база и точное состояние |
-| Контекст | `core/kb.mjs`, `core/roles.mjs`, `core/jobs.mjs` | JS/TS и Markdown; ограниченный пакет, обрезка не означает полноту |
+| Контекст | `core/kb.mjs`, `core/roles.mjs`, `core/jobs.mjs` | JS/TS, Python, Go, Swift и Markdown; ограниченный пакет, обрезка не означает полноту |
 | Исполнение | `core/jobs.mjs`, `core/adapters.mjs`, `core/process.mjs` | отдельная Git worktree для писателя; API пишет только в paths |
 | Проверки | `core/accept.mjs` | PASS/FAIL/UNKNOWN и лог, привязанные к состоянию; сбой запуска — UNKNOWN |
 | Решение | `core/accept.mjs`, `core/gitshell.mjs` | ответ модели не принимает задачу; ручные пункты, отдельные сборка и отправка |
@@ -23,10 +23,14 @@ Borshkit — локальная CLI на Node.js 22+, без зависимос�
 | Claude Code | CLAUDE.md | адаптер CLI | плагин, навык, команды и hooks |
 | Codex | AGENTS.md | адаптер CLI | инструкции и запуск; отдельный плагин не заявлен |
 | Gemini | GEMINI.md | CLI и API | инструкции и адаптеры |
-| Copilot / Roo / Cline | файлы правил | нативного адаптера нет | экспорт не добавляет sandbox, API или управление сеансом |
+| Copilot / Roo / Cline | файлы правил | нативный путь из VSIX | Copilot LM API без инструментов; Roo start/cancel/events; Cline start, статус/отмена UNKNOWN/UNSUPPORTED |
 | OpenAI-совместимый API | не требуется | API-адаптер | зависит от схемы ответа и возможностей endpoint |
 
 Адаптеры тестируются поддельными программами и ответами API. Это проверяет протокол, а не качество живых моделей. VSIX собирается локально; это не публикация в Marketplace.
+
+## Передача и нативные среды
+
+`core/handoff.mjs` экспортирует и импортирует задачи по схеме 1; `core/context-pack.mjs` сохраняет происхождение и пропуски при сжатии. Импорт не переносит приёмку. Нативный путь описан в [руководстве](guide/native-integrations.md), включая отсутствие достоверной отмены Cline. Автоматическая запись ответа Copilot и автоматическая приёмка не выполняются.
 
 ## Надёжность Git
 

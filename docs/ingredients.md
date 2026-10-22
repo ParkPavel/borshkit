@@ -74,3 +74,10 @@ Borshkit — это борщ. Его не придумали с нуля: соб
 Список собран из истории коммитов на зафиксированных версиях: имена и логины GitHub, которые авторы сами опубликовали. Адресов почты в нём нет. Боты указаны отдельно. С доступом к API GitHub список можно пересобрать по аккаунтам: `borshkit атрибуция контрибьюторы владелец/репо …`.
 
 Спасибо каждому. Без вашей открытой работы этого борща бы не было.
+
+
+## API интеграций 0.13
+
+- [VS Code Language Model API](https://github.com/microsoft/vscode) (MIT): публичный Language Model API; код не копируется.
+- [Roo Code API](https://github.com/RooCodeInc/Roo-Code) (Apache-2.0): публичные startNewTask, cancelCurrentTask и события; код не копируется.
+- [Cline API](https://github.com/cline/cline) (Apache-2.0): публичный startNewTask; без автоматической имитации кнопок согласия, код не копируется.
