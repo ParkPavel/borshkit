@@ -13,7 +13,9 @@
   "scripts": {
     "test": "node --test test/*.test.mjs",
     "check": "node scripts/check.mjs",
-    "verify": "npm run check && npm test"
+    "verify": "npm run check && npm run site:check && npm test",
+    "site": "node scripts/site.mjs",
+    "site:check": "node scripts/check-site.mjs"
   },
   "repository": {
     "type": "git",
@@ -56,7 +58,11 @@
     "integrations",
     "Dockerfile",
     ".devcontainer",
-    "scripts/live-check.mjs"
+    "scripts/live-check.mjs",
+    "scripts/site.mjs",
+    "scripts/check-site.mjs",
+    "scripts/vendor/marked",
+    "design-qa.md"
   ],
   "keywords": [
     "ai-agents",

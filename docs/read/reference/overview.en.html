@@ -1,0 +1,227 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base href="../../"><meta name="description" content="Details and limitations — 0.13 — документация Borshkit"><meta name="theme-color" content="#141619"><title>Details and limitations — 0.13 · Borshkit</title><link rel="canonical" href="https://parkpavel.github.io/borshkit/read/reference/overview.en.html"><link rel="stylesheet" href="site.css"><link rel="stylesheet" href="reader.css"><script src="reader.js" defer></script></head><body class="docs-page"><a class="skip" href="read/reference/overview.en.html#article">К статье</a><header class="docs-header"><a class="brand" href="index.html">borshkit<span class="brand-dot">.</span></a><a class="docs-label" href="read/index.html">Документация <span>0.13</span></a><nav aria-label="Навигация проекта"><a href="index.html">Обзор</a><a href="https://github.com/ParkPavel/borshkit/releases/tag/0.13.0">Скачать</a><a class="support-link" href="https://web.tribute.tg/d/Sh8">Поддержать</a><a href="https://github.com/ParkPavel/borshkit">GitHub</a></nav></header><div class="docs-tools"><button type="button" id="menu-toggle" aria-controls="docs-nav" aria-expanded="false">Разделы</button><label class="search-label" for="docs-search">Найти в документации</label><input id="docs-search" type="search" placeholder="Задача, проверка, Copilot…" autocomplete="off" aria-controls="search-results"><span class="search-shortcut" aria-hidden="true">/</span></div><div class="search-output" id="search-results" aria-live="polite" hidden></div><div class="docs-layout"><aside id="docs-nav" class="docs-sidebar"><nav aria-label="Разделы документации"><section><h2>Начать здесь</h2><a href="read/index.html">Документация Borshkit</a><a href="read/guide/quickstart.html">Быстрый старт: первая задача</a><a href="read/guide/workflow.html">Руководство: от цели до результата</a><a href="read/guide/setup.html">Мастер настройки команды</a></section><section><h2>Работать с задачами</h2><a href="read/guide/handoff.html">Передать работу другому харнесу</a><a href="read/guide/native-integrations.html">Copilot, Roo и Cline: нативный запуск</a><a href="read/guide/team-operations.html">Работа команды, телефон и перенос</a><a href="read/concepts/acceptance.html">Приёмка по целям</a><a href="read/concepts/evidence.html">Доказательства и устаревание</a><a href="read/concepts/executors.html">Исполнители, пулы и автопилот</a><a href="read/concepts/privacy.html">Приватность и настройки</a><a href="read/concepts/knowledge.html">База знаний: заметки, связи, SQL</a><a href="read/concepts/glossary.html">Словарь</a></section><section><h2>Справочник</h2><a href="read/reference/commands.html">Все команды</a><a href="read/reference/contract.html">Формат задачи (`contract.json`)</a><a href="read/reference/team-resources.html">Команда, оценки ролей и ресурсы</a><a href="read/architecture.html">Текущая архитектура</a><a href="read/roadmap.html">Статус пяти направлений — 0.13.0</a><a href="read/release.html">Как выпускается Borshkit</a><a href="read/ingredients.html">Рецепт: из чего сварен Borshkit</a><a href="read/library/index.html">Библиотека: навыки и проверенные ссылки</a><a href="read/project/SECURITY.html">Безопасность</a><a href="read/project/CONTRIBUTING.html">Как помочь Borshkit</a><a href="read/project/CHANGELOG.html">Изменения</a></section><details open><summary>Ещё материалы</summary><a href="read/project/AGENTS.html">Для агентов, которые разрабатывают Borshkit</a><a href="read/project/CONTRIBUTORS-REFERENCES.html">Контрибьюторы проектов, на которых построен Borshkit</a><a href="read/project/README.de.html">Borshkit</a><a href="read/project/README.en.html">Borshkit</a><a href="read/project/README.fr.html">Borshkit</a><a href="read/project/README.ko.html">Borshkit</a><a href="read/project/README.html">Borshkit</a><a href="read/project/README.zh-TW.html">Borshkit</a><a href="read/project/design-qa.html">Проверка продуктового оформления</a><a href="read/concepts/research.html">Исследования: источники и цитаты</a><a href="read/concepts/roles-and-skills.html">Роли и навыки</a><a href="read/concepts/space.html">Пространство и Git простыми словами</a><a href="read/concepts/team-workspace.html">Borshkit как профессиональная команда</a><a href="read/guide/website.html">Сайт и документация как единый продукт</a><a href="read/reference/overview.de.html">Details und Grenzen — 0.13</a><a href="read/reference/overview.en.html" aria-current="page">Details and limitations — 0.13</a><a href="read/reference/overview.fr.html">Détails et limites — 0.13</a><a href="read/reference/overview.ko.html">상세 설명과 한계 — 0.13</a><a href="read/reference/overview.ru.html">Подробности и ограничения — 0.13</a><a href="read/reference/overview.zh-TW.html">詳細資料與限制 — 0.13</a><a href="read/spec.html">Borshkit (Борщкит) — Modular AI Workspace</a><a href="read/verification-0.13.html">Проверка выпуска 0.13.0</a><a href="read/verification-2026-10-20.html">Проверка модернизации — 20 октября 2026</a></details><details><summary>История и отчёты</summary><a href="read/discussions/audit-2026-10-07.html">Ответ на независимый аудит 0.10.1</a><a href="read/discussions/modernization-2026-10-08.html">Аудит и программа модернизации — 2026-10-08</a><a href="read/discussions/modernization-2026-10-09.html">Контроль модернизации — 2026-10-09</a><a href="read/discussions/professionalism-2026-10-22.html">Аудит оформления и достоверности — 22 октября 2026</a><a href="read/discussions/space-history-backup.html">Черновик обсуждения: резервная копия истории пространства</a><a href="read/graph/README.html">Граф документации</a></details></nav><a class="sidebar-support" href="https://web.tribute.tg/d/Sh8"><strong>Поддержать Borshkit</strong><span>Помоги развивать открытый инструмент.</span></a></aside><main id="article" tabindex="-1" class="docs-article"><div class="article-meta"><span>ДОКУМЕНТАЦИЯ</span><a href="https://github.com/ParkPavel/borshkit/blob/main/docs/reference/overview.en.md">Исходник на GitHub</a></div><article lang="en"><h1 id="details-and-limitations--013">Details and limitations — 0.13<a class="heading-anchor" href="read/reference/overview.en.html#details-and-limitations--013" aria-label="Ссылка на раздел">#</a></h1>
+<h2 id="a-visible-team">A visible team<a class="heading-anchor" href="read/reference/overview.en.html#a-visible-team" aria-label="Ссылка на раздел">#</a></h2>
+<p><img src="media/diagrams/team.en.svg" alt="Task → role → executor → model/API → result → independent review; proposal, application, launch, verification and acceptance are separate" loading="lazy"></p>
+<p><code>borshkit team</code> shows models, connection freshness, role assessments, assigned pools and known resources. <code>borshkit team plan &lt;task&gt;</code> explains candidates and reserves a model family for independent review. <code>team propose</code> saves a settings proposal; applying it and starting work are separate actions. Stale data blocks application. Free API access must be checked in the account; unknown balances stay explicit.</p>
+<p>The new <code>design-prompter</code> role writes a visual design brief. Choose a model using a role assessment rather than its brand. <a href="read/reference/team-resources.html">Commands and formats</a> · <a href="read/concepts/team-workspace.html">Team architecture and next stages</a> · <a href="read/discussions/modernization-2026-10-08.html">Audit</a> (Russian documentation).</p>
+<p><code>borshkit setup</code> saves the host, privacy, explicit models and roles. Use <code>--interactive</code> in a terminal or step commands from an app. <a href="read/guide/setup.html">Guide</a> (Russian). Compatibility is separate from role quality; a proposal neither applies settings nor launches work.</p>
+<p><img src="media/diagrams/setup.en.svg" alt="Setup: host, privacy, models, responsibilities and proposal; application, assessments, routing and launch are separate" loading="lazy"></p>
+<p>Passkey approval for settings and critical questions is implemented after trusted enrollment. The release includes <code>assessment</code>, shared budget/WIP, dependencies and checkpoints, explicit <code>monitor start/stop</code>, Gemini CLI/API, a local VSIX and explicit source transfer with fresh verification.</p>
+<p>Version 0.13 supports instruction exports and native VSIX entry points: Copilot returns text without tools; Roo provides task IDs, events and cancellation; Cline provides launch only, with unknown status. Strict privacy blocks the native path. <a href="read/guide/native-integrations.html">Capabilities, installation and limits</a> (Russian). Autopilot is off by default.</p>
+<p><a href="read/guide/team-operations.html">Operations and security limits</a> · <a href="read/discussions/modernization-2026-10-09.html">Implementation audit</a> (Russian). Local tests do not substitute for real model, phone browser, VS Code or exact-commit CI validation.</p>
+<p><img src="media/diagrams/operations.en.svg" alt="Team: assessment, budget, proposal, passkey and separate launch; monitor suggests, transfer requires fresh checks" loading="lazy"></p>
+<blockquote>
+<p><strong>Language note:</strong> Borshkit&#39;s messages are in Russian for now. Every command and flag also has an English name, and this README uses those.</p>
+</blockquote>
+<h2 id="the-main-idea">The main idea<a class="heading-anchor" href="read/reference/overview.en.html#the-main-idea" aria-label="Ссылка на раздел">#</a></h2>
+<p><img src="media/diagrams/flow.en.svg" alt="How a task travels: goal and criteria → agent works in its own copy of the project → checks → review by a different executor → acceptance sheet; outcomes: needs a fix, unverified, waiting for you, accepted; once accepted it is merged into main and pushed" loading="lazy"></p>
+<p>A model says “done”. That is not acceptance yet:</p>
+<ul>
+<li>every piece of evidence is bound to the exact state of the files;</li>
+<li>whatever can be checked automatically is checked automatically;</li>
+<li>whatever cannot becomes a short instruction for you;</li>
+<li>whatever was not checked is called exactly that: <strong>not checked</strong>.</li>
+</ul>
+<h2 id="install">Install<a class="heading-anchor" href="read/reference/overview.en.html#install" aria-label="Ссылка на раздел">#</a></h2>
+<p>You need Node.js 22+ and Git. There are no external dependencies.</p>
+<p><strong>As a Claude Code plugin:</strong></p>
+<div class="code-block"><div class="code-toolbar"><span>команда</span><button type="button" class="code-copy" aria-label="Скопировать блок кода">Копировать</button></div><pre tabindex="0"><code>/plugin marketplace add ParkPavel/borshkit
+/plugin install borshkit@borshkit</code></pre></div><p>The plugin adds the skill, slash commands and protective Claude Code hooks. It does not install global commands on PATH. Install the CLI separately for <code>borshkit</code> and <code>borsch</code> in a terminal, as shown below.</p>
+<p><strong>As a terminal command:</strong></p>
+<div class="code-block"><div class="code-toolbar"><span>sh</span><button type="button" class="code-copy" aria-label="Скопировать блок кода">Копировать</button></div><pre tabindex="0"><code>git clone https://github.com/ParkPavel/borshkit.git
+cd borshkit &amp;&amp; npm link        # adds the borshkit and borsch commands</code></pre></div><p>Or with one command from the latest release, no clone needed:</p>
+<div class="code-block"><div class="code-toolbar"><span>sh</span><button type="button" class="code-copy" aria-label="Скопировать блок кода">Копировать</button></div><pre tabindex="0"><code>npm install -g https://github.com/ParkPavel/borshkit/releases/latest/download/borshkit.tgz</code></pre></div><p>The package is not published to the npm registry; the command above installs the GitHub archive directly.</p>
+<h2 id="your-first-task">Your first task<a class="heading-anchor" href="read/reference/overview.en.html#your-first-task" aria-label="Ссылка на раздел">#</a></h2>
+<div class="code-block"><div class="code-toolbar"><span>sh</span><button type="button" class="code-copy" aria-label="Скопировать блок кода">Копировать</button></div><pre tabindex="0"><code>cd my-project
+borshkit init                                     # borshkit/ folder in the root, hidden from the project&#39;s history
+borshkit executor add codex
+borshkit executor add claude                      # Claude Code on your subscription; you confirm in the terminal
+borshkit task new dark-mode --goal &quot;Dark theme in settings&quot;
+borshkit job run dark-mode --role architect --executor claude     # proposes goals and criteria
+# Review architect-proposal.json; copy agreed goals, criteria and checks into contract.json before continuing.
+borshkit job run dark-mode --role implementer --executor claude   # writes code in a separate copy
+borshkit task verify dark-mode                        # tests, build, linter
+borshkit job run dark-mode --role reviewer --executor codex       # review by a different model family
+borshkit task converge dark-mode                      # acceptance sheet: what is proven, what waits for you
+borshkit task confirm dark-mode C3 yes &quot;saw the dark theme after a restart&quot;
+borshkit merge dark-mode &amp;&amp; borshkit push             # into the main version and to GitHub — only after your “yes”</code></pre></div><p>All commands: <a href="read/reference/commands.html">command reference</a> (Russian and English names side by side). Step-by-step guide (in Russian): <a href="read/guide/quickstart.html">quick start</a>.</p>
+<h2 id="how-it-works">How it works<a class="heading-anchor" href="read/reference/overview.en.html#how-it-works" aria-label="Ссылка на раздел">#</a></h2>
+<p>See the <a href="read/architecture.html">current architecture and support levels</a> and the <a href="read/guide/workflow.html">workflow guide</a>.</p>
+<h2 id="what-it-does">What it does<a class="heading-anchor" href="read/reference/overview.en.html#what-it-does" aria-label="Ссылка на раздел">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>What you get</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Acceptance by goals</strong></td>
+<td><code>auto</code> / <code>model</code> / <code>manual</code> criteria, an acceptance sheet, trust goals for models confirmed by measurement</td>
+</tr>
+<tr>
+<td><strong>Workspace</strong></td>
+<td>the <code>borshkit/</code> folder is an Obsidian vault with its own history; the <code>.gitignore</code> rule is added and checked automatically</td>
+</tr>
+<tr>
+<td><strong>Executors</strong></td>
+<td>Claude Code, Codex (with GPT Image), any OpenAI-compatible API, your own programs; pools with fallback</td>
+</tr>
+<tr>
+<td><strong>21 roles</strong></td>
+<td>architect, developer, reviewers, tester, researcher, designers, design prompt author, README illustrator…</td>
+</tr>
+<tr>
+<td><strong>Autopilot</strong></td>
+<td>routine questions get their default answer after a minute; critical ones stop with a report and a context hand-over</td>
+</tr>
+<tr>
+<td><strong>Dispatcher</strong></td>
+<td>who got the job, who is working, what waits for you: in the terminal, in <code>STATUS.md</code> and in the Claude Code status line</td>
+</tr>
+<tr>
+<td><strong>Research</strong></td>
+<td>sources are stored as copies; the <code>citations</code> check verifies every quote word for word</td>
+</tr>
+<tr>
+<td><strong>Privacy</strong></td>
+<td>three modes; the agent’s task packet is checked for keys and personal data before it leaves; settings change only through proposals</td>
+</tr>
+<tr>
+<td><strong>Git for beginners</strong></td>
+<td>“what changed”, “who changed this”, “put it back” — in plain words, with no destructive commands</td>
+</tr>
+<tr>
+<td><strong>Credits</strong></td>
+<td><code>attribution</code> and <code>readme-assets</code> checks, the full list of contributors of every source</td>
+</tr>
+</tbody></table>
+<h2 id="frontend-design-and-ios">Frontend, design and iOS<a class="heading-anchor" href="read/reference/overview.en.html#frontend-design-and-ios" aria-label="Ссылка на раздел">#</a></h2>
+<p>Borshkit has roles for interfaces, and each one gets only its own skills:</p>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>What it does</th>
+<th>Skills and primary sources</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ui-engineer</code></td>
+<td>builds the interface: every state, motion, keyboard</td>
+<td>Emil Kowalski, ECC; Vercel Web Interface Guidelines, shadcn/ui, Radix, React Aria, WCAG</td>
+</tr>
+<tr>
+<td><code>ios-designer</code></td>
+<td>reviews iPhone and iPad interfaces</td>
+<td><code>apple-design</code>, Liquid Glass, SwiftUI; Apple HIG, SF Symbols</td>
+</tr>
+<tr>
+<td><code>motion-reviewer</code></td>
+<td>reviews animations strictly</td>
+<td><code>review-animations</code>, <code>animation-vocabulary</code>, <code>motion-foundations</code></td>
+</tr>
+<tr>
+<td><code>a11y-reviewer</code></td>
+<td>reviews accessibility against WCAG 2.2 AA</td>
+<td>ECC <code>accessibility</code>, <code>frontend-a11y</code>; WAI-ARIA APG, axe-core</td>
+</tr>
+<tr>
+<td><code>designer</code></td>
+<td>breaks the interface with worst-case data</td>
+<td><code>break-ui</code></td>
+</tr>
+</tbody></table>
+<p>The <a href="read/library/index.html">library</a> holds 3 skill packs (25 skills) and 63 verified links: components, motion, design systems, accessibility, icons, fonts, quality tools. In the terminal: <code>borshkit skills</code> and <code>borshkit library</code>.</p>
+<h2 id="the-recipe">The recipe<a class="heading-anchor" href="read/reference/overview.en.html#the-recipe" aria-label="Ссылка на раздел">#</a></h2>
+<p>Borshkit is borscht: it is cooked from the best ingredients that other people grew and shared openly.</p>
+<blockquote>
+<p>Some ingredients were cooked twice. Spec Kit was first stewed in Claudex, then simmered again as a specification check, and only then finished in Borshkit. Everything reached the table in fine shape: licenses kept, authors named.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Ingredient</th>
+<th>What was taken</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/ParkPavel/claudex">Claudex</a></td>
+<td>the core: task contract, evidence, convergence, CLI adapters</td>
+</tr>
+<tr>
+<td><a href="https://github.com/DietrichGebert/ponytail">Ponytail</a> (<a href="https://github.com/sponsors/DietrichGebert">sponsor</a>)</td>
+<td>the “lazy senior” — do the minimum, keep it simple</td>
+</tr>
+<tr>
+<td><a href="https://github.com/emilkowalski/skills">emilkowalski/skills</a></td>
+<td>14 design-engineering and motion skills</td>
+</tr>
+<tr>
+<td><a href="https://github.com/affaan-m/ECC">ECC</a> (<a href="https://github.com/sponsors/affaan-m">sponsor</a>)</td>
+<td>9 frontend skills, the idea of modules</td>
+</tr>
+<tr>
+<td><a href="https://github.com/github/spec-kit">Spec Kit</a></td>
+<td>the path “intent → specification → tasks → convergence” (through Claudex, twice)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/obra/superpowers">Superpowers</a> (<a href="https://github.com/sponsors/obra">sponsor</a>)</td>
+<td>a separate copy for the agent, test before the fix (through Claudex)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/Graphify-Labs/graphify">Graphify</a> (<a href="https://github.com/sponsors/safishamsi">sponsor</a>)</td>
+<td>provenance of links in a code map (idea, through Claudex)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/kvyb/prompt-agent">prompt-agent</a></td>
+<td>scoring past jobs (idea, through Claudex)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/justinwetch/HIGAgentSkills">HIGAgentSkills</a></td>
+<td>routing through Apple HIG (link only)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/panniantong/agent-reach">Agent Reach</a></td>
+<td>web collection routes for the researcher</td>
+</tr>
+<tr>
+<td><a href="https://github.com/raullenchai/free-llm-api-resources">free-llm-api-resources</a></td>
+<td>a pointer when choosing free APIs (link only)</td>
+</tr>
+</tbody></table>
+<p>The full recipe with versions and licenses is in <a href="read/ingredients.html">docs/ingredients.md</a> (Russian). <strong>All contributors</strong> of these projects, 1262 entries: <a href="read/project/CONTRIBUTORS-REFERENCES.html">CONTRIBUTORS-REFERENCES.md</a>. Thank you, every one of you!</p>
+<h2 id="limits">Limits<a class="heading-anchor" href="read/reference/overview.en.html#limits" aria-label="Ссылка на раздел">#</a></h2>
+<ul>
+<li>Borshkit checks the task packet it sends to an agent. It does not see what Claude Code or Codex read from the files of the project copy afterwards: ignored files (<code>.env</code>) are not in the copy, but the agent can read every other file.</li>
+<li>Task checks (tests, build) run with your environment, because tests sometimes need keys. The environment filter applies only to executors.</li>
+<li>The knowledge map understands links in JS/TS code and Markdown. Swift, Python, Go and other languages are not mapped yet; acceptance does not depend on it.</li>
+<li>The Claude Code, Codex and Gemini adapters are tested against fake programs with the same event format. The flags of an installed Claude Code have been checked. CI does not run real models.</li>
+<li>Images through Codex (GPT Image) are not tested yet: <code>borshkit executor probe codex</code> shows it on your subscription.</li>
+<li>Whether the Obsidian graph shows links from note properties is not tested. That is why links are repeated as ordinary links in the text.</li>
+<li>Borshkit&#39;s messages are in Russian only for now; commands and flags are in Russian and English.</li>
+<li><code>node:sqlite</code> is still experimental in Node 22.</li>
+<li>Pattern-based detection of keys and personal data does not catch everything.</li>
+</ul>
+<h2 id="documentation">Documentation<a class="heading-anchor" href="read/reference/overview.en.html#documentation" aria-label="Ссылка на раздел">#</a></h2>
+<p>The documentation is in Russian for now:</p>
+<ul>
+<li><a href="read/index.html">Documentation map</a> — quick start, concepts, reference.</li>
+<li><a href="read/spec.html">Specification</a> — the original analysis and decisions D1–D22.</li>
+<li><a href="read/project/CHANGELOG.html">Changelog</a> · <a href="read/project/CONTRIBUTING.html">Contributing</a> · <a href="read/project/SECURITY.html">Security</a> · <a href="read/project/AGENTS.html">For agent developers</a></li>
+</ul>
+<h2 id="development">Development<a class="heading-anchor" href="read/reference/overview.en.html#development" aria-label="Ссылка на раздел">#</a></h2>
+<div class="code-block"><div class="code-toolbar"><span>sh</span><button type="button" class="code-copy" aria-label="Скопировать блок кода">Копировать</button></div><pre tabindex="0"><code>npm run verify   # static checks and all tests; CI runs them on Linux, Windows and macOS</code></pre></div><h2 id="author">Author<a class="heading-anchor" href="read/reference/overview.en.html#author" aria-label="Ссылка на раздел">#</a></h2>
+<p><strong>Pavel Park</strong> — <a href="https://github.com/ParkPavel">GitHub</a> · <a href="https://t.me/parkpavel_chigon">Telegram channel</a></p>
+<h2 id="support-the-project">Support the project<a class="heading-anchor" href="read/reference/overview.en.html#support-the-project" aria-label="Ссылка на раздел">#</a></h2>
+<p>Borshkit is free and open source. If it helps you, support its development with a donation via Tribute.</p>
+<p><a href="https://web.tribute.tg/d/Sh8"><img src="https://img.shields.io/badge/Tribute-Donate-e8554e?style=for-the-badge&amp;logo=telegram&amp;logoColor=white" alt="Donate" loading="lazy"></a></p>
+
+<p>From the terminal: <code>borshkit support</code> prints the link and offers to open it in your browser. A star on GitHub and telling your colleagues help a lot too.</p>
+<h2 id="license">License<a class="heading-anchor" href="read/reference/overview.en.html#license" aria-label="Ссылка на раздел">#</a></h2>
+<p>Apache-2.0 — see <a href="https://github.com/ParkPavel/borshkit/blob/main/LICENSE">LICENSE</a> and <a href="https://github.com/ParkPavel/borshkit/blob/main/NOTICE">NOTICE</a>. The skills in <code>packs/</code> are MIT, each pack with its author&#39;s license.</p>
+<h2 id="связи">Связи<a class="heading-anchor" href="read/reference/overview.en.html#связи" aria-label="Ссылка на раздел">#</a></h2>
+<ul>
+<li><a href="read/architecture.html">Текущая архитектура</a></li>
+<li><a href="read/roadmap.html">Дорожная карта</a></li>
+</ul>
+</article><nav class="page-neighbors" aria-label="Предыдущая и следующая статьи"><span></span><span></span></nav><footer class="article-footer"><p>Не хватает ответа? <a href="https://github.com/ParkPavel/borshkit/issues">Сообщи об этом</a>.</p><a href="index.html">К обзору продукта</a></footer></main><aside class="docs-toc" aria-label="В этой статье"><p>В этой статье</p><nav><a href="read/reference/overview.en.html#a-visible-team" class="toc-level-2">A visible team</a><a href="read/reference/overview.en.html#the-main-idea" class="toc-level-2">The main idea</a><a href="read/reference/overview.en.html#install" class="toc-level-2">Install</a><a href="read/reference/overview.en.html#your-first-task" class="toc-level-2">Your first task</a><a href="read/reference/overview.en.html#how-it-works" class="toc-level-2">How it works</a><a href="read/reference/overview.en.html#what-it-does" class="toc-level-2">What it does</a><a href="read/reference/overview.en.html#frontend-design-and-ios" class="toc-level-2">Frontend, design and iOS</a><a href="read/reference/overview.en.html#the-recipe" class="toc-level-2">The recipe</a><a href="read/reference/overview.en.html#limits" class="toc-level-2">Limits</a><a href="read/reference/overview.en.html#documentation" class="toc-level-2">Documentation</a><a href="read/reference/overview.en.html#development" class="toc-level-2">Development</a><a href="read/reference/overview.en.html#author" class="toc-level-2">Author</a><a href="read/reference/overview.en.html#support-the-project" class="toc-level-2">Support the project</a><a href="read/reference/overview.en.html#license" class="toc-level-2">License</a><a href="read/reference/overview.en.html#связи" class="toc-level-2">Связи</a></nav></aside></div><p class="reader-status sr-only" id="reader-status" role="status"></p></body></html>

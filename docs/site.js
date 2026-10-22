@@ -21,7 +21,7 @@ function select(index) {
   document.querySelector('#layer-meta').textContent = `${mode === 'current' ? 'РЕАЛИЗОВАНО' : 'ПЛАН'} / ${String(index + 1).padStart(2, '0')}`;
   document.querySelector('#layer-title').textContent = item[1];
   document.querySelector('#layer-description').textContent = item[2];
-  document.querySelector('#layer-link').href = repo + item[3];
+  document.querySelector('#layer-link').href = item[3].startsWith('docs/') ? 'read/' + item[3].slice(5).replace(/\.md$/, '.html') : repo + item[3];
   document.querySelector('#layer-link').textContent = mode === 'current' ? 'Посмотреть реализацию' : 'Открыть дорожную карту';
   document.querySelector('#layer-boundary').textContent = item[4];
 }

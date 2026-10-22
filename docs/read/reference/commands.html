@@ -1,0 +1,373 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base href="../../"><meta name="description" content="Все команды — документация Borshkit"><meta name="theme-color" content="#141619"><title>Все команды · Borshkit</title><link rel="canonical" href="https://parkpavel.github.io/borshkit/read/reference/commands.html"><link rel="stylesheet" href="site.css"><link rel="stylesheet" href="reader.css"><script src="reader.js" defer></script></head><body class="docs-page"><a class="skip" href="read/reference/commands.html#article">К статье</a><header class="docs-header"><a class="brand" href="index.html">borshkit<span class="brand-dot">.</span></a><a class="docs-label" href="read/index.html">Документация <span>0.13</span></a><nav aria-label="Навигация проекта"><a href="index.html">Обзор</a><a href="https://github.com/ParkPavel/borshkit/releases/tag/0.13.0">Скачать</a><a class="support-link" href="https://web.tribute.tg/d/Sh8">Поддержать</a><a href="https://github.com/ParkPavel/borshkit">GitHub</a></nav></header><div class="docs-tools"><button type="button" id="menu-toggle" aria-controls="docs-nav" aria-expanded="false">Разделы</button><label class="search-label" for="docs-search">Найти в документации</label><input id="docs-search" type="search" placeholder="Задача, проверка, Copilot…" autocomplete="off" aria-controls="search-results"><span class="search-shortcut" aria-hidden="true">/</span></div><div class="search-output" id="search-results" aria-live="polite" hidden></div><div class="docs-layout"><aside id="docs-nav" class="docs-sidebar"><nav aria-label="Разделы документации"><section><h2>Начать здесь</h2><a href="read/index.html">Документация Borshkit</a><a href="read/guide/quickstart.html">Быстрый старт: первая задача</a><a href="read/guide/workflow.html">Руководство: от цели до результата</a><a href="read/guide/setup.html">Мастер настройки команды</a></section><section><h2>Работать с задачами</h2><a href="read/guide/handoff.html">Передать работу другому харнесу</a><a href="read/guide/native-integrations.html">Copilot, Roo и Cline: нативный запуск</a><a href="read/guide/team-operations.html">Работа команды, телефон и перенос</a><a href="read/concepts/acceptance.html">Приёмка по целям</a><a href="read/concepts/evidence.html">Доказательства и устаревание</a><a href="read/concepts/executors.html">Исполнители, пулы и автопилот</a><a href="read/concepts/privacy.html">Приватность и настройки</a><a href="read/concepts/knowledge.html">База знаний: заметки, связи, SQL</a><a href="read/concepts/glossary.html">Словарь</a></section><section><h2>Справочник</h2><a href="read/reference/commands.html" aria-current="page">Все команды</a><a href="read/reference/contract.html">Формат задачи (`contract.json`)</a><a href="read/reference/team-resources.html">Команда, оценки ролей и ресурсы</a><a href="read/architecture.html">Текущая архитектура</a><a href="read/roadmap.html">Статус пяти направлений — 0.13.0</a><a href="read/release.html">Как выпускается Borshkit</a><a href="read/ingredients.html">Рецепт: из чего сварен Borshkit</a><a href="read/library/index.html">Библиотека: навыки и проверенные ссылки</a><a href="read/project/SECURITY.html">Безопасность</a><a href="read/project/CONTRIBUTING.html">Как помочь Borshkit</a><a href="read/project/CHANGELOG.html">Изменения</a></section><details><summary>Ещё материалы</summary><a href="read/project/AGENTS.html">Для агентов, которые разрабатывают Borshkit</a><a href="read/project/CONTRIBUTORS-REFERENCES.html">Контрибьюторы проектов, на которых построен Borshkit</a><a href="read/project/README.de.html">Borshkit</a><a href="read/project/README.en.html">Borshkit</a><a href="read/project/README.fr.html">Borshkit</a><a href="read/project/README.ko.html">Borshkit</a><a href="read/project/README.html">Borshkit</a><a href="read/project/README.zh-TW.html">Borshkit</a><a href="read/project/design-qa.html">Проверка продуктового оформления</a><a href="read/concepts/research.html">Исследования: источники и цитаты</a><a href="read/concepts/roles-and-skills.html">Роли и навыки</a><a href="read/concepts/space.html">Пространство и Git простыми словами</a><a href="read/concepts/team-workspace.html">Borshkit как профессиональная команда</a><a href="read/guide/website.html">Сайт и документация как единый продукт</a><a href="read/reference/overview.de.html">Details und Grenzen — 0.13</a><a href="read/reference/overview.en.html">Details and limitations — 0.13</a><a href="read/reference/overview.fr.html">Détails et limites — 0.13</a><a href="read/reference/overview.ko.html">상세 설명과 한계 — 0.13</a><a href="read/reference/overview.ru.html">Подробности и ограничения — 0.13</a><a href="read/reference/overview.zh-TW.html">詳細資料與限制 — 0.13</a><a href="read/spec.html">Borshkit (Борщкит) — Modular AI Workspace</a><a href="read/verification-0.13.html">Проверка выпуска 0.13.0</a><a href="read/verification-2026-10-20.html">Проверка модернизации — 20 октября 2026</a></details><details><summary>История и отчёты</summary><a href="read/discussions/audit-2026-10-07.html">Ответ на независимый аудит 0.10.1</a><a href="read/discussions/modernization-2026-10-08.html">Аудит и программа модернизации — 2026-10-08</a><a href="read/discussions/modernization-2026-10-09.html">Контроль модернизации — 2026-10-09</a><a href="read/discussions/professionalism-2026-10-22.html">Аудит оформления и достоверности — 22 октября 2026</a><a href="read/discussions/space-history-backup.html">Черновик обсуждения: резервная копия истории пространства</a><a href="read/graph/README.html">Граф документации</a></details></nav><a class="sidebar-support" href="https://web.tribute.tg/d/Sh8"><strong>Поддержать Borshkit</strong><span>Помоги развивать открытый инструмент.</span></a></aside><main id="article" tabindex="-1" class="docs-article"><div class="article-meta"><span>ДОКУМЕНТАЦИЯ</span><a href="https://github.com/ParkPavel/borshkit/blob/main/docs/reference/commands.md">Исходник на GitHub</a></div><article lang="ru"><h1 id="все-команды">Все команды<a class="heading-anchor" href="read/reference/commands.html#все-команды" aria-label="Ссылка на раздел">#</a></h1>
+<p>Мастер: <code>borshkit мастер [--диалог]</code>, <code>мастер вход &lt;среда&gt;</code>, <code>мастер безопасность строгий|умеренный</code>, <code>мастер среда &lt;исполнитель&gt; --модель &lt;id&gt; --данные &lt;политика&gt;</code> или <code>--файл &lt;манифест.json&gt;</code>, <code>мастер роли &lt;имена-через-запятую&gt;</code>, <code>мастер предложить</code>, <code>мастер заново</code>. Английские имена: <code>setup host|privacy|executor|roles|propose|reset</code>, <code>--interactive</code>. Выбор и предложение доступны без TTY; применение ослабления требует человека в терминале. <a href="read/guide/setup.html">Руководство</a>.</p>
+<p>Команда и ресурсы: <code>borshkit команда</code>, <code>команда план|предложить &lt;задача&gt; --роли architect,implementer,reviewer</code>, <code>ресурсы записать &lt;исполнитель&gt; --файл resources.json</code>, <code>исполнитель отпечаток &lt;имя&gt;</code>, <code>исполнитель оценить &lt;имя&gt; --роль &lt;роль&gt; --файл assessments/role.md --результат PASS|FAIL --срок &lt;ISO-дата&gt;</code>. Английские имена: <code>team show|plan|propose</code>, <code>resources record</code>, <code>executor fingerprint|qualify</code>. Форматы и ограничения — <a href="read/reference/team-resources.html">Команда и ресурсы</a>.</p>
+<p>У каждой команды есть русское и английское имя. Флаги тоже: <code>--цель</code> = <code>--goal</code>. Сообщения Borshkit пока только на русском. <code>--json</code> у любой команды даёт ответ для программ. <code>borshkit помощь</code> (<code>help</code>) печатает краткую справку.</p>
+<p>Команда <code>borsch</code> — то же самое, что <code>borshkit</code>.</p>
+<h2 id="пространство">Пространство<a class="heading-anchor" href="read/reference/commands.html#пространство" aria-label="Ссылка на раздел">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>Команда</th>
+<th>English</th>
+<th>Что делает</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>начать [--проект путь] [--папка имя] [--только-локально]</code></td>
+<td><code>init</code></td>
+<td>создаёт <code>borshkit/</code> в корне проекта и прячет её от истории проекта</td>
+</tr>
+<tr>
+<td><code>статус</code></td>
+<td><code>status</code></td>
+<td>режим, задачи, работы, что ждёт тебя</td>
+</tr>
+<tr>
+<td><code>статус --следить</code> / <code>--строка</code></td>
+<td><code>status --watch</code> / <code>--line</code></td>
+<td>живая диспетчерская / строка для статуса Claude Code</td>
+</tr>
+<tr>
+<td><code>доктор</code></td>
+<td><code>doctor</code></td>
+<td>проверить окружение и пространство; заодно — установлен ли Agent Reach</td>
+</tr>
+<tr>
+<td><code>сохранить &quot;что изменилось&quot;</code></td>
+<td><code>save</code></td>
+<td>точка возврата в истории пространства</td>
+</tr>
+<tr>
+<td><code>поддержать [--открыть]</code></td>
+<td><code>support [--open]</code></td>
+<td>ссылка на донат через Tribute; в терминале предлагает открыть её в браузере</td>
+</tr>
+</tbody></table>
+<h2 id="задачи-и-приёмка">Задачи и приёмка<a class="heading-anchor" href="read/reference/commands.html#задачи-и-приёмка" aria-label="Ссылка на раздел">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>Команда</th>
+<th>English</th>
+<th>Что делает</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>задача новая &lt;имя&gt; --цель &quot;…&quot; [--вид feature|bug|maintenance|research] [--база &lt;ref&gt;]</code></td>
+<td><code>task new</code></td>
+<td>новая задача с контрактом; <code>--база</code> — исходный снимок и копия задачи от этого коммита, а не от HEAD проекта</td>
+</tr>
+<tr>
+<td><code>задача анализ &lt;имя&gt;</code></td>
+<td><code>task check</code></td>
+<td>понятно ли описаны цели и критерии; что останется за тобой</td>
+</tr>
+<tr>
+<td><code>задача проверить &lt;имя&gt; [проверка …]</code></td>
+<td><code>task verify</code></td>
+<td>запустить автоматические проверки</td>
+</tr>
+<tr>
+<td><code>задача отзыв &lt;имя&gt; --результат файл.json --исполнитель &lt;имя&gt; [--семейство openai]</code></td>
+<td><code>task review</code></td>
+<td>импортировать ревью из файла; его PASS остаётся за тобой</td>
+</tr>
+<tr>
+<td><code>задача итог &lt;имя&gt;</code></td>
+<td><code>task converge</code></td>
+<td>сверить и написать лист приёмки</td>
+</tr>
+<tr>
+<td><code>задача подтвердить &lt;имя&gt; &lt;критерий&gt; да|нет &quot;что видел&quot;</code></td>
+<td><code>task confirm</code></td>
+<td>твой ответ по пункту листа</td>
+</tr>
+<tr>
+<td><code>задача принять &lt;имя&gt; [&quot;заметка&quot;]</code></td>
+<td><code>task accept</code></td>
+<td>общая приёмка для политики <code>manual</code></td>
+</tr>
+<tr>
+<td><code>задача обновить &lt;имя&gt;</code></td>
+<td><code>task update</code></td>
+<td>влить текущую основную версию в копию задачи перед сборкой</td>
+</tr>
+</tbody></table>
+<h2 id="исполнители-роли-работы">Исполнители, роли, работы<a class="heading-anchor" href="read/reference/commands.html#исполнители-роли-работы" aria-label="Ссылка на раздел">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>Команда</th>
+<th>English</th>
+<th>Что делает</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>исполнители</code></td>
+<td><code>executors</code></td>
+<td>кто может работать и что показала проверка</td>
+</tr>
+<tr>
+<td><code>исполнитель добавить claude|codex [--данные no-train|trains|local]</code></td>
+<td><code>executor add</code></td>
+<td>подписочный CLI одной командой</td>
+</tr>
+<tr>
+<td><code>исполнитель добавить &lt;имя&gt; --файл манифест.json</code></td>
+<td><code>executor add</code></td>
+<td>API или своя программа</td>
+</tr>
+<tr>
+<td><code>исполнитель проверить &lt;имя&gt;</code></td>
+<td><code>executor probe</code></td>
+<td>сверить программу или API с тем, что нужно</td>
+</tr>
+<tr>
+<td><code>роли</code></td>
+<td><code>roles</code></td>
+<td>роли, их права и навыки</td>
+</tr>
+<tr>
+<td><code>навыки [пакет]</code></td>
+<td><code>skills</code></td>
+<td>пакеты навыков и когда какой нужен</td>
+</tr>
+<tr>
+<td><code>библиотека [категория]</code></td>
+<td><code>library</code></td>
+<td>проверенные ссылки для фронтенда и дизайна</td>
+</tr>
+<tr>
+<td><code>работа запустить &lt;задача&gt; --роль &lt;роль&gt; --исполнитель &lt;имя&gt; | --пул &lt;пул&gt;</code></td>
+<td><code>job run</code></td>
+<td>поручить работу</td>
+</tr>
+<tr>
+<td>… <code>[--линза lite|full|ultra] [--навыки a/b,c/d] [--файл путь] [--в-папке]</code></td>
+<td><code>--lens</code>, <code>--skills</code>, <code>--file</code>, <code>--in-place</code></td>
+<td>«ленивый сеньор», доп. навыки, файл картинки, писать прямо в папку проекта без Git (с подтверждением)</td>
+</tr>
+<tr>
+<td><code>работа список</code></td>
+<td><code>job list</code></td>
+<td>последние работы</td>
+</tr>
+<tr>
+<td><code>работа продолжить &lt;работа&gt; [--исполнитель | --пул]</code></td>
+<td><code>job resume</code></td>
+<td>продолжить после остановки, с передачей контекста</td>
+</tr>
+<tr>
+<td><code>вопросы</code></td>
+<td><code>question</code></td>
+<td>открытые вопросы</td>
+</tr>
+<tr>
+<td><code>вопрос ответить &lt;номер&gt; &lt;вариант&gt;</code></td>
+<td><code>question answer</code></td>
+<td>ответ; критические — только в терминале</td>
+</tr>
+</tbody></table>
+<h2 id="источники-и-знания">Источники и знания<a class="heading-anchor" href="read/reference/commands.html#источники-и-знания" aria-label="Ссылка на раздел">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>Команда</th>
+<th>English</th>
+<th>Что делает</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>материал добавить &lt;файл&gt; | --url … [--через jina] | --текст &quot;…&quot; | --команда &quot;…&quot;</code></td>
+<td><code>material add</code></td>
+<td>сохранить источник</td>
+</tr>
+<tr>
+<td><code>материал список</code> / <code>обновить &lt;id&gt;</code></td>
+<td><code>material list</code> / <code>refresh</code></td>
+<td>список / перечитать страницу</td>
+</tr>
+<tr>
+<td><code>знания собрать</code></td>
+<td><code>knowledge build</code></td>
+<td>заметки со связями и SQL-индекс</td>
+</tr>
+<tr>
+<td><code>знания sql &quot;SELECT …&quot;</code></td>
+<td><code>knowledge sql</code></td>
+<td>запрос только на чтение</td>
+</tr>
+<tr>
+<td><code>знания найти &lt;слова&gt;</code></td>
+<td><code>knowledge search</code></td>
+<td>полнотекстовый поиск</td>
+</tr>
+<tr>
+<td><code>знания контекст &lt;задача&gt;</code></td>
+<td><code>knowledge context</code></td>
+<td>что связано с задачей</td>
+</tr>
+<tr>
+<td><code>знания урок &lt;задача&gt; &quot;что поняли&quot;</code></td>
+<td><code>knowledge lesson</code></td>
+<td>урок из принятой задачи</td>
+</tr>
+<tr>
+<td><code>знания экспорт [папка]</code> / <code>--sql файл.sql</code></td>
+<td><code>knowledge export</code></td>
+<td>заметки для GitHub / граф как SQL</td>
+</tr>
+</tbody></table>
+<h2 id="приватность-и-настройки">Приватность и настройки<a class="heading-anchor" href="read/reference/commands.html#приватность-и-настройки" aria-label="Ссылка на раздел">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>Команда</th>
+<th>English</th>
+<th>Что делает</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>приватность [умеренный|строгий|эксперимент]</code></td>
+<td><code>privacy [moderate|strict|experiment]</code></td>
+<td>показать или сменить режим</td>
+</tr>
+<tr>
+<td><code>настройки показать</code></td>
+<td><code>settings show</code></td>
+<td>текущие настройки</td>
+</tr>
+<tr>
+<td><code>настройки предложить &lt;файл.json&gt; --от &lt;кто&gt; --причина &quot;…&quot;</code></td>
+<td><code>settings propose</code></td>
+<td>предложение изменений</td>
+</tr>
+<tr>
+<td><code>настройки применить &lt;номер&gt;</code></td>
+<td><code>settings apply</code></td>
+<td>применить; ослабление — только в терминале</td>
+</tr>
+<tr>
+<td><code>настройки принять</code> / <code>вернуть</code></td>
+<td><code>settings accept</code> / <code>revert</code></td>
+<td>ручная правка в обход: принять или откатить</td>
+</tr>
+<tr>
+<td><code>эксперимент начать</code> / <code>ключ &lt;ИМЯ&gt;</code> / <code>завершить [--ключи-отозваны]</code></td>
+<td><code>experiment start</code> / <code>key</code> / <code>end</code></td>
+<td>сессия с одноразовыми ключами</td>
+</tr>
+</tbody></table>
+<h2 id="git-простыми-словами">Git простыми словами<a class="heading-anchor" href="read/reference/commands.html#git-простыми-словами" aria-label="Ссылка на раздел">#</a></h2>
+<p>Добавь <code>пространство</code> (<code>space</code>), чтобы говорить об истории папки <code>borshkit/</code>, а не проекта.</p>
+<table>
+<thead>
+<tr>
+<th>Команда</th>
+<th>English</th>
+<th>Что делает</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>история [--сколько 10]</code> / <code>история объяснить</code></td>
+<td><code>history</code> / <code>history explain</code></td>
+<td>что было сделано / что такое Git, на примерах твоего проекта</td>
+</tr>
+<tr>
+<td><code>что-изменилось</code></td>
+<td><code>changes</code></td>
+<td>изменения с последнего сохранения</td>
+</tr>
+<tr>
+<td><code>кто-что &lt;файл&gt;</code></td>
+<td><code>who</code></td>
+<td>кто и когда менял файл</td>
+</tr>
+<tr>
+<td><code>вернуть &lt;файл&gt; [--к &lt;сохранение&gt;]</code></td>
+<td><code>restore</code></td>
+<td>вернуть файл; сначала копия в <code>backups/</code></td>
+</tr>
+<tr>
+<td><code>сохранить-проект &quot;что изменилось&quot;</code></td>
+<td><code>save-project</code></td>
+<td>коммит проекта с проверкой на ключи</td>
+</tr>
+<tr>
+<td><code>собрать &lt;задача&gt;</code></td>
+<td><code>merge</code></td>
+<td>принятую работу — в основную версию; копия должна содержать текущую основную версию; только ты</td>
+</tr>
+<tr>
+<td><code>отправить [--удалённый origin]</code></td>
+<td><code>push</code></td>
+<td>на GitHub без перезаписи чужого; только ты</td>
+</tr>
+</tbody></table>
+<h2 id="атрибуция-и-оценка">Атрибуция и оценка<a class="heading-anchor" href="read/reference/commands.html#атрибуция-и-оценка" aria-label="Ссылка на раздел">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>Команда</th>
+<th>English</th>
+<th>Что делает</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>атрибуция проверить [--манифест …] [--readme …]</code></td>
+<td><code>attribution probe</code></td>
+<td>благодарности, лицензии, ссылки на поддержку</td>
+</tr>
+<tr>
+<td><code>атрибуция картинки [--readme …]</code></td>
+<td><code>attribution assets</code></td>
+<td>картинки README: есть, с alt, не тяжёлые</td>
+</tr>
+<tr>
+<td><code>атрибуция контрибьюторы [владелец/репо …] [--клоны путь,…]</code></td>
+<td><code>attribution contributors</code></td>
+<td>список всех контрибьюторов референсов</td>
+</tr>
+<tr>
+<td><code>оценка запустить --скрытые скрытые.json</code></td>
+<td><code>eval run</code></td>
+<td>ложные PASS, вмешательства, расход</td>
+</tr>
+<tr>
+<td><code>оценка доверие &lt;метка&gt; [--семейство openai] [--порог 0.05]</code></td>
+<td><code>eval trust</code></td>
+<td>можно ли верить PASS модели этого семейства по этой метке</td>
+</tr>
+<tr>
+<td><code>hook session-start|pre-tool</code></td>
+<td><code>hook</code></td>
+<td>вызывается плагином Claude Code</td>
+</tr>
+</tbody></table>
+<h2 id="команда-согласие-и-перенос-0120">Команда, согласие и перенос (0.12.0)<a class="heading-anchor" href="read/reference/commands.html#команда-согласие-и-перенос-0120" aria-label="Ссылка на раздел">#</a></h2>
+<p>| Команда | Что делает |
+|---|---|
+| <code>assessment run &lt;executor&gt; --file suite.json</code> / <code>propose --file report.json</code> | явный стенд и отдельное предложение квалификации |
+| <code>budget show</code> / <code>propose --file policy.json</code> / <code>reconcile &lt;id&gt; --file usage.json</code> / <code>recover</code> | общий расход, пределы, сверка владельцем и UNKNOWN после обрыва |
+| <code>coordination dependencies &lt;task&gt;</code> / <code>consolidate &lt;tasks…&gt;</code> | проверенные зависимости и снимок консолидации |
+| <code>approval devices</code> / <code>enroll &lt;id&gt; --file descriptor.json</code> / <code>revoke &lt;id&gt;</code> | доверенное сопряжение и отзыв владельцем |
+| <code>approval serve --origin https://… --trusted-proxy</code> | явный локальный сервис за доверенным TLS proxy |
+| <code>approval challenge --file action.json</code> / <code>apply --file assertion.json</code> | подписанное точное действие без TTY после сопряжения |
+| <code>monitor status\|start\|stop\|run\|once</code> | управляемый процесс, наблюдения и необязательные предложения |
+| <code>integration export --host codex\|claude\|gemini\|copilot\|roo\|cline</code> | инструкции среды без перезаписи пользовательского файла |
+| <code>portable export --file paths.json --out capsule.json</code> / <code>import --file capsule.json</code> | явные исходники с SHA; настройки как предложение, новые проверки обязательны |</p>
+<p>Подробные схемы, команды и ограничения: <a href="read/guide/team-operations.html">операционное руководство</a>. Русские имена: <code>стенд</code>, <code>бюджет</code>, <code>координация</code>, <code>подтверждение</code>, <code>монитор</code>, <code>интеграция</code>, <code>перенос</code>.</p>
+<h2 id="связи">Связи<a class="heading-anchor" href="read/reference/commands.html#связи" aria-label="Ссылка на раздел">#</a></h2>
+<ul>
+<li>Первая задача по шагам: <a href="read/guide/quickstart.html">Быстрый старт</a></li>
+<li>Поля контракта: <a href="read/reference/contract.html">Формат задачи</a></li>
+</ul>
+<h2 id="передача-и-нативные-среды-0130">Передача и нативные среды (0.13.0)<a class="heading-anchor" href="read/reference/commands.html#передача-и-нативные-среды-0130" aria-label="Ссылка на раздел">#</a></h2>
+<ul>
+<li><code>передача export &lt;задача&gt; --файл пакет.json [--budget 12000]</code> / <code>handoff export</code> — пакет задачи с контекстом и происхождением.</li>
+<li><code>передача import &lt;новая-задача&gt; --файл пакет.json</code> / <code>handoff import</code> — новая непроверенная задача; приёмка не импортируется.</li>
+<li><code>интеграция prepare &lt;задача&gt; --host copilot|roo|cline</code> — отдельная Git-копия и запрос для VSIX; не запускает модель.</li>
+<li><code>интеграция finish &lt;задача&gt;</code> — человек подтверждает остановку нативных сред и освобождает копию; приёмка не меняется.</li>
+<li>VS Code: <code>borshkit.nativeStart</code>, <code>borshkit.nativeCancel</code>, <code>borshkit.nativeStatus</code>. Cline не предоставляет достоверную отмену/статус; см. <a href="read/guide/native-integrations.html">границы</a>.</li>
+</ul>
+</article><nav class="page-neighbors" aria-label="Предыдущая и следующая статьи"><a href="read/concepts/glossary.html"><small>Назад</small>Словарь</a><a href="read/reference/contract.html"><small>Дальше</small>Формат задачи (`contract.json`)</a></nav><footer class="article-footer"><p>Не хватает ответа? <a href="https://github.com/ParkPavel/borshkit/issues">Сообщи об этом</a>.</p><a href="index.html">К обзору продукта</a></footer></main><aside class="docs-toc" aria-label="В этой статье"><p>В этой статье</p><nav><a href="read/reference/commands.html#пространство" class="toc-level-2">Пространство</a><a href="read/reference/commands.html#задачи-и-приёмка" class="toc-level-2">Задачи и приёмка</a><a href="read/reference/commands.html#исполнители-роли-работы" class="toc-level-2">Исполнители, роли, работы</a><a href="read/reference/commands.html#источники-и-знания" class="toc-level-2">Источники и знания</a><a href="read/reference/commands.html#приватность-и-настройки" class="toc-level-2">Приватность и настройки</a><a href="read/reference/commands.html#git-простыми-словами" class="toc-level-2">Git простыми словами</a><a href="read/reference/commands.html#атрибуция-и-оценка" class="toc-level-2">Атрибуция и оценка</a><a href="read/reference/commands.html#команда-согласие-и-перенос-0120" class="toc-level-2">Команда, согласие и перенос (0.12.0)</a><a href="read/reference/commands.html#связи" class="toc-level-2">Связи</a><a href="read/reference/commands.html#передача-и-нативные-среды-0130" class="toc-level-2">Передача и нативные среды (0.13.0)</a></nav></aside></div><p class="reader-status sr-only" id="reader-status" role="status"></p></body></html>

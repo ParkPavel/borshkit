@@ -1,0 +1,162 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base href="../../"><meta name="description" content="Работа команды, телефон и перенос — документация Borshkit"><meta name="theme-color" content="#141619"><title>Работа команды, телефон и перенос · Borshkit</title><link rel="canonical" href="https://parkpavel.github.io/borshkit/read/guide/team-operations.html"><link rel="stylesheet" href="site.css"><link rel="stylesheet" href="reader.css"><script src="reader.js" defer></script></head><body class="docs-page"><a class="skip" href="read/guide/team-operations.html#article">К статье</a><header class="docs-header"><a class="brand" href="index.html">borshkit<span class="brand-dot">.</span></a><a class="docs-label" href="read/index.html">Документация <span>0.13</span></a><nav aria-label="Навигация проекта"><a href="index.html">Обзор</a><a href="https://github.com/ParkPavel/borshkit/releases/tag/0.13.0">Скачать</a><a class="support-link" href="https://web.tribute.tg/d/Sh8">Поддержать</a><a href="https://github.com/ParkPavel/borshkit">GitHub</a></nav></header><div class="docs-tools"><button type="button" id="menu-toggle" aria-controls="docs-nav" aria-expanded="false">Разделы</button><label class="search-label" for="docs-search">Найти в документации</label><input id="docs-search" type="search" placeholder="Задача, проверка, Copilot…" autocomplete="off" aria-controls="search-results"><span class="search-shortcut" aria-hidden="true">/</span></div><div class="search-output" id="search-results" aria-live="polite" hidden></div><div class="docs-layout"><aside id="docs-nav" class="docs-sidebar"><nav aria-label="Разделы документации"><section><h2>Начать здесь</h2><a href="read/index.html">Документация Borshkit</a><a href="read/guide/quickstart.html">Быстрый старт: первая задача</a><a href="read/guide/workflow.html">Руководство: от цели до результата</a><a href="read/guide/setup.html">Мастер настройки команды</a></section><section><h2>Работать с задачами</h2><a href="read/guide/handoff.html">Передать работу другому харнесу</a><a href="read/guide/native-integrations.html">Copilot, Roo и Cline: нативный запуск</a><a href="read/guide/team-operations.html" aria-current="page">Работа команды, телефон и перенос</a><a href="read/concepts/acceptance.html">Приёмка по целям</a><a href="read/concepts/evidence.html">Доказательства и устаревание</a><a href="read/concepts/executors.html">Исполнители, пулы и автопилот</a><a href="read/concepts/privacy.html">Приватность и настройки</a><a href="read/concepts/knowledge.html">База знаний: заметки, связи, SQL</a><a href="read/concepts/glossary.html">Словарь</a></section><section><h2>Справочник</h2><a href="read/reference/commands.html">Все команды</a><a href="read/reference/contract.html">Формат задачи (`contract.json`)</a><a href="read/reference/team-resources.html">Команда, оценки ролей и ресурсы</a><a href="read/architecture.html">Текущая архитектура</a><a href="read/roadmap.html">Статус пяти направлений — 0.13.0</a><a href="read/release.html">Как выпускается Borshkit</a><a href="read/ingredients.html">Рецепт: из чего сварен Borshkit</a><a href="read/library/index.html">Библиотека: навыки и проверенные ссылки</a><a href="read/project/SECURITY.html">Безопасность</a><a href="read/project/CONTRIBUTING.html">Как помочь Borshkit</a><a href="read/project/CHANGELOG.html">Изменения</a></section><details><summary>Ещё материалы</summary><a href="read/project/AGENTS.html">Для агентов, которые разрабатывают Borshkit</a><a href="read/project/CONTRIBUTORS-REFERENCES.html">Контрибьюторы проектов, на которых построен Borshkit</a><a href="read/project/README.de.html">Borshkit</a><a href="read/project/README.en.html">Borshkit</a><a href="read/project/README.fr.html">Borshkit</a><a href="read/project/README.ko.html">Borshkit</a><a href="read/project/README.html">Borshkit</a><a href="read/project/README.zh-TW.html">Borshkit</a><a href="read/project/design-qa.html">Проверка продуктового оформления</a><a href="read/concepts/research.html">Исследования: источники и цитаты</a><a href="read/concepts/roles-and-skills.html">Роли и навыки</a><a href="read/concepts/space.html">Пространство и Git простыми словами</a><a href="read/concepts/team-workspace.html">Borshkit как профессиональная команда</a><a href="read/guide/website.html">Сайт и документация как единый продукт</a><a href="read/reference/overview.de.html">Details und Grenzen — 0.13</a><a href="read/reference/overview.en.html">Details and limitations — 0.13</a><a href="read/reference/overview.fr.html">Détails et limites — 0.13</a><a href="read/reference/overview.ko.html">상세 설명과 한계 — 0.13</a><a href="read/reference/overview.ru.html">Подробности и ограничения — 0.13</a><a href="read/reference/overview.zh-TW.html">詳細資料與限制 — 0.13</a><a href="read/spec.html">Borshkit (Борщкит) — Modular AI Workspace</a><a href="read/verification-0.13.html">Проверка выпуска 0.13.0</a><a href="read/verification-2026-10-20.html">Проверка модернизации — 20 октября 2026</a></details><details><summary>История и отчёты</summary><a href="read/discussions/audit-2026-10-07.html">Ответ на независимый аудит 0.10.1</a><a href="read/discussions/modernization-2026-10-08.html">Аудит и программа модернизации — 2026-10-08</a><a href="read/discussions/modernization-2026-10-09.html">Контроль модернизации — 2026-10-09</a><a href="read/discussions/professionalism-2026-10-22.html">Аудит оформления и достоверности — 22 октября 2026</a><a href="read/discussions/space-history-backup.html">Черновик обсуждения: резервная копия истории пространства</a><a href="read/graph/README.html">Граф документации</a></details></nav><a class="sidebar-support" href="https://web.tribute.tg/d/Sh8"><strong>Поддержать Borshkit</strong><span>Помоги развивать открытый инструмент.</span></a></aside><main id="article" tabindex="-1" class="docs-article"><div class="article-meta"><span>ДОКУМЕНТАЦИЯ</span><a href="https://github.com/ParkPavel/borshkit/blob/main/docs/guide/team-operations.md">Исходник на GitHub</a></div><article lang="ru"><h1 id="работа-команды-телефон-и-перенос">Работа команды, телефон и перенос<a class="heading-anchor" href="read/guide/team-operations.html#работа-команды-телефон-и-перенос" aria-label="Ссылка на раздел">#</a></h1>
+<p>Начиная с 0.12, Borshkit содержит инструменты настройки и работы команды. Установленные программы, объявленная подписка и успешная проба подключения не доказывают пригодность модели. Подключение аккаунтов, доступность конкретных моделей и согласие владельца остаются явными шагами.</p>
+<h2 id="ответственность-и-цикл-поставки">Ответственность и цикл поставки<a class="heading-anchor" href="read/guide/team-operations.html#ответственность-и-цикл-поставки" aria-label="Ссылка на раздел">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>Обязанность</th>
+<th>Роль</th>
+<th>Результат и граница</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Цель и решение о выпуске</td>
+<td>владелец</td>
+<td>контракт, бюджет, ручные критерии; полномочия модели не заменяют согласие</td>
+</tr>
+<tr>
+<td>Декомпозиция</td>
+<td>architect</td>
+<td>предложение критериев и проверок</td>
+</tr>
+<tr>
+<td>Планирование потока</td>
+<td>coordinator</td>
+<td>зависимости, блокировки, передачи; без применения настроек и слияния</td>
+</tr>
+<tr>
+<td>Исполнение</td>
+<td>implementer, ui-engineer, platform-engineer</td>
+<td>файлы в пределах задачи, отдельная копия проекта</td>
+</tr>
+<tr>
+<td>Задание дизайна</td>
+<td>design-prompter</td>
+<td>текстовый brief с критериями</td>
+</tr>
+<tr>
+<td>Визуальный результат</td>
+<td>designer и специализированные дизайнеры</td>
+<td>изображение или макет, независимая оценка визуального качества</td>
+</tr>
+<tr>
+<td>Проверка</td>
+<td>tester, reviewer, security-reviewer</td>
+<td>проверяемые результаты на конкретном состоянии; независимые ревьюеры другого семейства</td>
+</tr>
+<tr>
+<td>Документация</td>
+<td>docs-writer</td>
+<td>пользовательские шаги, решения и известные ограничения</td>
+</tr>
+</tbody></table>
+<p>Цикл: цель → контракт → распределение → работа → автоматические проверки → независимое ревью → лист приёмки → консолидация → интеграция → повторная проверка → решение владельца о выпуске. В конце цикла сохраняй checkpoint и урок с привязкой к состоянию. Частичный результат передаётся следующему исполнителю с перечнем файлов, ошибок и неизвестного; семейство предыдущего автора остаётся в учёте независимости.</p>
+<p><img src="media/diagrams/operations.ru.svg" alt="Цикл команды: настройка, роли, проверки, приёмка" loading="lazy"></p>
+<h2 id="компетенции-моделей">Компетенции моделей<a class="heading-anchor" href="read/guide/team-operations.html#компетенции-моделей" aria-label="Ссылка на раздел">#</a></h2>
+<p>Llama может быть кандидатом для brief, Gemini или GPT Image — для изображения, другая подходящая модель — для ТЗ. Название семейства не задаёт рейтинг. Выбирай точный ID модели, поддерживаемый выход, политику данных, актуальную пробу и оценку конкретной роли. Оценка не переносится на другую конфигурацию, инструкцию или набор навыков.</p>
+<div class="code-block"><div class="code-toolbar"><span>sh</span><button type="button" class="code-copy" aria-label="Скопировать блок кода">Копировать</button></div><pre tabindex="0"><code>borshkit стенд запустить &lt;исполнитель&gt; --файл examples/assessment-brief.json --вход-токены 5000 --выход-токены 1500
+borshkit стенд предложить --файл &lt;путь-к-отчёту.json&gt;
+borshkit настройки применить &lt;предложение&gt;
+borshkit команда план &lt;задача&gt; --вход-токены 5000 --выход-токены 1500</code></pre></div><p>Стенд запускается явно и может расходовать платные ресурсы. Каждый случай получает только явные fixtures в временной папке, действующие инструкции и навыки роли. Проверки не передаются в промпт. Команды проверок выбирает владелец набора; они исполняются локально и требуют доверия. Результат PASS требует успеха схемы и всех независимых команд. Для image-роли нужен <code>imagePath</code> внутри случая и проверка PNG; структурная проверка изображения не оценивает красоту, соответствие бренду или UX. Эти свойства проверяются отдельным визуальным ревью и ручными критериями.</p>
+<p>Отчёт фиксирует модель, конфигурацию, SHA набора и инструкций, случай, расход и среду. Предложение оценки отдельно применяется. Результаты локальных поддельных исполнителей проверяют механизмы, а не качество реальных моделей. Изменение исполняемых внешних проверочных программ требует нового набора и оценки; для воспроизводимого стенда помещай проверку в аргументы команды или закрепляй её версию отдельно.</p>
+<h2 id="wip-бюджет-и-стоимость">WIP, бюджет и стоимость<a class="heading-anchor" href="read/guide/team-operations.html#wip-бюджет-и-стоимость" aria-label="Ссылка на раздел">#</a></h2>
+<div class="code-block"><div class="code-toolbar"><span>sh</span><button type="button" class="code-copy" aria-label="Скопировать блок кода">Копировать</button></div><pre tabindex="0"><code>borshkit бюджет предложить --файл examples/execution-policy.json
+borshkit настройки применить &lt;предложение&gt;
+borshkit работа запустить &lt;задача&gt; --роль implementer --исполнитель &lt;имя&gt; --вход-токены 5000 --выход-токены 1500
+borshkit бюджет показать</code></pre></div><p><code>execution.maxActiveRuns</code> и <code>maxActiveTasks</code> ограничивают одновременно выполняемые вызовы и задачи. Резервы jobs и стенда создаются под общей блокировкой <code>.state/execution-ledger.json</code>. Бюджеты <code>tokenBudget</code> и <code>usdBudget</code> — совокупные для этого журнала, не суточные квоты аккаунта. Резерв требует оценки; денежный резерв также требует актуального тарифа с <code>source</code>, <code>at</code>, <code>expiresAt</code> и fingerprint исполнителя. Изменение тарифов и повышение пределов подтверждает владелец.</p>
+<p>Тариф: <code>execution.rates.&lt;executor&gt; = {inputUsdPerMillion, outputUsdPerMillion, fingerprint, source, at, expiresAt}</code>. Цены вводятся по проверенному источнику. План сортирует по оценке цены только модели с актуальными тарифами и положительными оценками на одном SHA набора. В остальных случаях он объясняет доступность без выдуманного сравнения стоимости. Семейство ревьюера резервируется отдельно.</p>
+<p>API получает ограничение выходных токенов. Оценка входа может оказаться ниже фактического расхода; CLI, retries и провайдер могут расходовать больше оценки. Это механизм ограничения запусков и учёта, не банковский лимит и не гарантия максимального счёта. Жёсткие ограничения расходов устанавливай у провайдера. После исчерпания бюджета новые бюджетные вызовы блокируются.</p>
+<p>Если расход не измерен, запись становится UNKNOWN, резерв сохраняется. После обрыва процесса восстановление также даёт UNKNOWN. Подписочные балансы Claude/Codex/Gemini, которые среда не раскрывает, не угадываются. HTTP-остатки имеют срок и область endpoint/account; <code>/models</code> не означает остаток генерации.</p>
+<div class="code-block"><div class="code-toolbar"><span>sh</span><button type="button" class="code-copy" aria-label="Скопировать блок кода">Копировать</button></div><pre tabindex="0"><code>borshkit бюджет восстановить
+borshkit бюджет сверить &lt;id-резерва&gt; --файл расход.json</code></pre></div><p>Сверка <code>{tokens, usd, source}</code> требует подтверждения владельца в терминале и остаётся заявленной сверкой, не проверенным счётом. Passkey в этой версии подтверждает настройки и критические вопросы; сверка бюджета, слияние и отправка Git через него не выполняются.</p>
+<h2 id="зависимости-и-консолидация">Зависимости и консолидация<a class="heading-anchor" href="read/guide/team-operations.html#зависимости-и-консолидация" aria-label="Ссылка на раздел">#</a></h2>
+<p>В <code>contract.json</code> укажи <code>dependencies: [&quot;upstream-task&quot;]</code>. Перед новым запуском все зависимости должны быть приняты на текущем состоянии. Для зависимости с worktree результат должен быть интегрирован в HEAD проекта или существующей копии текущей задачи. Циклы зависимостей блокируются.</p>
+<div class="code-block"><div class="code-toolbar"><span>sh</span><button type="button" class="code-copy" aria-label="Скопировать блок кода">Копировать</button></div><pre tabindex="0"><code>borshkit координация зависимости &lt;задача&gt;
+borshkit координация итог &lt;задача-1&gt; &lt;задача-2&gt;</code></pre></div><p>Checkpoint хранит статусы, зависимости и точные состояния в <code>coordination/checkpoint-*.json</code> и человекочитаемом Markdown. READY_FOR_INTEGRATION — снимок, не слияние или общий PASS проекта. После интеграции выполни общие проверки. Координатор предлагает порядок; ядро и владелец выполняют решения.</p>
+<h2 id="подтверждение-с-телефона">Подтверждение с телефона<a class="heading-anchor" href="read/guide/team-operations.html#подтверждение-с-телефона" aria-label="Ссылка на раздел">#</a></h2>
+<p>Сервис запускает владелец явно. Для телефона нужен доверенный HTTPS origin с доменным именем. Локальная разработка допускает HTTP localhost. <code>--trusted-proxy</code> означает, что доверенный TLS proxy уже настроен с сохранением Host; Borshkit сам его не разворачивает.</p>
+<div class="code-block"><div class="code-toolbar"><span>sh</span><button type="button" class="code-copy" aria-label="Скопировать блок кода">Копировать</button></div><pre tabindex="0"><code>borshkit подтверждение serve --origin https://approval.example.org --trusted-proxy
+# либо собственный HTTPS:
+borshkit подтверждение serve --origin https://approval.example.org:8787 --cert сертификат.pem --key приватный-ключ.pem</code></pre></div><p>По умолчанию сервис слушает только <code>127.0.0.1:8787</code>. Открой выбранный origin в браузере телефона, нажми «Создать публичный файл устройства». Передай этот публичный файл доверенному администратору и независимо сверь origin и файл. Администратор регистрирует его вне агентской сессии:</p>
+<div class="code-block"><div class="code-toolbar"><span>sh</span><button type="button" class="code-copy" aria-label="Скопировать блок кода">Копировать</button></div><pre tabindex="0"><code>borshkit подтверждение enroll phone --file borshkit-device.json
+borshkit подтверждение devices
+borshkit подтверждение revoke phone</code></pre></div><p>Первое сопряжение и отзыв требуют владельца в терминале. Полностью дистанционный старт без уже доверенного канала не решается самим JSON-файлом или голосовым сообщением. После сопряжения выбери предложение/критический вопрос на странице, прочитай действительные настройки до/после и ослабления, затем подтверди passkey с проверкой личности устройства. Настройки применяются отдельно от запуска работы. Вопрос получает конкретный выбранный ответ.</p>
+<p>Приватный ключ остаётся в аутентификаторе. Реестр устройств, nonce и аудит лежат <strong>вне проекта</strong>, по умолчанию <code>~/.config/borshkit/approvals</code>; <code>--store</code> выбирается доверенным владельцем. Срок 120 секунд, максимум пять минут. Проверяются ES256/P-256, credential ID, RP, точный origin, challenge, присутствие и проверка личности, срок, отзыв, проект, версия действия и одноразовость. Повторное использование и изменение предложения требуют нового согласия; если применение сорвалось после потребления nonce, повторная попытка тоже требует нового согласия.</p>
+<p>Это защита протокола для агента с доступом к проекту, а не от администратора ОС или агента с доступом к реестру и коду сервиса. Размести сервис и реестр под отдельной учётной записью/изолированным хостом, если агент может писать за пределами проекта. Терминальная фраза сама по себе остаётся барьером UX, не доказательством идентичности. Браузерный сценарий с реальным passkey и собственным HTTPS должен быть проверен владельцем; криптографические fixture-тесты не заменяют такую проверку.</p>
+<h2 id="управляемый-монитор">Управляемый монитор<a class="heading-anchor" href="read/guide/team-operations.html#управляемый-монитор" aria-label="Ссылка на раздел">#</a></h2>
+<div class="code-block"><div class="code-toolbar"><span>sh</span><button type="button" class="code-copy" aria-label="Скопировать блок кода">Копировать</button></div><pre tabindex="0"><code>borshkit монитор once
+borshkit монитор start --task &lt;задача&gt; --roles architect,implementer,reviewer --suggest --interval 30000 --cycles 120
+borshkit монитор status
+borshkit монитор stop</code></pre></div><p><code>start</code> запускает отдельный процесс, <code>run</code> — в текущем терминале. Один монитор держит lock с PID, сохраняет владельца-token, heartbeat, последний отчёт и ограничение циклов. <code>stop</code> пишет запрос этому token; чужой PID не завершается. Остановка подтверждается после текущего цикла/паузы. При аварийном завершении состояние INTERRUPTED; явный новый запуск восстанавливает зависшие резервы как UNKNOWN.</p>
+<p>Монитор обновляет TEAM.md и STATUS.md из локальных наблюдений; генерацию и API-пробы не выполняет. С <code>--suggest</code> он предлагает новое распределение только при изменении данных и доступном составе; защита от повторных одинаковых предложений действует внутри одного запуска. Предложение не применяется. Нет скрытого старта на init, включения автопилота или автоматического продолжения jobs.</p>
+<h2 id="среды-и-входные-материалы">Среды и входные материалы<a class="heading-anchor" href="read/guide/team-operations.html#среды-и-входные-материалы" aria-label="Ссылка на раздел">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>Среда</th>
+<th>Реализованный канал</th>
+<th>Ограничение</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Codex CLI</td>
+<td>нативный adapter, schema, sandbox, события</td>
+<td>версия/флаги проверяются; права и подписка среды отдельны</td>
+</tr>
+<tr>
+<td>Claude Code CLI</td>
+<td>нативный adapter, schema, ограниченные инструменты</td>
+<td>версия/флаги проверяются; Remote Control обеспечивает установленная среда</td>
+</tr>
+<tr>
+<td>Gemini CLI</td>
+<td>headless stream-json, явная модель, sandbox, deny-all policy, extensions none</td>
+<td>инструментов нет; scoped текст передаёт Borshkit; admin policies блокируют запуск; точный ID модели обязателен</td>
+</tr>
+<tr>
+<td>Gemini API</td>
+<td>generateContent, JSON и PNG, usageMetadata</td>
+<td>ключ по имени переменной, доступ модели и политика аккаунта проверяются отдельно</td>
+</tr>
+<tr>
+<td>OpenAI compatible API</td>
+<td>JSON и images/generations</td>
+<td>совместимость конкретного endpoint проверяется отдельно</td>
+</tr>
+<tr>
+<td>VS Code</td>
+<td>локальное расширение с setup/status/team через Node ProcessExecution</td>
+<td>требуется Node 22+, Git и доверенный workspace; не устанавливает чужие плагины</td>
+</tr>
+<tr>
+<td>Copilot, Roo, Cline</td>
+<td>экспорт инструкций и нативный запуск из VSIX</td>
+<td><a href="read/guide/native-integrations.html">Публичные API и ограничения</a>: Copilot — текст; Roo — ID/события/отмена; Cline — запуск, статус неизвестен; совместимые hooks и Remote Control не заявлены</td>
+</tr>
+<tr>
+<td>Приложения Codex/Claude и телефон</td>
+<td>вызов CLI через доступную среду; passkey-страница</td>
+<td>телефон управляет хостом исполнения, не обязан локально запускать Node</td>
+</tr>
+</tbody></table>
+<p>Gemini не использует YOLO; профиль исключает инструменты и проверяет init-модель. Политики уровня проекта у Gemini upstream сейчас не действуют; Borshkit передаёт явный deny-all policy и отказывается при наличии стандартных admin TOML. Это всё равно не изоляция от владельца ОС, нестандартных глобальных настроек или уязвимой версии CLI. Проверка качества роли должна проводиться на конкретной установленной версии. API-профиль не отправляет <code>tools</code> и не исполняет function calls.</p>
+<div class="code-block"><div class="code-toolbar"><span>sh</span><button type="button" class="code-copy" aria-label="Скопировать блок кода">Копировать</button></div><pre tabindex="0"><code>borshkit integration export --host codex
+# допустимые host: claude, gemini, copilot, roo, cline
+node scripts/vsix.mjs /tmp/borshkit.vsix
+code --install-extension /tmp/borshkit.vsix</code></pre></div><p>Экспорт не перезаписывает пользовательский файл или изменённый вручную ранее управляемый файл. В таком случае добавь ссылку на SETUP/TEAM/STATUS вручную. Расширение содержит runtime пакета; команды вызывают Node с отдельными аргументами, без конкатенации shell-команды. Голос транскрибирует хост; полученный текст — вход задачи без дополнительных полномочий. Материалы, цитаты и изображения подключаются явно через существующие material/task-механизмы; источник, SHA и границы приватности сохраняются.</p>
+<h2 id="перенос-и-происхождение">Перенос и происхождение<a class="heading-anchor" href="read/guide/team-operations.html#перенос-и-происхождение" aria-label="Ссылка на раздел">#</a></h2>
+<div class="code-block"><div class="code-toolbar"><span>sh</span><button type="button" class="code-copy" aria-label="Скопировать блок кода">Копировать</button></div><pre tabindex="0"><code>borshkit portable export --file файлы.json --out набор.json
+# файлы.json: [&quot;src/app.js&quot;, &quot;package.json&quot;, &quot;README.md&quot;]
+# на новом хосте в отдельном проекте с Git и созданным пространством:
+borshkit portable import --file набор.json</code></pre></div><p>Набор до 32 MiB: явные обычные файлы, SHA-256 каждого и всего payload, режим файла, commit источника, версия и сведения среды, шаблон настроек. Скрытые папки, пространство Borshkit, ключи и symlink не экспортируются; распознанные секреты блокируются. Импорт проверяет целостность и отказывается перезаписывать файл. SHA выявляет изменение, но не доказывает доверие автору. Импортируй набор из доверенного источника.</p>
+<p>Импорт даёт IMPORTED_UNVERIFIED и отдельное предложение настроек, если они отличаются. <code>autopilot</code>, trustedAgent, принятие задач, процессы, устройства, абсолютные worktree-пути, тарифы, пробы и квалификации не переносятся. Это перенос источников, а не восстановление активной сессии или всех секретов/материалов/истории пространства. Повторное принятие результатов требует новых свидетельств. Вывод LLM не обещается идентичным при повторном запуске.</p>
+<p><code>Dockerfile</code> и Dev Container фиксируют Node 22.14.0 и Linux-среду; образ по version tag не является неизменяемым digest и сам по себе не доказывает битовую воспроизводимость. Сборку контейнера и поддержку твоего CPU проверяй отдельно. CLI поддерживает Node 22+ и Git на Linux/Windows/macOS; факт прохождения каждого OS подтверждает CI именно нужного commit.</p>
+<p>Релизный workflow проверяет package/plugin/VS Code/tag, запускает verify, собирает tgz и VSIX, SHA256SUMS и build-provenance.json, затем создаёт GitHub OIDC attestation. Локальный manifest — не подписанная attestation. Подписанное происхождение считается доступным только после успешного выполнения workflow:</p>
+<div class="code-block"><div class="code-toolbar"><span>sh</span><button type="button" class="code-copy" aria-label="Скопировать блок кода">Копировать</button></div><pre tabindex="0"><code>gh attestation verify borshkit.tgz --repo ParkPavel/borshkit</code></pre></div><h2 id="связи">Связи<a class="heading-anchor" href="read/guide/team-operations.html#связи" aria-label="Ссылка на раздел">#</a></h2>
+<ul>
+<li><a href="read/guide/setup.html">Мастер настройки</a></li>
+<li><a href="read/concepts/team-workspace.html">Архитектура команды</a></li>
+<li><a href="read/reference/team-resources.html">Команды и форматы</a></li>
+<li><a href="read/discussions/modernization-2026-10-09.html">Контроль завершения</a></li>
+</ul>
+</article><nav class="page-neighbors" aria-label="Предыдущая и следующая статьи"><a href="read/guide/native-integrations.html"><small>Назад</small>Copilot, Roo и Cline: нативный запуск</a><a href="read/concepts/acceptance.html"><small>Дальше</small>Приёмка по целям</a></nav><footer class="article-footer"><p>Не хватает ответа? <a href="https://github.com/ParkPavel/borshkit/issues">Сообщи об этом</a>.</p><a href="index.html">К обзору продукта</a></footer></main><aside class="docs-toc" aria-label="В этой статье"><p>В этой статье</p><nav><a href="read/guide/team-operations.html#ответственность-и-цикл-поставки" class="toc-level-2">Ответственность и цикл поставки</a><a href="read/guide/team-operations.html#компетенции-моделей" class="toc-level-2">Компетенции моделей</a><a href="read/guide/team-operations.html#wip-бюджет-и-стоимость" class="toc-level-2">WIP, бюджет и стоимость</a><a href="read/guide/team-operations.html#зависимости-и-консолидация" class="toc-level-2">Зависимости и консолидация</a><a href="read/guide/team-operations.html#подтверждение-с-телефона" class="toc-level-2">Подтверждение с телефона</a><a href="read/guide/team-operations.html#управляемый-монитор" class="toc-level-2">Управляемый монитор</a><a href="read/guide/team-operations.html#среды-и-входные-материалы" class="toc-level-2">Среды и входные материалы</a><a href="read/guide/team-operations.html#перенос-и-происхождение" class="toc-level-2">Перенос и происхождение</a><a href="read/guide/team-operations.html#связи" class="toc-level-2">Связи</a></nav></aside></div><p class="reader-status sr-only" id="reader-status" role="status"></p></body></html>
