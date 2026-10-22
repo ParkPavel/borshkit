@@ -3,13 +3,14 @@ import { assert, atomicJSON, contained, readJSON, sha, exists, acquireLock, with
 import { createHandoff } from './handoff.mjs';
 import { ensureWorktree } from './jobs.mjs';
 import { ID } from './contract.mjs';
-import { readyTask } from './accept.mjs';
-import { snapshot } from './snapshot.mjs';
+import { readyTask, taskState } from './accept.mjs';
+import { openSpace } from './space.mjs';
 import { stableJSON } from './resources.mjs';
 import { outboundFindings } from './privacy.mjs';
 
 export async function prepareNative(space, taskId, host) {
   assert(['copilot', 'roo', 'cline'].includes(host), 'Нативная среда: copilot, roo или cline');
+  assert(space.settings.privacy !== 'strict', 'Строгий режим: политика данных нативной среды не подтверждена; используй проверенного CLI/API-исполнителя');
   await readyTask(space, taskId);
   const release = await acquireLock(path.join(space.state, 'locks', `writer-${taskId}.lock`), { busy: 'В задаче уже работает писатель' });
   try {
@@ -49,7 +50,10 @@ export async function validateNativeRequest(file) {
   const marker = await readJSON(path.resolve(path.dirname(file), '../../tasks', value.taskId, 'native-active.json'));
   assert(marker.digest === digest && marker.state === 'PREPARED_UNVERIFIED', 'Нативный запрос уже запущен, завершён или заменён');
   assert(typeof value.prompt === 'string' && value.prompt.length <= 256000 && typeof value.cwd === 'string' && path.isAbsolute(value.cwd), 'Неверный запрос нативного запуска');
-  assert((await snapshot(value.cwd)).digest === value.sourceState?.source?.digest, 'Файлы изменились после подготовки; создай запрос заново');
+  const spaceDir = path.resolve(path.dirname(file), '../..');
+  const space = await openSpace(path.dirname(spaceDir), { folder: path.basename(spaceDir) });
+  assert(stableJSON(await taskState(space, value.taskId)) === stableJSON(value.sourceState), 'Файлы, контракт или настройки изменились после подготовки; создай запрос заново');
+  assert(space.settings.privacy !== 'strict', 'Строгий режим блокирует неподтверждённую политику нативной среды');
   return value;
 }
 

@@ -165,3 +165,14 @@ test('native sessions reserve the writer and unknown authors cannot establish in
   await assert.rejects(validateNativeRequest(request.file));
   assert.deepEqual(await authorProviders(s, 'native-owner'), ['unknown']);
 });
+
+
+test('strict privacy blocks native preparation and invalidates previously prepared requests', async t => {
+  const { proposeSettings, applyProposal } = await import('../core/config.mjs');
+  const s = await space(t); await task(s, 'strict-native', contract);
+  const prepared = await prepareNative(s, 'strict-native', 'copilot');
+  const proposal = await proposeSettings(s, { privacy: 'strict' });
+  await applyProposal(s, proposal.id);
+  await assert.rejects(validateNativeRequest(prepared.file), /настройки изменились/);
+  await assert.rejects(prepareNative(s, 'strict-native', 'roo'), /Строгий режим/);
+});
