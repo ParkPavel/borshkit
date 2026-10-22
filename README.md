@@ -1,19 +1,22 @@
 # Borshkit
 
-**Переносимый рабочий слой для ИИ в коде.**
+**Задачи, переносимый контекст и доказательства результата для ИИ-разработки.**
 
 Опиши результат. Поручи работу агенту. Получи доказательства, привязанные к состоянию файлов, и понятный список того, что проверить самому.
 
 <a href="README.md">ru</a> · <a href="README.en.md">en</a> · <a href="README.de.md">de</a> · <a href="README.ko.md">ko</a> · <a href="README.zh-TW.md">zh-TW</a> · <a href="README.fr.md">fr</a>
 
+[Релиз 0.13.0](https://github.com/ParkPavel/borshkit/releases/tag/0.13.0) · [CI](https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml) · [Документация](docs/README.md)
+
 ## Начать
 
 0.13.0 · Node.js 22+ · Git
 
+Основной путь — проверенный архив GitHub Release. Публикации в реестре npm пока нет. Для правок исходников используй [клонирование и npm link](docs/release.md).
+
 ```sh
-git clone https://github.com/ParkPavel/borshkit.git
-cd borshkit
-npm link
+npm install -g https://github.com/ParkPavel/borshkit/releases/download/0.13.0/borshkit.tgz
+borshkit помощь
 ```
 
 [Quickstart](docs/guide/quickstart.md) · [Руководство](docs/guide/workflow.md) · [Команды](docs/reference/commands.md) · [Сайт](https://parkpavel.github.io/borshkit/)
@@ -23,6 +26,8 @@ npm link
 CLI, плагин Claude Code и VSIX. Запуск Claude Code, Codex, Gemini и API-исполнителей; нативные API Copilot/Roo/Cline из VS Code с явными ограничениями. Передача задачи между средами и статическая карта JS/TS, Python, Go, Swift. [Нативные возможности и границы](docs/guide/native-integrations.md).
 
 Ответ «готово» не принимает задачу. Проверки, независимое ревью и решения человека сохраняются отдельно. Изменение файлов делает старые доказательства устаревшими.
+
+PASS — проверка прошла; FAIL — проверка не прошла; UNKNOWN — доказательств нет. Живые испытания моделей и устройств ожидаются от пользователей.
 
 [Архитектура](docs/architecture.md) · [План](docs/roadmap.md) · [Подробности и ограничения](docs/reference/overview.ru.md) · [Передача контекста](docs/guide/handoff.md)
 
@@ -51,11 +56,10 @@ Borshkit — это борщ: собран из лучших ингредиен�
 Полный рецепт с версиями и лицензиями — [docs/ingredients.md](docs/ingredients.md). **Все контрибьюторы** этих проектов, 1262 записи — [CONTRIBUTORS-REFERENCES.md](CONTRIBUTORS-REFERENCES.md). Спасибо каждому!
 
 
+Контракты API (код не копировался): [VS Code Language Model API](https://github.com/microsoft/vscode) · [Roo Code API](https://github.com/RooCodeInc/Roo-Code) · [Cline API](https://github.com/cline/cline)
+
 </details>
 
 Apache-2.0 · [LICENSE](LICENSE) · [NOTICE](NOTICE) · [Безопасность](SECURITY.md)
 
 Pavel Park · [GitHub](https://github.com/ParkPavel) · [Telegram](https://t.me/parkpavel_chigon) · [Support / Поддержать](https://web.tribute.tg/d/Sh8)
-
-
-API references (no copied code): [VS Code Language Model API](https://github.com/microsoft/vscode) · [Roo Code API](https://github.com/RooCodeInc/Roo-Code) · [Cline API](https://github.com/cline/cline)

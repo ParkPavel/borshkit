@@ -2,7 +2,7 @@
 bk-type: reference
 related: ["../architecture.md", "../roadmap.md"]
 ---
-# Détails et limites — 0.12
+# Détails et limites — 0.13
 
 ## Une équipe visible
 
@@ -16,7 +16,9 @@ Le nouveau rôle `design-prompter` rédige un brief de design visuel. Le modèle
 
 <p align="center"><img src="../../assets/diagrams/setup.fr.svg" alt="Configuration : environnement, confidentialité, modèles, responsabilités et proposition ; application, évaluation, affectation et lancement séparés" width="100%"></p>
 
-La confirmation par passkey des réglages et questions critiques est implémentée après un appairage de confiance. La branche ajoute `assessment`, budget/WIP communs, dépendances et checkpoints, `monitor start/stop` explicite, Gemini CLI/API, un VSIX local et le transfert de fichiers avec de nouvelles vérifications. Copilot/Roo/Cline reçoivent des instructions exportées ; aucun exécuteur natif n’est annoncé. L’autopilote reste désactivé.
+La confirmation par passkey des réglages et questions critiques est implémentée après un appairage de confiance. La version inclut `assessment`, budget/WIP communs, dépendances et checkpoints, `monitor start/stop` explicite, Gemini CLI/API, un VSIX local et le transfert de fichiers avec de nouvelles vérifications.
+
+La version 0.13 propose l’export des instructions et des points d’entrée natifs dans le VSIX : Copilot renvoie du texte sans outils ; Roo fournit ID, événements et annulation ; Cline permet seulement le lancement avec un état inconnu. Le mode de confidentialité strict bloque cette voie native. [Fonctions, installation et limites](../guide/native-integrations.md) (russe). L’autopilote est désactivé par défaut.
 
 [Exploitation et limites de sécurité](../../docs/guide/team-operations.md) · [Contrôle de l’implémentation](../../docs/discussions/modernization-2026-10-09.md) (russe). Les tests locaux ne remplacent pas les validations du modèle réel, du navigateur du téléphone, de VS Code et du commit CI exact.
 
@@ -45,7 +47,7 @@ Il te faut Node.js 22+ et Git. Il n’y a aucune dépendance externe.
 /plugin install borshkit@borshkit
 ```
 
-Le plugin donne à l’agent le skill Borshkit, des hooks de protection et les commandes `borshkit` et `borsch` dans le terminal de Claude Code. Pour les utiliser aussi dans ton propre terminal, installe en plus la commande comme ci-dessous.
+Le plugin ajoute le skill, les commandes slash et les hooks de protection de Claude Code. Il n’installe pas de commande globale dans le PATH. Installe séparément la CLI pour utiliser `borshkit` et `borsch` dans un terminal.
 
 **Comme commande dans le terminal :**
 
@@ -60,7 +62,8 @@ Ou en une commande depuis la dernière version, sans clone :
 npm install -g https://github.com/ParkPavel/borshkit/releases/latest/download/borshkit.tgz
 ```
 
-Le paquet n’est pas encore publié sur npm. Le compteur de téléchargements en haut ne compte que cette archive : les installations par le plugin et par `git clone` n’y sont pas.
+Le paquet n’est pas encore publié dans le registre npm ; la commande ci-dessus installe directement l’archive GitHub.
+
 
 ## Ta première tâche
 

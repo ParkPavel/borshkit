@@ -1,19 +1,22 @@
 # Borshkit
 
-**AI 코딩을 위한 이식 가능한 기반.**
+**AI 코딩을 위한 작업, 이식 가능한 컨텍스트와 검증 가능한 결과.**
 
 결과를 정의하고 에이전트에게 작업을 맡기세요. 정확한 파일 상태에 연결된 증거와 사람이 확인할 체크리스트를 받습니다.
 
 <a href="README.md">ru</a> · <a href="README.en.md">en</a> · <a href="README.de.md">de</a> · <a href="README.ko.md">ko</a> · <a href="README.zh-TW.md">zh-TW</a> · <a href="README.fr.md">fr</a>
 
+[릴리스 0.13.0](https://github.com/ParkPavel/borshkit/releases/tag/0.13.0) · [CI](https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml) · [문서 (러시아어)](docs/README.md)
+
 ## 시작하기
 
 0.13.0 · Node.js 22+ · Git
 
+검증된 GitHub Release 압축 파일을 설치하세요. npm 레지스트리에는 아직 게시되지 않았습니다. 소스를 수정하려면 [git clone 및 npm link](docs/release.md)를 사용하세요.
+
 ```sh
-git clone https://github.com/ParkPavel/borshkit.git
-cd borshkit
-npm link
+npm install -g https://github.com/ParkPavel/borshkit/releases/download/0.13.0/borshkit.tgz
+borshkit help
 ```
 
 [Quickstart](docs/guide/quickstart.md) · [Guide](docs/guide/workflow.md) · [Commands](docs/reference/commands.md) · [Website](https://parkpavel.github.io/borshkit/)
@@ -22,7 +25,7 @@ npm link
 
 CLI, Claude Code 플러그인과 VSIX를 제공합니다. Claude Code·Codex·Gemini·API 실행기와 VS Code의 Copilot·Roo·Cline 네이티브 API를 지원하며 한계를 명시합니다. 작업 전달과 JS/TS·Python·Go·Swift 정적 지도를 제공합니다. [지원 범위와 한계](docs/guide/native-integrations.md).
 
-PASS / FAIL / UNKNOWN: evidence follows the exact file state. A model response alone does not accept a task. CLI messages are currently in Russian; commands also have English aliases.
+PASS: 검사 통과. FAIL: 검사 실패. UNKNOWN: 증거 없음. 실제 모델과 기기 시험은 사용자 피드백을 기다립니다. CLI 메시지와 대부분의 안내는 러시아어이며 명령에는 영어 별칭이 있습니다.
 
 [Architecture](docs/architecture.md) · [Roadmap](docs/roadmap.md) · [상세 설명과 한계](docs/reference/overview.ko.md) · [Context handoff](docs/guide/handoff.md)
 
@@ -51,11 +54,10 @@ Borshkit은 보르시입니다. 다른 사람들이 기르고 누구나 쓸 수 
 버전과 라이선스까지 담은 전체 레시피는 [docs/ingredients.md](docs/ingredients.md)(러시아어)에 있습니다. 이 프로젝트들의 **모든 기여자** 목록(1262개 항목)은 [CONTRIBUTORS-REFERENCES.md](CONTRIBUTORS-REFERENCES.md)에 있습니다. 한 분 한 분 모두 감사합니다!
 
 
+API 참조 (코드 복사 없음): [VS Code Language Model API](https://github.com/microsoft/vscode) · [Roo Code API](https://github.com/RooCodeInc/Roo-Code) · [Cline API](https://github.com/cline/cline)
+
 </details>
 
 Apache-2.0 · [LICENSE](LICENSE) · [NOTICE](NOTICE) · [Security](SECURITY.md)
 
 Pavel Park · [GitHub](https://github.com/ParkPavel) · [Telegram](https://t.me/parkpavel_chigon) · [Support / Поддержать](https://web.tribute.tg/d/Sh8)
-
-
-API references (no copied code): [VS Code Language Model API](https://github.com/microsoft/vscode) · [Roo Code API](https://github.com/RooCodeInc/Roo-Code) · [Cline API](https://github.com/cline/cline)

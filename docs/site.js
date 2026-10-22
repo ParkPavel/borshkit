@@ -5,7 +5,7 @@ const data = {
     ['Контекст и знания', 'Важное — рядом с задачей', 'Роли, навыки, знания проекта и ограниченный diff помогают исполнителю понять работу. Новые текстовые файлы входят в пакет ревью внутри границ задачи.', 'core/jobs.mjs', 'Пакет ограничен. Пропущенное и обрезанное требует дополнительного чтения; карта кода статически разбирает JS/TS, Python, Go, Swift и Markdown.'],
     ['Исполнители', 'Среда меняется. Задача остаётся.', 'Borshkit запускает Claude Code, Codex, Gemini и API-исполнителей. Пишущий агент в Git-проекте получает отдельную рабочую копию.', 'core/adapters.mjs', 'VSIX использует нативные API Copilot/Roo/Cline. Отмена и статус Cline недоступны в публичном API; живые испытания отложены для пользователей.'],
     ['Проверки и приёмка', 'Результат с доказательствами', 'Команды проверок, независимое ревью и ручные подтверждения записываются отдельно. Доказательства относятся к точному состоянию файлов.', 'core/accept.mjs', 'Сбой запуска — UNKNOWN. Изменение файлов может сделать прежний PASS устаревшим. Ответ модели сам не принимает задачу.'],
-    ['Передача работы', 'Продолжить без потери решений', 'Единый пакет задачи сохраняет контракт, состояние, решения, контекст с происхождением и исторические ссылки на evidence. Импорт требует новых проверок.', 'core/portable.mjs', 'Активный сеанс, ключи, процессы и доверенная приёмка между машинами не переносятся.']
+    ['Передача работы', 'Продолжить с сохранёнными решениями', 'Единый пакет задачи сохраняет контракт, состояние, решения, контекст с происхождением и исторические ссылки на evidence. Импорт требует новых проверок.', 'core/handoff.mjs', 'Активный сеанс, ключи, процессы и доверенная приёмка между машинами не переносятся.']
   ],
   target: [
     ['Пользовательские испытания', 'От протокола к реальному опыту', 'Следующий этап: проверить конкретные версии моделей, аккаунты Roo/Cline/Copilot и физические устройства. Владелец отложил живые испытания до пользовательской обратной связи.', 'docs/roadmap.md', 'ПЛАН · Реализация и автоматические тесты не заменяют живой запуск.'],
@@ -26,11 +26,12 @@ function select(index) {
   document.querySelector('#layer-boundary').textContent = item[4];
 }
 function render() {
+  document.querySelector('#map-content').setAttribute('aria-label', mode === 'current' ? 'Текущая архитектура' : 'Целевая архитектура — план');
   layers.replaceChildren(...data[mode].map((item, index) => {
     const button = document.createElement('button');
-    button.type = 'button'; button.className = 'layer';
+    button.type = 'button'; button.className = 'layer'; button.setAttribute('aria-controls', 'layer-detail');
     const name = document.createElement('span');
-    const number = document.createElement('span'); number.textContent = String(index + 1).padStart(2, '0');
+    const number = document.createElement('span'); number.textContent = String(index + 1).padStart(2, '0'); number.className = 'layer-number'; number.setAttribute('aria-hidden', 'true');
     name.append(number, item[0]);
     button.append(name); button.addEventListener('click', () => select(index));
     return button;
@@ -54,4 +55,5 @@ document.querySelectorAll('[data-copy]').forEach(button => button.addEventListen
     button.textContent = 'Выдели текст';
   }
 }));
+document.querySelector('.map-shell').hidden = false;
 render();
