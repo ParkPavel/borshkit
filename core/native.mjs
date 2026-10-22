@@ -35,7 +35,7 @@ export async function prepareNative(space, taskId, host) {
 }
 export async function finishNative(space, taskId, { confirmedByPerson = false } = {}) {
   assert(confirmedByPerson, 'Завершение нативной работы подтверждает человек после остановки среды');
-  const t = await readyTask(space, taskId);
+  const t = await readyTask(space, taskId, { draft: true });
   const marker = path.join(t.dir, 'native-active.json');
   assert(await exists(marker), 'Незавершённой нативной работы нет');
   const fs = await import('node:fs/promises');
@@ -47,8 +47,20 @@ export async function validateNativeRequest(file) {
   assert(value.schemaVersion === 1 && ['roo', 'cline', 'copilot'].includes(value.host) && digest === sha(stableJSON(payload)), 'Повреждён запрос нативного запуска');
   assert(ID.test(value.taskId ?? ''), 'Неверный идентификатор нативной задачи');
   const marker = await readJSON(path.resolve(path.dirname(file), '../../tasks', value.taskId, 'native-active.json'));
-  assert(marker.digest === digest, 'Нативный запрос уже завершён или заменён');
+  assert(marker.digest === digest && marker.state === 'PREPARED_UNVERIFIED', 'Нативный запрос уже запущен, завершён или заменён');
   assert(typeof value.prompt === 'string' && value.prompt.length <= 256000 && typeof value.cwd === 'string' && path.isAbsolute(value.cwd), 'Неверный запрос нативного запуска');
   assert((await snapshot(value.cwd)).digest === value.sourceState?.source?.digest, 'Файлы изменились после подготовки; создай запрос заново');
   return value;
+}
+
+export async function claimNativeRequest(file) {
+  const input = await readJSON(file);
+  assert(ID.test(input.taskId ?? ''), 'Неверный идентификатор задачи');
+  const release = await acquireLock(path.resolve(path.dirname(file), '../locks', `writer-${input.taskId}.lock`), { busy: 'Запрос уже занят' });
+  try {
+    const request = await validateNativeRequest(file);
+    const marker = path.resolve(path.dirname(file), '../../tasks', request.taskId, 'native-active.json');
+    await atomicJSON(marker, { request: file, host: request.host, state: 'RUNNING_UNVERIFIED', digest: request.digest });
+    return request;
+  } finally { await release(); }
 }

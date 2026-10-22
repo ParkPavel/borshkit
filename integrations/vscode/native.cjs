@@ -45,7 +45,7 @@ class NativeSession extends EventEmitter {
       }else if(this.host==='cline')await limited(()=>this.api.startNewTask(prompt),this.timeoutMs);
       else throw Error('Неизвестная нативная среда');
       if(this.host==='cline')this.change('LAUNCHED_STATUS_UNKNOWN');return this.status();
-    }catch(error){if(this.state==='CANCELLED')return this.status();this.change('FAILED_OR_UNKNOWN');this.dispose();throw error;}
+    }catch(error){if(this.state==='CANCELLED')return this.status();this.cancelSource?.cancel();this.change('FAILED_OR_UNKNOWN');this.dispose();throw error;}
   }
   async cancel(){
     if(this.host==='cline')throw Error('Публичный Cline API не предоставляет однозначной отмены. Останови задачу в Cline; приёмка остаётся UNKNOWN.');

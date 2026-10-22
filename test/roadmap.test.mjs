@@ -8,7 +8,7 @@ import { packContext } from '../core/context-pack.mjs';
 import { createHandoff, exportHandoff, importHandoff } from '../core/handoff.mjs';
 import { mapCode } from '../core/code-map.mjs';
 import { buildKnowledge, queryKnowledge } from '../core/kb.mjs';
-import { prepareNative, validateNativeRequest, finishNative } from '../core/native.mjs';
+import { prepareNative, validateNativeRequest, finishNative, claimNativeRequest } from '../core/native.mjs';
 import { converge, verifyAll, recordReview, taskState, authorProviders } from '../core/accept.mjs';
 import { readJSON, atomicJSON } from '../core/io.mjs';
 import { space, task, write, tempDir, node, project } from './helpers.mjs';
@@ -154,6 +154,8 @@ test('native sessions reserve the writer and unknown authors cannot establish in
   assert.deepEqual(await authorProviders(s, 'native-owner'), ['unknown']);
   await assert.rejects(runJob(s, { taskId: 'native-owner', role: 'implementer', executor: 'unused' }), /нативная работа/);
   await assert.rejects(prepareNative(s, 'native-owner', 'roo'), /незавершённая/);
+  await claimNativeRequest(request.file);
+  await assert.rejects(claimNativeRequest(request.file), /уже запущен/);
   const seen = await taskState(s, 'native-owner');
   await recordReview(s, 'native-owner', { executor: 'reviewer', provider: 'openai', seenState: seen, origin: 'job', result: { taskId: 'native-owner', criteria: [{ id: 'C1', status: 'PASS', evidence: ['src/app.js:1'] }], findings: [], unknowns: [] } });
   const report = await converge(s, 'native-owner');

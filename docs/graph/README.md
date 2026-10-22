@@ -375,4 +375,4 @@ flowchart LR
 
 ## Модули ядра без документации
 
-- `core/code-map.mjs`
+- `core/builtins.mjs`
