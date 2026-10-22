@@ -3,7 +3,7 @@ const search=document.querySelector('#docs-search');
 const results=document.querySelector('#search-results');
 const status=document.querySelector('#reader-status');
 let indexPromise,queryVersion=0;
-const closeSearch=()=>{results.hidden=true;};
+const closeSearch=()=>{queryVersion++;results.hidden=true;};
 function positionResults(){const rect=document.querySelector('.docs-tools').getBoundingClientRect();const width=Math.min(750,innerWidth-32);results.style.width=width+'px';results.style.left=Math.max(16,Math.min(search.getBoundingClientRect().left,innerWidth-width-16))+'px';results.style.top=(rect.bottom+8)+'px';results.style.maxHeight=Math.max(150,innerHeight-rect.bottom-28)+'px';}
 window.addEventListener('resize',()=>{if(!results.hidden)positionResults();});
 search.addEventListener('input',async()=>{

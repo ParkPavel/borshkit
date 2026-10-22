@@ -25,7 +25,7 @@ export function resolveLink(href, source, files, image=false) {
   if (target.startsWith('../') || path.isAbsolute(target)) return '#';
   const anchor=fragment ? '#'+fragment : '';
   if (files.has(target)) return 'read/'+route(target)+anchor;
-  if (target.startsWith('assets/')) return 'media/'+target.slice(7)+anchor;
+  if (target.startsWith('assets/')&&/\.(png|jpe?g|webp|gif|avif|svg|ico)$/i.test(target)) return 'media/'+target.slice(7)+anchor;
   if (image) return /^https?:/i.test(href) ? href : '#';
   return REPO+target+anchor;
 }
@@ -67,6 +67,13 @@ const groups=[
  ['Справочник',['docs/reference/commands.md','docs/reference/contract.md','docs/reference/team-resources.md','docs/architecture.md','docs/roadmap.md','docs/release.md','docs/ingredients.md','library/README.md','SECURITY.md','CONTRIBUTING.md','CHANGELOG.md']]
 ];
 async function markdownFiles(dir) {const out=[];for(const e of await fs.readdir(path.join(ROOT,dir),{withFileTypes:true})){const f=posix(path.join(dir,e.name));if(e.isDirectory())out.push(...await markdownFiles(f));else if(e.isFile()&&e.name.endsWith('.md'))out.push(f);}return out;}
+async function copyArtwork(source,target) {
+  await fs.mkdir(target,{recursive:true});
+  for(const e of await fs.readdir(source,{withFileTypes:true})){
+    if(e.isDirectory())await copyArtwork(path.join(source,e.name),path.join(target,e.name));
+    else if(e.isFile()&&/\.(png|jpe?g|webp|gif|avif|svg|ico)$/i.test(e.name))await fs.copyFile(path.join(source,e.name),path.join(target,e.name));
+  }
+}
 export async function buildSite(output=path.join(ROOT,'docs','read')) {
   const sources=[...await markdownFiles('docs'),...(await fs.readdir(ROOT)).filter(f=>f.endsWith('.md')),'library/README.md'].filter(f=>!f.startsWith('docs/read/')&&!f.startsWith('docs/media/')).sort();
   const files=new Set(sources),pages=[];
@@ -89,7 +96,7 @@ export async function buildSite(output=path.join(ROOT,'docs','read')) {
   await fs.writeFile(path.join(output,'search-index.json'),JSON.stringify(index)+'\n');
   // Only public, versioned artwork; never copy user workspaces or service data.
   await fs.rm(path.join(path.dirname(output),'media'),{recursive:true,force:true});
-  await fs.cp(path.join(ROOT,'assets'),path.join(path.dirname(output),'media'),{recursive:true});
+  await copyArtwork(path.join(ROOT,'assets'),path.join(path.dirname(output),'media'));
   return {pages:pages.length,output};
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url))console.log(JSON.stringify(await buildSite()));

@@ -58,7 +58,11 @@
     "integrations",
     "Dockerfile",
     ".devcontainer",
-    "scripts/live-check.mjs"
+    "scripts/live-check.mjs",
+    "scripts/site.mjs",
+    "scripts/check-site.mjs",
+    "scripts/vendor/marked",
+    "design-qa.md"
   ],
   "keywords": [
     "ai-agents",

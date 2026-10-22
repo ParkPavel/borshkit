@@ -34,4 +34,5 @@ test('documentation ships complete static articles, searchable text, local image
   assert.ok(index.every(p=>!p.text.startsWith('---')));
   assert.ok(index.some(p=>p.url==='read/guide/quickstart.html'&&p.text.includes('npm install -g')));
   await fs.access(path.join(dir,'media/product/hero.webp'));
+  await assert.rejects(fs.access(path.join(dir,'media/approval/index.html')));
 });
