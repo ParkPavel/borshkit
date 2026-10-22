@@ -1,0 +1,100 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base href="../"><meta name="description" content="Текущая архитектура — документация Borshkit"><meta name="theme-color" content="#141619"><title>Текущая архитектура · Borshkit</title><link rel="canonical" href="https://parkpavel.github.io/borshkit/read/architecture.html"><link rel="stylesheet" href="site.css"><link rel="stylesheet" href="reader.css"><script src="reader.js" defer></script></head><body class="docs-page"><a class="skip" href="read/architecture.html#article">К статье</a><header class="docs-header"><a class="brand" href="index.html">borshkit<span class="brand-dot">.</span></a><a class="docs-label" href="read/index.html">Документация <span>0.13</span></a><nav aria-label="Навигация проекта"><a href="index.html">Обзор</a><a href="https://github.com/ParkPavel/borshkit/releases/tag/0.13.0">Скачать</a><a class="support-link" href="https://web.tribute.tg/d/Sh8">Поддержать</a><a href="https://github.com/ParkPavel/borshkit">GitHub</a></nav></header><div class="docs-tools"><button type="button" id="menu-toggle" aria-controls="docs-nav" aria-expanded="false">Разделы</button><label class="search-label" for="docs-search">Найти в документации</label><input id="docs-search" type="search" placeholder="Задача, проверка, Copilot…" autocomplete="off" aria-controls="search-results"><span class="search-shortcut" aria-hidden="true">/</span></div><div class="search-output" id="search-results" aria-live="polite" hidden></div><div class="docs-layout"><aside id="docs-nav" class="docs-sidebar"><nav aria-label="Разделы документации"><section><h2>Начать здесь</h2><a href="read/index.html">Документация Borshkit</a><a href="read/guide/quickstart.html">Быстрый старт: первая задача</a><a href="read/guide/workflow.html">Руководство: от цели до результата</a><a href="read/guide/setup.html">Мастер настройки команды</a></section><section><h2>Работать с задачами</h2><a href="read/guide/handoff.html">Передать работу другому харнесу</a><a href="read/guide/native-integrations.html">Copilot, Roo и Cline: нативный запуск</a><a href="read/guide/team-operations.html">Работа команды, телефон и перенос</a><a href="read/concepts/acceptance.html">Приёмка по целям</a><a href="read/concepts/evidence.html">Доказательства и устаревание</a><a href="read/concepts/executors.html">Исполнители, пулы и автопилот</a><a href="read/concepts/privacy.html">Приватность и настройки</a><a href="read/concepts/knowledge.html">База знаний: заметки, связи, SQL</a><a href="read/concepts/glossary.html">Словарь</a></section><section><h2>Справочник</h2><a href="read/reference/commands.html">Все команды</a><a href="read/reference/contract.html">Формат задачи (`contract.json`)</a><a href="read/reference/team-resources.html">Команда, оценки ролей и ресурсы</a><a href="read/architecture.html" aria-current="page">Текущая архитектура</a><a href="read/roadmap.html">Статус пяти направлений — 0.13.0</a><a href="read/release.html">Как выпускается Borshkit</a><a href="read/ingredients.html">Рецепт: из чего сварен Borshkit</a><a href="read/library/index.html">Библиотека: навыки и проверенные ссылки</a><a href="read/project/SECURITY.html">Безопасность</a><a href="read/project/CONTRIBUTING.html">Как помочь Borshkit</a><a href="read/project/CHANGELOG.html">Изменения</a></section><details><summary>Ещё материалы</summary><a href="read/project/AGENTS.html">Для агентов, которые разрабатывают Borshkit</a><a href="read/project/CONTRIBUTORS-REFERENCES.html">Контрибьюторы проектов, на которых построен Borshkit</a><a href="read/project/README.de.html">Borshkit</a><a href="read/project/README.en.html">Borshkit</a><a href="read/project/README.fr.html">Borshkit</a><a href="read/project/README.ko.html">Borshkit</a><a href="read/project/README.html">Borshkit</a><a href="read/project/README.zh-TW.html">Borshkit</a><a href="read/concepts/research.html">Исследования: источники и цитаты</a><a href="read/concepts/roles-and-skills.html">Роли и навыки</a><a href="read/concepts/space.html">Пространство и Git простыми словами</a><a href="read/concepts/team-workspace.html">Borshkit как профессиональная команда</a><a href="read/guide/website.html">Сайт и документация как единый продукт</a><a href="read/reference/overview.de.html">Details und Grenzen — 0.13</a><a href="read/reference/overview.en.html">Details and limitations — 0.13</a><a href="read/reference/overview.fr.html">Détails et limites — 0.13</a><a href="read/reference/overview.ko.html">상세 설명과 한계 — 0.13</a><a href="read/reference/overview.ru.html">Подробности и ограничения — 0.13</a><a href="read/reference/overview.zh-TW.html">詳細資料與限制 — 0.13</a><a href="read/spec.html">Borshkit (Борщкит) — Modular AI Workspace</a><a href="read/verification-0.13.html">Проверка выпуска 0.13.0</a><a href="read/verification-2026-10-20.html">Проверка модернизации — 20 октября 2026</a></details><details><summary>История и отчёты</summary><a href="read/discussions/audit-2026-10-07.html">Ответ на независимый аудит 0.10.1</a><a href="read/discussions/modernization-2026-10-08.html">Аудит и программа модернизации — 2026-10-08</a><a href="read/discussions/modernization-2026-10-09.html">Контроль модернизации — 2026-10-09</a><a href="read/discussions/professionalism-2026-10-22.html">Аудит оформления и достоверности — 22 октября 2026</a><a href="read/discussions/space-history-backup.html">Черновик обсуждения: резервная копия истории пространства</a><a href="read/graph/README.html">Граф документации</a></details></nav><a class="sidebar-support" href="https://web.tribute.tg/d/Sh8"><strong>Поддержать Borshkit</strong><span>Помоги развивать открытый инструмент.</span></a></aside><main id="article" tabindex="-1" class="docs-article"><div class="article-meta"><span>ДОКУМЕНТАЦИЯ</span><a href="https://github.com/ParkPavel/borshkit/blob/main/docs/architecture.md">Исходник на GitHub</a></div><article lang="ru"><h1 id="текущая-архитектура">Текущая архитектура<a class="heading-anchor" href="read/architecture.html#текущая-архитектура" aria-label="Ссылка на раздел">#</a></h1>
+<p>Borshkit — локальная CLI на Node.js 22+, без зависимостей времени выполнения. Это переносимый слой задач, контекста и доказательств для работы с кодом. Сам по себе он не заменяет ИИ-харнес и не гарантирует качество модели.</p>
+<table>
+<thead>
+<tr>
+<th>Слой</th>
+<th>Реализация</th>
+<th>Граница</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Контракт</td>
+<td><code>core/contract.mjs</code>, <code>core/snapshot.mjs</code></td>
+<td>цель, paths, критерии, база и точное состояние</td>
+</tr>
+<tr>
+<td>Контекст</td>
+<td><code>core/kb.mjs</code>, <code>core/roles.mjs</code>, <code>core/jobs.mjs</code></td>
+<td>JS/TS, Python, Go, Swift и Markdown; ограниченный пакет, обрезка не означает полноту</td>
+</tr>
+<tr>
+<td>Исполнение</td>
+<td><code>core/jobs.mjs</code>, <code>core/adapters.mjs</code>, <code>core/process.mjs</code></td>
+<td>отдельная Git worktree для писателя; API пишет только в paths</td>
+</tr>
+<tr>
+<td>Проверки</td>
+<td><code>core/accept.mjs</code></td>
+<td>PASS/FAIL/UNKNOWN и лог, привязанные к состоянию; сбой запуска — UNKNOWN</td>
+</tr>
+<tr>
+<td>Решение</td>
+<td><code>core/accept.mjs</code>, <code>core/gitshell.mjs</code></td>
+<td>ответ модели не принимает задачу; ручные пункты, отдельные сборка и отправка</td>
+</tr>
+<tr>
+<td>Передача задачи</td>
+<td><code>core/handoff.mjs</code>, <code>core/context-pack.mjs</code></td>
+<td>контракт и контекст с происхождением; импорт не переносит приёмку</td>
+</tr>
+<tr>
+<td>Перенос проекта</td>
+<td><code>core/portable.mjs</code>, <code>core/integrations.mjs</code></td>
+<td>явные файлы и шаблон настроек; доказательства и доверие на новой машине проверяются заново</td>
+</tr>
+</tbody></table>
+<h2 id="уровни-поддержки-сред">Уровни поддержки сред<a class="heading-anchor" href="read/architecture.html#уровни-поддержки-сред" aria-label="Ссылка на раздел">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>Среда</th>
+<th>Экспорт инструкций</th>
+<th>Запуск исполнителя</th>
+<th>Специальная интеграция</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Claude Code</td>
+<td>CLAUDE.md</td>
+<td>адаптер CLI</td>
+<td>плагин, навык, команды и hooks</td>
+</tr>
+<tr>
+<td>Codex</td>
+<td>AGENTS.md</td>
+<td>адаптер CLI</td>
+<td>инструкции и запуск; отдельный плагин не заявлен</td>
+</tr>
+<tr>
+<td>Gemini</td>
+<td>GEMINI.md</td>
+<td>CLI и API</td>
+<td>инструкции и адаптеры</td>
+</tr>
+<tr>
+<td>Copilot / Roo / Cline</td>
+<td>файлы правил</td>
+<td>нативный путь из VSIX</td>
+<td>Copilot LM API без инструментов; Roo start/cancel/events; Cline start, статус/отмена UNKNOWN/UNSUPPORTED</td>
+</tr>
+<tr>
+<td>OpenAI-совместимый API</td>
+<td>не требуется</td>
+<td>API-адаптер</td>
+<td>зависит от схемы ответа и возможностей endpoint</td>
+</tr>
+</tbody></table>
+<p>Адаптеры тестируются поддельными программами и ответами API. Это проверяет протокол, а не качество живых моделей. VSIX опубликован в <a href="https://github.com/ParkPavel/borshkit/releases/tag/0.13.0">GitHub Release 0.13.0</a>; в VS Code Marketplace расширение не опубликовано.</p>
+<h2 id="передача-и-нативные-среды">Передача и нативные среды<a class="heading-anchor" href="read/architecture.html#передача-и-нативные-среды" aria-label="Ссылка на раздел">#</a></h2>
+<p><code>core/handoff.mjs</code> экспортирует и импортирует задачи по схеме 1; <code>core/context-pack.mjs</code> сохраняет происхождение и пропуски при сжатии. Импорт не переносит приёмку. Нативный путь описан в <a href="read/guide/native-integrations.html">руководстве</a>, включая отсутствие достоверной отмены Cline. Автоматическая запись ответа Copilot и автоматическая приёмка не выполняются.</p>
+<h2 id="надёжность-git">Надёжность Git<a class="heading-anchor" href="read/architecture.html#надёжность-git" aria-label="Ссылка на раздел">#</a></h2>
+<p>Читающие команды повторяются только после аварии процесса или временного отказа запуска. Записи, commit, merge и push автоматически не повторяются. Таймаут, отмена, отсутствие программы и ненулевой ответ — разные причины ошибки. stderr сохраняется в диагностике. Запрос остановки дерева ограничен по времени; при отказе Windows taskkill используется прямое завершение. ОС может отказать в завершении чужого процесса — программа сообщает сбой, а не обещает, что дерево исчезло.</p>
+<p>Ревью получает diff только внутри paths и содержимое новых текстовых файлов. На diff выделено до 9000 символов, на объединённый контекст — 12000; diff идёт первым. Обрезка обозначается. Двоичные файлы и неподдерживаемые типы требуют отдельной проверки.</p>
+<h2 id="связи">Связи<a class="heading-anchor" href="read/architecture.html#связи" aria-label="Ссылка на раздел">#</a></h2>
+<ul>
+<li><a href="read/roadmap.html">Следующие этапы</a></li>
+<li><a href="read/guide/handoff.html">Передача контекста</a></li>
+<li><a href="read/reference/commands.html">Команды</a></li>
+</ul>
+</article><nav class="page-neighbors" aria-label="Предыдущая и следующая статьи"><a href="read/reference/team-resources.html"><small>Назад</small>Команда, оценки ролей и ресурсы</a><a href="read/roadmap.html"><small>Дальше</small>Статус пяти направлений — 0.13.0</a></nav><footer class="article-footer"><p>Не хватает ответа? <a href="https://github.com/ParkPavel/borshkit/issues">Сообщи об этом</a>.</p><a href="index.html">К обзору продукта</a></footer></main><aside class="docs-toc" aria-label="В этой статье"><p>В этой статье</p><nav><a href="read/architecture.html#уровни-поддержки-сред" class="toc-level-2">Уровни поддержки сред</a><a href="read/architecture.html#передача-и-нативные-среды" class="toc-level-2">Передача и нативные среды</a><a href="read/architecture.html#надёжность-git" class="toc-level-2">Надёжность Git</a><a href="read/architecture.html#связи" class="toc-level-2">Связи</a></nav></aside></div><p class="reader-status sr-only" id="reader-status" role="status"></p></body></html>

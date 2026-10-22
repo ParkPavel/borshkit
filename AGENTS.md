@@ -17,5 +17,7 @@
   - `docs/graph/` — `node scripts/docs-graph.mjs`.
 
   Тесты падают, если первые два устарели.
+  - `docs/read/` и `docs/media/` — `npm run site`; проверка актуальности — `npm run site:check`.
+
 - **Документация** — заметки в формате Borshkit: frontmatter с `bk-type` и связями-путями, внизу раздел «Связи» с обычными ссылками ([как устроено](docs/concepts/knowledge.md)).
 - В проекте с пространством Borshkit пользуйся навыком `skills/borshkit/SKILL.md`.

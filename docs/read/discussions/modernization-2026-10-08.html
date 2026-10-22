@@ -1,0 +1,222 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base href="../../"><meta name="description" content="Аудит и программа модернизации — 2026-10-08 — документация Borshkit"><meta name="theme-color" content="#141619"><title>Аудит и программа модернизации — 2026-10-08 · Borshkit</title><link rel="canonical" href="https://parkpavel.github.io/borshkit/read/discussions/modernization-2026-10-08.html"><link rel="stylesheet" href="site.css"><link rel="stylesheet" href="reader.css"><script src="reader.js" defer></script></head><body class="docs-page"><a class="skip" href="read/discussions/modernization-2026-10-08.html#article">К статье</a><header class="docs-header"><a class="brand" href="index.html">borshkit<span class="brand-dot">.</span></a><a class="docs-label" href="read/index.html">Документация <span>0.13</span></a><nav aria-label="Навигация проекта"><a href="index.html">Обзор</a><a href="https://github.com/ParkPavel/borshkit/releases/tag/0.13.0">Скачать</a><a class="support-link" href="https://web.tribute.tg/d/Sh8">Поддержать</a><a href="https://github.com/ParkPavel/borshkit">GitHub</a></nav></header><div class="docs-tools"><button type="button" id="menu-toggle" aria-controls="docs-nav" aria-expanded="false">Разделы</button><label class="search-label" for="docs-search">Найти в документации</label><input id="docs-search" type="search" placeholder="Задача, проверка, Copilot…" autocomplete="off" aria-controls="search-results"><span class="search-shortcut" aria-hidden="true">/</span></div><div class="search-output" id="search-results" aria-live="polite" hidden></div><div class="docs-layout"><aside id="docs-nav" class="docs-sidebar"><nav aria-label="Разделы документации"><section><h2>Начать здесь</h2><a href="read/index.html">Документация Borshkit</a><a href="read/guide/quickstart.html">Быстрый старт: первая задача</a><a href="read/guide/workflow.html">Руководство: от цели до результата</a><a href="read/guide/setup.html">Мастер настройки команды</a></section><section><h2>Работать с задачами</h2><a href="read/guide/handoff.html">Передать работу другому харнесу</a><a href="read/guide/native-integrations.html">Copilot, Roo и Cline: нативный запуск</a><a href="read/guide/team-operations.html">Работа команды, телефон и перенос</a><a href="read/concepts/acceptance.html">Приёмка по целям</a><a href="read/concepts/evidence.html">Доказательства и устаревание</a><a href="read/concepts/executors.html">Исполнители, пулы и автопилот</a><a href="read/concepts/privacy.html">Приватность и настройки</a><a href="read/concepts/knowledge.html">База знаний: заметки, связи, SQL</a><a href="read/concepts/glossary.html">Словарь</a></section><section><h2>Справочник</h2><a href="read/reference/commands.html">Все команды</a><a href="read/reference/contract.html">Формат задачи (`contract.json`)</a><a href="read/reference/team-resources.html">Команда, оценки ролей и ресурсы</a><a href="read/architecture.html">Текущая архитектура</a><a href="read/roadmap.html">Статус пяти направлений — 0.13.0</a><a href="read/release.html">Как выпускается Borshkit</a><a href="read/ingredients.html">Рецепт: из чего сварен Borshkit</a><a href="read/library/index.html">Библиотека: навыки и проверенные ссылки</a><a href="read/project/SECURITY.html">Безопасность</a><a href="read/project/CONTRIBUTING.html">Как помочь Borshkit</a><a href="read/project/CHANGELOG.html">Изменения</a></section><details><summary>Ещё материалы</summary><a href="read/project/AGENTS.html">Для агентов, которые разрабатывают Borshkit</a><a href="read/project/CONTRIBUTORS-REFERENCES.html">Контрибьюторы проектов, на которых построен Borshkit</a><a href="read/project/README.de.html">Borshkit</a><a href="read/project/README.en.html">Borshkit</a><a href="read/project/README.fr.html">Borshkit</a><a href="read/project/README.ko.html">Borshkit</a><a href="read/project/README.html">Borshkit</a><a href="read/project/README.zh-TW.html">Borshkit</a><a href="read/concepts/research.html">Исследования: источники и цитаты</a><a href="read/concepts/roles-and-skills.html">Роли и навыки</a><a href="read/concepts/space.html">Пространство и Git простыми словами</a><a href="read/concepts/team-workspace.html">Borshkit как профессиональная команда</a><a href="read/guide/website.html">Сайт и документация как единый продукт</a><a href="read/reference/overview.de.html">Details und Grenzen — 0.13</a><a href="read/reference/overview.en.html">Details and limitations — 0.13</a><a href="read/reference/overview.fr.html">Détails et limites — 0.13</a><a href="read/reference/overview.ko.html">상세 설명과 한계 — 0.13</a><a href="read/reference/overview.ru.html">Подробности и ограничения — 0.13</a><a href="read/reference/overview.zh-TW.html">詳細資料與限制 — 0.13</a><a href="read/spec.html">Borshkit (Борщкит) — Modular AI Workspace</a><a href="read/verification-0.13.html">Проверка выпуска 0.13.0</a><a href="read/verification-2026-10-20.html">Проверка модернизации — 20 октября 2026</a></details><details open><summary>История и отчёты</summary><a href="read/discussions/audit-2026-10-07.html">Ответ на независимый аудит 0.10.1</a><a href="read/discussions/modernization-2026-10-08.html" aria-current="page">Аудит и программа модернизации — 2026-10-08</a><a href="read/discussions/modernization-2026-10-09.html">Контроль модернизации — 2026-10-09</a><a href="read/discussions/professionalism-2026-10-22.html">Аудит оформления и достоверности — 22 октября 2026</a><a href="read/discussions/space-history-backup.html">Черновик обсуждения: резервная копия истории пространства</a><a href="read/graph/README.html">Граф документации</a></details></nav><a class="sidebar-support" href="https://web.tribute.tg/d/Sh8"><strong>Поддержать Borshkit</strong><span>Помоги развивать открытый инструмент.</span></a></aside><main id="article" tabindex="-1" class="docs-article"><div class="article-meta"><span>ИСТОРИЯ / ОТЧЁТ</span><a href="https://github.com/ParkPavel/borshkit/blob/main/docs/discussions/modernization-2026-10-08.md">Исходник на GitHub</a></div><article lang="ru"><h1 id="аудит-и-программа-модернизации--2026-10-08">Аудит и программа модернизации — 2026-10-08<a class="heading-anchor" href="read/discussions/modernization-2026-10-08.html#аудит-и-программа-модернизации--2026-10-08" aria-label="Ссылка на раздел">#</a></h1>
+<p>Исторический снимок этапа 8 октября. Актуальные изменения и границы реализации: <a href="read/discussions/modernization-2026-10-09.html">контроль 9 октября</a> и <a href="read/guide/team-operations.html">операционное руководство</a>. Таблица оставшихся работ ниже описывает состояние на момент этого документа.</p>
+<p>Основание — пользовательская обратная связь в чате и чтение реализации 0.11.1. Это аудит архитектуры и исходного кода, не независимый pentest, не сертификация безопасности и не живое сравнение моделей. Изменения первого этапа перечислены отдельно; остальные требования сохраняются открытыми.</p>
+<h2 id="что-уже-хорошо-устроено">Что уже хорошо устроено<a class="heading-anchor" href="read/discussions/modernization-2026-10-08.html#что-уже-хорошо-устроено" aria-label="Ссылка на раздел">#</a></h2>
+<p>Роли отделены от исполнителей; есть явные пулы, доказательства привязаны к состоянию, писатель работает в worktree, импортированное ревью не закрывает приёмку само, все семейства незавершённых авторов учитываются. Ядро без runtime-зависимостей, упаковка плагином/CLI/архивом, тесты на fake исполнителях и CI Linux/Windows дают основу для развития.</p>
+<h2 id="найденные-разрывы-и-первый-этап">Найденные разрывы и первый этап<a class="heading-anchor" href="read/discussions/modernization-2026-10-08.html#найденные-разрывы-и-первый-этап" aria-label="Ссылка на раздел">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>Приоритет</th>
+<th>Наблюдение 0.11.1</th>
+<th>Изменение / открытая работа</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Высокий</td>
+<td>help/version или <code>/models</code> трактуются пользователем как готовность команды; качество роли не подтверждено</td>
+<td>каталог разделяет пробу подключения и оценку роли; оценки с моделью, сроком и отпечатками</td>
+</tr>
+<tr>
+<td>Высокий</td>
+<td>полный снимок старого предложения мог перезаписать новые настройки</td>
+<td><code>baseDigest</code>, блокировка операций и отказ при изменении зависимостей</td>
+</tr>
+<tr>
+<td>Высокий</td>
+<td>план распределения и резерв ревью отсутствуют</td>
+<td>объяснимые планы, резерв семейства для ревью, учёт всех writer fallback</td>
+</tr>
+<tr>
+<td>Высокий</td>
+<td>ошибка <code>command --version</code> подавлялась, проба могла стать успешной</td>
+<td>ошибка делает пробу FAIL</td>
+</tr>
+<tr>
+<td>Средний</td>
+<td>пробы без привязки к конфигурации и срока</td>
+<td>fingerprint и часовой срок пробы; старые пробы требуют обновления</td>
+</tr>
+<tr>
+<td>Средний</td>
+<td>остатки API не имеют общих единиц, области и актуальности</td>
+<td>отдельные наблюдения; <code>/models</code> отделён от генерации; неизвестное явно</td>
+</tr>
+<tr>
+<td>Средний</td>
+<td><code>готово</code> работы легко спутать с приёмкой</td>
+<td>диспетчерская отдельно поясняет завершение выполнения и приёмку; сохраняет модель и свидетельство запуска</td>
+</tr>
+<tr>
+<td>Средний</td>
+<td>флаг повторной попытки исчезал с новой attempt</td>
+<td>не более одного ожидания Retry-After на исполнителя в работе</td>
+</tr>
+<tr>
+<td>Высокий</td>
+<td>опросы мониторинга могли перекрываться при медленной записи и терять ответ об остановке, выявлено CI Windows</td>
+<td>последовательные опросы, ожидание текущего опроса при завершении работы; проверка единственного вопроса</td>
+</tr>
+<tr>
+<td>Высокий, открыто</td>
+<td>подтверждение ослабления только через терминал</td>
+<td>защищённый удалённый канал спроектирован, реализация и аудит впереди</td>
+</tr>
+<tr>
+<td>Средний, частично закрыто</td>
+<td>нет последовательного мастера onboarding</td>
+<td>мастер безопасности/сред/моделей/ролей с сохранением выбора и предложением; живые оценки, бюджет и пробная задача ещё открыты</td>
+</tr>
+<tr>
+<td>Средний, открыто</td>
+<td>независимые клиенты имеют разные инструкции, плагины и Remote Control</td>
+<td>матрица границ поддержки; нативные адаптеры Gemini/IDE — следующий этап</td>
+</tr>
+<tr>
+<td>Средний, открыто</td>
+<td>нет управляемого фонового сервиса и измеренной оптимизации</td>
+<td>локальные снимки и явный watch; демон, WIP, бюджеты и прогнозирование — следующий этап</td>
+</tr>
+</tbody></table>
+<p><code>PASS</code> импортированной оценки остаётся заявлением человека. Объявленный <code>provider</code> остаётся заявлением о семействе модели. Нет гарантии неизменности внешней модели за alias, криптографической аттестации отчёта или обязательного резерва ревью для ручных запусков вне нового плана. Нельзя объявлять эти ограничения устранёнными.</p>
+<h2 id="практики-сильных-it-команд">Практики сильных IT-команд<a class="heading-anchor" href="read/discussions/modernization-2026-10-08.html#практики-сильных-it-команд" aria-label="Ссылка на раздел">#</a></h2>
+<p>Профессионализм выражается в проверяемом процессе: ясное владение результатом, маленькие изменения, видимое ограничение незавершённой работы, независимая проверка, воспроизводимый build, своевременная интеграция и документация решений. Эти принципы переносим на агентские роли; это инженерная рекомендация, а не утверждение, что исследован объективный рейтинг «лучших пулов».</p>
+<ul>
+<li>DORA: наблюдать поток поставки и стабильность, а не количество агентских сообщений. <a href="https://dora.dev/capabilities/">Модель способностей</a>.</li>
+<li>Google Engineering Practices: небольшие проверяемые изменения, цель ревью, ответственность автора и ревьюера. <a href="https://google.github.io/eng-practices/review/">Code review</a>.</li>
+<li>Google SRE: наблюдаемость должна помогать действовать; сигнал состояния важнее объёма логов. <a href="https://sre.google/sre-book/monitoring-distributed-systems/">Monitoring distributed systems</a>.</li>
+<li>NIST SSDF: требования безопасности, защита среды и артефактов, проверка выпуска, реагирование на дефекты. <a href="https://csrc.nist.gov/projects/ssdf">SSDF</a>.</li>
+<li>SLSA: происхождение сборки и воспроизводимость цепочки, без обещания детерминированного вывода LLM. <a href="https://slsa.dev/spec/">Specification</a>.</li>
+<li>Dev Containers: декларация среды снижает расхождения машин; контейнер не означает поддержку любого телефона. <a href="https://containers.dev/implementors/spec/">Specification</a>.</li>
+</ul>
+<h2 id="источники-по-интеграции-сред">Источники по интеграции сред<a class="heading-anchor" href="read/discussions/modernization-2026-10-08.html#источники-по-интеграции-сред" aria-label="Ссылка на раздел">#</a></h2>
+<p>Первичные источники собраны через Firecrawl; интерфейсы меняются, поэтому при реализации адаптера нужно снова сверить актуальную документацию и закрепить версию. Ссылки являются источниками решений, тексты и код из них не импортированы в пакет.</p>
+<table>
+<thead>
+<tr>
+<th>Источник</th>
+<th>Вывод для Borshkit</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://agents.md/">AGENTS.md</a> и <a href="https://agentskills.io/specification">Agent Skills</a></td>
+<td>общие инструкции и применимый навык — разные уровни; загрузка материалов по необходимости</td>
+</tr>
+<tr>
+<td><a href="https://code.claude.com/docs/en/plugins">Claude Code plugins</a></td>
+<td>упаковка включает навыки, хуки, агенты и MCP; права локальной среды остаются её ответственностью</td>
+</tr>
+<tr>
+<td><a href="https://code.claude.com/docs/en/remote-control">Claude Remote Control</a></td>
+<td>удалённое управление требует поддерживаемого сценария и живого процесса исполнения</td>
+</tr>
+<tr>
+<td><a href="https://learn.chatgpt.com/docs/remote-connections">Codex remote connections</a></td>
+<td>учитывать возможности и условия конкретного приложения; не переносить их автоматически на CLI</td>
+</tr>
+<tr>
+<td><a href="https://code.visualstudio.com/docs/agent-customization/overview">VS Code agent customization</a></td>
+<td>конфигурации разных harness не эквивалентны автоматически</td>
+</tr>
+<tr>
+<td><a href="https://geminicli.com/docs/ide-integration/">Gemini CLI IDE integration</a></td>
+<td>companion и контекст IDE требуют собственного адаптера</td>
+</tr>
+<tr>
+<td><a href="https://docs.roocode.com/">Roo Code</a> и <a href="https://docs.cline.bot/">Cline</a></td>
+<td>конкретные средства и правила доступа проверяются отдельно</td>
+</tr>
+<tr>
+<td><a href="https://modelcontextprotocol.io/specification">MCP specification</a></td>
+<td>согласовывать версию; транспорт не является sandbox или доказательством согласия</td>
+</tr>
+<tr>
+<td><a href="https://agentclientprotocol.com/protocol/overview">ACP</a></td>
+<td>мультимодальные возможности клиента согласовываются; не считать их универсальными</td>
+</tr>
+<tr>
+<td><a href="https://github.com/cloudevents/spec/tree/v1.0.2">CloudEvents</a></td>
+<td>envelope события, идентичность source/id; exactly-once не гарантируется</td>
+</tr>
+<tr>
+<td><a href="https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html">WCAG status messages</a></td>
+<td>изменения состояния должны читаться без догадок по цвету</td>
+</tr>
+<tr>
+<td><a href="https://cheatsheetseries.owasp.org/cheatsheets/LLM_Prompt_Injection_Prevention_Cheat_Sheet.html">OWASP prompt injection</a></td>
+<td>внешние данные не должны получать полномочия; текстовые метки недостаточны</td>
+</tr>
+</tbody></table>
+<p>Выбор модели опирается на <a href="https://developers.openai.com/api/docs/guides/model-selection">OpenAI model selection</a>, <a href="https://developers.openai.com/api/docs/guides/rate-limits">rate limits</a>, <a href="https://developers.openai.com/api/docs/guides/image-generation">image generation</a>, <a href="https://ai.google.dev/gemini-api/docs/image-generation">Gemini image generation</a> и <a href="https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E-Instruct">официальную карточку Llama</a>. Эти источники описывают свойства и способы оценки, но не доказывают универсальный рейтинг пригодности для проектных ролей.</p>
+<h2 id="последующие-этапы-и-критерии-готовности">Последующие этапы и критерии готовности<a class="heading-anchor" href="read/discussions/modernization-2026-10-08.html#последующие-этапы-и-критерии-готовности" aria-label="Ссылка на раздел">#</a></h2>
+<ol>
+<li><strong>Первый этап — прозрачная команда и ресурсы.</strong> Пробы/оценки/квоты различаются, изменения данных блокируют старые предложения, есть команды и документация, fake тесты. Живое качество моделей не заявлено.</li>
+<li><strong>Onboarding и оценки — частично реализовано.</strong> Мастер доступен диалогом и командами из приложения, сохраняет выбор, проверяет совместимость и создаёт предложение без запуска. Поиск файлов CLI не выполняет программы и API-запросы. Десять тестов покрывают сохранение, параллельные шаги, устаревание, приватность, факты запуска, существующую конфигурацию и отсутствие обхода подтверждения. Открыты стенд одинаковых заданий, воспроизводимые отчёты, условные рекомендации моделей, бюджет и пробная задача. <a href="read/guide/setup.html">Руководство</a>.</li>
+<li><strong>Адаптеры и мобильное управление.</strong> Отдельная матрица версий/прав/Remote Control, согласованный вход файлов/изображений/текста, защищённое удалённое подтверждение с тестами replay/expiry/revision/revocation.</li>
+<li><strong>Длительная командная работа.</strong> Ограничение WIP, координация интеграции, checkpoints, управляемый мониторинг, безопасная остановка и восстановление, доказанные источники квот.</li>
+<li><strong>Переносимая поставка — частично реализовано.</strong> Кандидатный архив и checksum проверяются; CI дополнен macOS. Открыты перенос пространства без старых путей и доступов, подписанная provenance по выбранной схеме, контейнер и примеры воспроизведения на разных машинах, обновление отметок выпуска одновременно с релизом.</li>
+</ol>
+<h2 id="что-остаётся-после-мастера">Что остаётся после мастера<a class="heading-anchor" href="read/discussions/modernization-2026-10-08.html#что-остаётся-после-мастера" aria-label="Ссылка на раздел">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>Направление</th>
+<th>Статус</th>
+<th>Критерий завершения</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Живые оценки компетенций</td>
+<td>не реализованы</td>
+<td>одинаковые задания, фиксированные модели/инструкции, независимые проверки, отчёт с ограничениями и расходом; запуск по явному действию</td>
+</tr>
+<tr>
+<td>Автоактуализация лимитов и рекомендации</td>
+<td>частично: наблюдения из ответов API и ручные данные</td>
+<td>источники по конкретным сервисам, срок и область, изменение лимитов порождает предложение; нет выдуманных подписочных остатков</td>
+</tr>
+<tr>
+<td>Бюджет и оптимизация</td>
+<td>не реализованы</td>
+<td>стоимость и лимиты учитываются по сопоставимым измерениям; резерв ревью, границы расходов, объяснение отказов</td>
+</tr>
+<tr>
+<td>Профессиональная координация</td>
+<td>частично: роли, контракт, отдельные worktree и ревью</td>
+<td>WIP, зависимости задач, checkpoints, ответственный координатор, интеграционный цикл и передача незавершённой работы</td>
+</tr>
+<tr>
+<td>Удалённое согласие с телефона</td>
+<td>спроектировано</td>
+<td>доверенное подключение человека, точное действие/ревизия, одноразовость, expiry, отзыв, аудит; негативные проверки и отдельный разбор угроз</td>
+</tr>
+<tr>
+<td>Нативные адаптеры Gemini/IDE</td>
+<td>не реализованы</td>
+<td>матрица версий и прав, реальные совместимые хуки/события и входные материалы; воспроизводимые проверки каждого адаптера</td>
+</tr>
+<tr>
+<td>Управляемый фоновый мониторинг</td>
+<td>частично: явный watch и мониторинг работы</td>
+<td>start/stop, владелец, бюджет, источник состояния, восстановление и предложение изменений без скрытого запуска</td>
+</tr>
+<tr>
+<td>Перенос и происхождение поставки</td>
+<td>частично: пакет и checksum</td>
+<td>перенос не несёт ключи, старые абсолютные пути и устаревшие пробы; зафиксирована среда и проверяется происхождение сборки</td>
+</tr>
+<tr>
+<td>Релиз</td>
+<td>не опубликован</td>
+<td>ревью, зелёный CI точной версии, согласованные package/plugin/tag/README/changelog, архив и схемы опубликованного выпуска</td>
+</tr>
+</tbody></table>
+<p>Мастер закрывает понятный выбор и подготовку настроек, но не весь сценарий «готовая команда из коробки». Не следует считать ни всю модернизацию, ни этап оценок завершёнными.</p>
+<h2 id="связи">Связи<a class="heading-anchor" href="read/discussions/modernization-2026-10-08.html#связи" aria-label="Ссылка на раздел">#</a></h2>
+<ul>
+<li><a href="read/concepts/team-workspace.html">Архитектура команды</a></li>
+<li><a href="read/reference/team-resources.html">Работающие команды и форматы</a></li>
+<li><a href="read/spec.html">Исходная спецификация</a></li>
+<li><a href="read/discussions/audit-2026-10-07.html">Предыдущий аудит</a></li>
+</ul>
+</article><nav class="page-neighbors" aria-label="Предыдущая и следующая статьи"><span></span><span></span></nav><footer class="article-footer"><p>Не хватает ответа? <a href="https://github.com/ParkPavel/borshkit/issues">Сообщи об этом</a>.</p><a href="index.html">К обзору продукта</a></footer></main><aside class="docs-toc" aria-label="В этой статье"><p>В этой статье</p><nav><a href="read/discussions/modernization-2026-10-08.html#что-уже-хорошо-устроено" class="toc-level-2">Что уже хорошо устроено</a><a href="read/discussions/modernization-2026-10-08.html#найденные-разрывы-и-первый-этап" class="toc-level-2">Найденные разрывы и первый этап</a><a href="read/discussions/modernization-2026-10-08.html#практики-сильных-it-команд" class="toc-level-2">Практики сильных IT-команд</a><a href="read/discussions/modernization-2026-10-08.html#источники-по-интеграции-сред" class="toc-level-2">Источники по интеграции сред</a><a href="read/discussions/modernization-2026-10-08.html#последующие-этапы-и-критерии-готовности" class="toc-level-2">Последующие этапы и критерии готовности</a><a href="read/discussions/modernization-2026-10-08.html#что-остаётся-после-мастера" class="toc-level-2">Что остаётся после мастера</a><a href="read/discussions/modernization-2026-10-08.html#связи" class="toc-level-2">Связи</a></nav></aside></div><p class="reader-status sr-only" id="reader-status" role="status"></p></body></html>

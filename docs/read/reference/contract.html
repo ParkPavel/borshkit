@@ -1,0 +1,129 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base href="../../"><meta name="description" content="Формат задачи (`contract.json`) — документация Borshkit"><meta name="theme-color" content="#141619"><title>Формат задачи (`contract.json`) · Borshkit</title><link rel="canonical" href="https://parkpavel.github.io/borshkit/read/reference/contract.html"><link rel="stylesheet" href="site.css"><link rel="stylesheet" href="reader.css"><script src="reader.js" defer></script></head><body class="docs-page"><a class="skip" href="read/reference/contract.html#article">К статье</a><header class="docs-header"><a class="brand" href="index.html">borshkit<span class="brand-dot">.</span></a><a class="docs-label" href="read/index.html">Документация <span>0.13</span></a><nav aria-label="Навигация проекта"><a href="index.html">Обзор</a><a href="https://github.com/ParkPavel/borshkit/releases/tag/0.13.0">Скачать</a><a class="support-link" href="https://web.tribute.tg/d/Sh8">Поддержать</a><a href="https://github.com/ParkPavel/borshkit">GitHub</a></nav></header><div class="docs-tools"><button type="button" id="menu-toggle" aria-controls="docs-nav" aria-expanded="false">Разделы</button><label class="search-label" for="docs-search">Найти в документации</label><input id="docs-search" type="search" placeholder="Задача, проверка, Copilot…" autocomplete="off" aria-controls="search-results"><span class="search-shortcut" aria-hidden="true">/</span></div><div class="search-output" id="search-results" aria-live="polite" hidden></div><div class="docs-layout"><aside id="docs-nav" class="docs-sidebar"><nav aria-label="Разделы документации"><section><h2>Начать здесь</h2><a href="read/index.html">Документация Borshkit</a><a href="read/guide/quickstart.html">Быстрый старт: первая задача</a><a href="read/guide/workflow.html">Руководство: от цели до результата</a><a href="read/guide/setup.html">Мастер настройки команды</a></section><section><h2>Работать с задачами</h2><a href="read/guide/handoff.html">Передать работу другому харнесу</a><a href="read/guide/native-integrations.html">Copilot, Roo и Cline: нативный запуск</a><a href="read/guide/team-operations.html">Работа команды, телефон и перенос</a><a href="read/concepts/acceptance.html">Приёмка по целям</a><a href="read/concepts/evidence.html">Доказательства и устаревание</a><a href="read/concepts/executors.html">Исполнители, пулы и автопилот</a><a href="read/concepts/privacy.html">Приватность и настройки</a><a href="read/concepts/knowledge.html">База знаний: заметки, связи, SQL</a><a href="read/concepts/glossary.html">Словарь</a></section><section><h2>Справочник</h2><a href="read/reference/commands.html">Все команды</a><a href="read/reference/contract.html" aria-current="page">Формат задачи (`contract.json`)</a><a href="read/reference/team-resources.html">Команда, оценки ролей и ресурсы</a><a href="read/architecture.html">Текущая архитектура</a><a href="read/roadmap.html">Статус пяти направлений — 0.13.0</a><a href="read/release.html">Как выпускается Borshkit</a><a href="read/ingredients.html">Рецепт: из чего сварен Borshkit</a><a href="read/library/index.html">Библиотека: навыки и проверенные ссылки</a><a href="read/project/SECURITY.html">Безопасность</a><a href="read/project/CONTRIBUTING.html">Как помочь Borshkit</a><a href="read/project/CHANGELOG.html">Изменения</a></section><details><summary>Ещё материалы</summary><a href="read/project/AGENTS.html">Для агентов, которые разрабатывают Borshkit</a><a href="read/project/CONTRIBUTORS-REFERENCES.html">Контрибьюторы проектов, на которых построен Borshkit</a><a href="read/project/README.de.html">Borshkit</a><a href="read/project/README.en.html">Borshkit</a><a href="read/project/README.fr.html">Borshkit</a><a href="read/project/README.ko.html">Borshkit</a><a href="read/project/README.html">Borshkit</a><a href="read/project/README.zh-TW.html">Borshkit</a><a href="read/concepts/research.html">Исследования: источники и цитаты</a><a href="read/concepts/roles-and-skills.html">Роли и навыки</a><a href="read/concepts/space.html">Пространство и Git простыми словами</a><a href="read/concepts/team-workspace.html">Borshkit как профессиональная команда</a><a href="read/guide/website.html">Сайт и документация как единый продукт</a><a href="read/reference/overview.de.html">Details und Grenzen — 0.13</a><a href="read/reference/overview.en.html">Details and limitations — 0.13</a><a href="read/reference/overview.fr.html">Détails et limites — 0.13</a><a href="read/reference/overview.ko.html">상세 설명과 한계 — 0.13</a><a href="read/reference/overview.ru.html">Подробности и ограничения — 0.13</a><a href="read/reference/overview.zh-TW.html">詳細資料與限制 — 0.13</a><a href="read/spec.html">Borshkit (Борщкит) — Modular AI Workspace</a><a href="read/verification-0.13.html">Проверка выпуска 0.13.0</a><a href="read/verification-2026-10-20.html">Проверка модернизации — 20 октября 2026</a></details><details><summary>История и отчёты</summary><a href="read/discussions/audit-2026-10-07.html">Ответ на независимый аудит 0.10.1</a><a href="read/discussions/modernization-2026-10-08.html">Аудит и программа модернизации — 2026-10-08</a><a href="read/discussions/modernization-2026-10-09.html">Контроль модернизации — 2026-10-09</a><a href="read/discussions/professionalism-2026-10-22.html">Аудит оформления и достоверности — 22 октября 2026</a><a href="read/discussions/space-history-backup.html">Черновик обсуждения: резервная копия истории пространства</a><a href="read/graph/README.html">Граф документации</a></details></nav><a class="sidebar-support" href="https://web.tribute.tg/d/Sh8"><strong>Поддержать Borshkit</strong><span>Помоги развивать открытый инструмент.</span></a></aside><main id="article" tabindex="-1" class="docs-article"><div class="article-meta"><span>ДОКУМЕНТАЦИЯ</span><a href="https://github.com/ParkPavel/borshkit/blob/main/docs/reference/contract.md">Исходник на GitHub</a></div><article lang="ru"><h1 id="формат-задачи-contractjson">Формат задачи (<code>contract.json</code>)<a class="heading-anchor" href="read/reference/contract.html#формат-задачи-contractjson" aria-label="Ссылка на раздел">#</a></h1>
+<p>Задача живёт в <code>borshkit/tasks/&lt;имя&gt;/contract.json</code>. Её создаёт <code>borshkit задача новая</code>, а цели и критерии дописываешь ты или роль <code>architect</code>. Готовый пример — <a href="https://github.com/ParkPavel/borshkit/blob/main/examples/contract.json"><code>examples/contract.json</code></a>.</p>
+<h2 id="поля">Поля<a class="heading-anchor" href="read/reference/contract.html#поля" aria-label="Ссылка на раздел">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>Поле</th>
+<th>Обязательно</th>
+<th>Что это</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>schemaVersion</code></td>
+<td>да</td>
+<td>всегда <code>2</code></td>
+</tr>
+<tr>
+<td><code>taskId</code></td>
+<td>да</td>
+<td>имя задачи: латиница, цифры, <code>-</code> и <code>_</code></td>
+</tr>
+<tr>
+<td><code>kind</code></td>
+<td>да</td>
+<td><code>feature</code>, <code>bug</code>, <code>maintenance</code> или <code>research</code></td>
+</tr>
+<tr>
+<td><code>goal</code></td>
+<td>да</td>
+<td>общая цель одной фразой</td>
+</tr>
+<tr>
+<td><code>nonGoals</code></td>
+<td>да</td>
+<td>чего задача <strong>не</strong> делает (список, можно пустой)</td>
+</tr>
+<tr>
+<td><code>decisions</code></td>
+<td>да</td>
+<td>уже принятые решения, чтобы агент их не пересматривал</td>
+</tr>
+<tr>
+<td><code>base</code></td>
+<td>да</td>
+<td>исходный снимок; Borshkit заполняет сам</td>
+</tr>
+<tr>
+<td><code>paths</code></td>
+<td>да</td>
+<td>какие файлы задача может менять; <code>&quot;.&quot;</code> — весь проект</td>
+</tr>
+<tr>
+<td><code>goals</code></td>
+<td>да</td>
+<td>цели: <code>{ &quot;id&quot;, &quot;text&quot;, &quot;criteria&quot;: [&quot;C1&quot;, …] }</code></td>
+</tr>
+<tr>
+<td><code>criteria</code></td>
+<td>да</td>
+<td>критерии: <code>{ &quot;id&quot;, &quot;text&quot;, &quot;class&quot;, &quot;tag&quot;?, &quot;manual&quot;? }</code></td>
+</tr>
+<tr>
+<td><code>checks</code></td>
+<td>да</td>
+<td>проверки (ниже); могут вести только к критериям <code>auto</code></td>
+</tr>
+<tr>
+<td><code>materials</code></td>
+<td>нет</td>
+<td>номера материалов для исследования: <code>[&quot;m-0123456789ab&quot;]</code></td>
+</tr>
+<tr>
+<td><code>acceptance.policy</code></td>
+<td>да</td>
+<td><code>mixed</code> (по умолчанию), <code>auto</code> или <code>manual</code> — см. <a href="read/concepts/acceptance.html">Приёмка</a></td>
+</tr>
+</tbody></table>
+<h2 id="критерий">Критерий<a class="heading-anchor" href="read/reference/contract.html#критерий" aria-label="Ссылка на раздел">#</a></h2>
+<div class="code-block"><div class="code-toolbar"><span>json</span><button type="button" class="code-copy" aria-label="Скопировать блок кода">Копировать</button></div><pre tabindex="0"><code>{ &quot;id&quot;: &quot;C2&quot;, &quot;text&quot;: &quot;Переключатель подписан и доступен с клавиатуры&quot;, &quot;class&quot;: &quot;model&quot;, &quot;tag&quot;: &quot;ui-a11y&quot; }</code></pre></div><ul>
+<li><code>class</code> — <code>auto</code>, <code>model</code> или <code>manual</code>.</li>
+<li><code>tag</code> — метка для цели доверия к модели (латиница, цифры, <code>-</code>).</li>
+<li><code>manual</code> — для ручной проверки: <code>steps</code> (шаги), <code>expect</code> (что должно быть видно), <code>where</code> (где смотреть).</li>
+</ul>
+<div class="code-block"><div class="code-toolbar"><span>json</span><button type="button" class="code-copy" aria-label="Скопировать блок кода">Копировать</button></div><pre tabindex="0"><code>{ &quot;id&quot;: &quot;C3&quot;, &quot;text&quot;: &quot;После перезапуска тема остаётся тёмной&quot;, &quot;class&quot;: &quot;manual&quot;,
+  &quot;manual&quot;: { &quot;steps&quot;: [&quot;Включи тёмную тему&quot;, &quot;Перезапусти приложение&quot;], &quot;expect&quot;: &quot;Тема тёмная&quot;, &quot;where&quot;: &quot;Тестовое хранилище&quot; } }</code></pre></div><h2 id="проверка-команда">Проверка-команда<a class="heading-anchor" href="read/reference/contract.html#проверка-команда" aria-label="Ссылка на раздел">#</a></h2>
+<div class="code-block"><div class="code-toolbar"><span>json</span><button type="button" class="code-copy" aria-label="Скопировать блок кода">Копировать</button></div><pre tabindex="0"><code>{ &quot;id&quot;: &quot;test&quot;, &quot;command&quot;: &quot;npm&quot;, &quot;args&quot;: [&quot;test&quot;], &quot;criteria&quot;: [&quot;C1&quot;], &quot;timeoutMs&quot;: 120000 }</code></pre></div><p>Команда запускается без оболочки, аргументы — списком. <code>timeoutMs</code> — до 15 минут (900000). Для пишущих ролей проверка идёт в копии задачи.</p>
+<h2 id="встроенные-проверки">Встроенные проверки<a class="heading-anchor" href="read/reference/contract.html#встроенные-проверки" aria-label="Ссылка на раздел">#</a></h2>
+<table>
+<thead>
+<tr>
+<th><code>builtin</code></th>
+<th>Поля</th>
+<th>Что проверяет</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>citations</code></td>
+<td><code>report</code> (путь к отчёту), <code>minCitations</code></td>
+<td>цитаты дословно есть в материалах — <a href="read/concepts/research.html">Исследования</a></td>
+</tr>
+<tr>
+<td><code>attribution</code></td>
+<td><code>manifest</code> (по умолчанию <code>third-party.json</code>), <code>readme</code></td>
+<td>каждый источник указан с лицензией и ссылкой; без лицензии — ничего не скопировано</td>
+</tr>
+<tr>
+<td><code>readme-assets</code></td>
+<td><code>readme</code>, <code>maxBytes</code> (по умолчанию 1 МБ)</td>
+<td>картинки на месте, с alt-текстом, не тяжелее лимита; локальные ссылки ведут к файлам</td>
+</tr>
+</tbody></table>
+<div class="code-block"><div class="code-toolbar"><span>json</span><button type="button" class="code-copy" aria-label="Скопировать блок кода">Копировать</button></div><pre tabindex="0"><code>{ &quot;id&quot;: &quot;cites&quot;, &quot;builtin&quot;: &quot;citations&quot;, &quot;report&quot;: &quot;research/report.md&quot;, &quot;minCitations&quot;: 3, &quot;criteria&quot;: [&quot;C4&quot;] }</code></pre></div><h2 id="что-подскажет-задача-анализ">Что подскажет <code>задача анализ</code><a class="heading-anchor" href="read/reference/contract.html#что-подскажет-задача-анализ" aria-label="Ссылка на раздел">#</a></h2>
+<p>Контракт может быть правильным по форме, но обещать то, чего ничто не покажет. <code>borshkit задача анализ &lt;имя&gt;</code> предупредит, например:</p>
+<ul>
+<li>критерий размытый: «быстро», «удобно», «корректно», «работает» — и без чисел;</li>
+<li>у критерия <code>auto</code> нет проверки;</li>
+<li>у ручного критерия нет шагов;</li>
+<li>критерий не относится ни к одной цели или повторяет другой;</li>
+<li>остались заглушки TODO, TBD или <code>???</code>;</li>
+<li>исследование без проверки <code>citations</code> или без материалов;</li>
+<li>сколько критериев останется за тобой (слепая зона).</li>
+</ul>
+<p>Предупреждения ничего не блокируют. Они показывают слепую зону до начала работы.</p>
+<h2 id="связи">Связи<a class="heading-anchor" href="read/reference/contract.html#связи" aria-label="Ссылка на раздел">#</a></h2>
+<ul>
+<li>Как критерии превращаются в итог: <a href="read/concepts/acceptance.html">Приёмка</a></li>
+<li>Команды задачи: <a href="read/reference/commands.html">Все команды</a></li>
+</ul>
+</article><nav class="page-neighbors" aria-label="Предыдущая и следующая статьи"><a href="read/reference/commands.html"><small>Назад</small>Все команды</a><a href="read/reference/team-resources.html"><small>Дальше</small>Команда, оценки ролей и ресурсы</a></nav><footer class="article-footer"><p>Не хватает ответа? <a href="https://github.com/ParkPavel/borshkit/issues">Сообщи об этом</a>.</p><a href="index.html">К обзору продукта</a></footer></main><aside class="docs-toc" aria-label="В этой статье"><p>В этой статье</p><nav><a href="read/reference/contract.html#поля" class="toc-level-2">Поля</a><a href="read/reference/contract.html#критерий" class="toc-level-2">Критерий</a><a href="read/reference/contract.html#проверка-команда" class="toc-level-2">Проверка-команда</a><a href="read/reference/contract.html#встроенные-проверки" class="toc-level-2">Встроенные проверки</a><a href="read/reference/contract.html#что-подскажет-задача-анализ" class="toc-level-2">Что подскажет задача анализ</a><a href="read/reference/contract.html#связи" class="toc-level-2">Связи</a></nav></aside></div><p class="reader-status sr-only" id="reader-status" role="status"></p></body></html>

@@ -1,0 +1,111 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base href="../../"><meta name="description" content="Исполнители, пулы и автопилот — документация Borshkit"><meta name="theme-color" content="#141619"><title>Исполнители, пулы и автопилот · Borshkit</title><link rel="canonical" href="https://parkpavel.github.io/borshkit/read/concepts/executors.html"><link rel="stylesheet" href="site.css"><link rel="stylesheet" href="reader.css"><script src="reader.js" defer></script></head><body class="docs-page"><a class="skip" href="read/concepts/executors.html#article">К статье</a><header class="docs-header"><a class="brand" href="index.html">borshkit<span class="brand-dot">.</span></a><a class="docs-label" href="read/index.html">Документация <span>0.13</span></a><nav aria-label="Навигация проекта"><a href="index.html">Обзор</a><a href="https://github.com/ParkPavel/borshkit/releases/tag/0.13.0">Скачать</a><a class="support-link" href="https://web.tribute.tg/d/Sh8">Поддержать</a><a href="https://github.com/ParkPavel/borshkit">GitHub</a></nav></header><div class="docs-tools"><button type="button" id="menu-toggle" aria-controls="docs-nav" aria-expanded="false">Разделы</button><label class="search-label" for="docs-search">Найти в документации</label><input id="docs-search" type="search" placeholder="Задача, проверка, Copilot…" autocomplete="off" aria-controls="search-results"><span class="search-shortcut" aria-hidden="true">/</span></div><div class="search-output" id="search-results" aria-live="polite" hidden></div><div class="docs-layout"><aside id="docs-nav" class="docs-sidebar"><nav aria-label="Разделы документации"><section><h2>Начать здесь</h2><a href="read/index.html">Документация Borshkit</a><a href="read/guide/quickstart.html">Быстрый старт: первая задача</a><a href="read/guide/workflow.html">Руководство: от цели до результата</a><a href="read/guide/setup.html">Мастер настройки команды</a></section><section><h2>Работать с задачами</h2><a href="read/guide/handoff.html">Передать работу другому харнесу</a><a href="read/guide/native-integrations.html">Copilot, Roo и Cline: нативный запуск</a><a href="read/guide/team-operations.html">Работа команды, телефон и перенос</a><a href="read/concepts/acceptance.html">Приёмка по целям</a><a href="read/concepts/evidence.html">Доказательства и устаревание</a><a href="read/concepts/executors.html" aria-current="page">Исполнители, пулы и автопилот</a><a href="read/concepts/privacy.html">Приватность и настройки</a><a href="read/concepts/knowledge.html">База знаний: заметки, связи, SQL</a><a href="read/concepts/glossary.html">Словарь</a></section><section><h2>Справочник</h2><a href="read/reference/commands.html">Все команды</a><a href="read/reference/contract.html">Формат задачи (`contract.json`)</a><a href="read/reference/team-resources.html">Команда, оценки ролей и ресурсы</a><a href="read/architecture.html">Текущая архитектура</a><a href="read/roadmap.html">Статус пяти направлений — 0.13.0</a><a href="read/release.html">Как выпускается Borshkit</a><a href="read/ingredients.html">Рецепт: из чего сварен Borshkit</a><a href="read/library/index.html">Библиотека: навыки и проверенные ссылки</a><a href="read/project/SECURITY.html">Безопасность</a><a href="read/project/CONTRIBUTING.html">Как помочь Borshkit</a><a href="read/project/CHANGELOG.html">Изменения</a></section><details><summary>Ещё материалы</summary><a href="read/project/AGENTS.html">Для агентов, которые разрабатывают Borshkit</a><a href="read/project/CONTRIBUTORS-REFERENCES.html">Контрибьюторы проектов, на которых построен Borshkit</a><a href="read/project/README.de.html">Borshkit</a><a href="read/project/README.en.html">Borshkit</a><a href="read/project/README.fr.html">Borshkit</a><a href="read/project/README.ko.html">Borshkit</a><a href="read/project/README.html">Borshkit</a><a href="read/project/README.zh-TW.html">Borshkit</a><a href="read/concepts/research.html">Исследования: источники и цитаты</a><a href="read/concepts/roles-and-skills.html">Роли и навыки</a><a href="read/concepts/space.html">Пространство и Git простыми словами</a><a href="read/concepts/team-workspace.html">Borshkit как профессиональная команда</a><a href="read/guide/website.html">Сайт и документация как единый продукт</a><a href="read/reference/overview.de.html">Details und Grenzen — 0.13</a><a href="read/reference/overview.en.html">Details and limitations — 0.13</a><a href="read/reference/overview.fr.html">Détails et limites — 0.13</a><a href="read/reference/overview.ko.html">상세 설명과 한계 — 0.13</a><a href="read/reference/overview.ru.html">Подробности и ограничения — 0.13</a><a href="read/reference/overview.zh-TW.html">詳細資料與限制 — 0.13</a><a href="read/spec.html">Borshkit (Борщкит) — Modular AI Workspace</a><a href="read/verification-0.13.html">Проверка выпуска 0.13.0</a><a href="read/verification-2026-10-20.html">Проверка модернизации — 20 октября 2026</a></details><details><summary>История и отчёты</summary><a href="read/discussions/audit-2026-10-07.html">Ответ на независимый аудит 0.10.1</a><a href="read/discussions/modernization-2026-10-08.html">Аудит и программа модернизации — 2026-10-08</a><a href="read/discussions/modernization-2026-10-09.html">Контроль модернизации — 2026-10-09</a><a href="read/discussions/professionalism-2026-10-22.html">Аудит оформления и достоверности — 22 октября 2026</a><a href="read/discussions/space-history-backup.html">Черновик обсуждения: резервная копия истории пространства</a><a href="read/graph/README.html">Граф документации</a></details></nav><a class="sidebar-support" href="https://web.tribute.tg/d/Sh8"><strong>Поддержать Borshkit</strong><span>Помоги развивать открытый инструмент.</span></a></aside><main id="article" tabindex="-1" class="docs-article"><div class="article-meta"><span>ДОКУМЕНТАЦИЯ</span><a href="https://github.com/ParkPavel/borshkit/blob/main/docs/concepts/executors.md">Исходник на GitHub</a></div><article lang="ru"><h1 id="исполнители-пулы-и-автопилот">Исполнители, пулы и автопилот<a class="heading-anchor" href="read/concepts/executors.html#исполнители-пулы-и-автопилот" aria-label="Ссылка на раздел">#</a></h1>
+<p><strong>Коротко:</strong> исполнитель — это тот, кто делает работу. Пул — очередь исполнителей на случай лимитов. Автопилот отвечает за тебя на рутинные вопросы, но никогда — на критические. Диспетчерская показывает, кто чем занят.</p>
+<h2 id="исполнители">Исполнители<a class="heading-anchor" href="read/concepts/executors.html#исполнители" aria-label="Ссылка на раздел">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>Вид (<code>kind</code>)</th>
+<th>Что это</th>
+<th>Как добавить</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>claude-cli</code></td>
+<td>Claude Code по твоей подписке</td>
+<td><code>borshkit исполнитель добавить claude</code></td>
+</tr>
+<tr>
+<td><code>codex-cli</code></td>
+<td>Codex CLI по подписке; умеет картинки через GPT Image</td>
+<td><code>borshkit исполнитель добавить codex</code></td>
+</tr>
+<tr>
+<td><code>gemini-cli</code></td>
+<td>Gemini CLI без инструментов: sandbox, запрещающая политика, точная модель</td>
+<td><code>borshkit исполнитель добавить gemini</code></td>
+</tr>
+<tr>
+<td><code>gemini-api</code></td>
+<td>Gemini API: текст, JSON и картинки PNG</td>
+<td>манифест: <code>--файл манифест.json</code></td>
+</tr>
+<tr>
+<td><code>openai-compat</code></td>
+<td>любой API в формате OpenAI: бесплатные, платные, локальные (Ollama, LM Studio)</td>
+<td><code>borshkit исполнитель добавить freellmapi|ollama|openrouter|groq --модель &lt;id&gt;</code> или манифест</td>
+</tr>
+<tr>
+<td><code>command</code></td>
+<td>своя программа, которая читает задание и пишет ответ</td>
+<td>манифест</td>
+</tr>
+</tbody></table>
+<p>Добавление — это предложение настроек, его подтверждаешь ты в терминале. Ключи API в настройках не хранятся: там только <strong>имя</strong> переменной окружения.</p>
+<h3 id="api-через-свой-сервер-freellmapi-litellm-ollama">API через свой сервер: FreeLLMAPI, LiteLLM, Ollama<a class="heading-anchor" href="read/concepts/executors.html#api-через-свой-сервер-freellmapi-litellm-ollama" aria-label="Ссылка на раздел">#</a></h3>
+<p>Borshkit не встраивает такие серверы, он подключается к ним как к обычному OpenAI-совместимому API. Например, <a href="https://github.com/tashfeenahmed/freellmapi">FreeLLMAPI</a> собирает бесплатные лимиты разных провайдеров за одним адресом <code>http://localhost:3001/v1</code>.</p>
+<ol>
+<li>Запусти сервер и возьми его ключ (у FreeLLMAPI — на странице Keys, начинается с <code>freellmapi-</code>).</li>
+<li>Сохрани ключ в переменной окружения: <code>setx FREELLMAPI_API_KEY &quot;ключ&quot;</code> в Windows или <code>export FREELLMAPI_API_KEY=ключ</code> в macOS и Linux. Открой терминал заново, иначе Borshkit переменную не увидит.</li>
+<li>Добавь исполнителя: <code>borshkit исполнитель добавить freellmapi</code>. Ключ он ищет в переменной <code>FREELLMAPI_API_KEY</code>; другую можно задать флагом <code>--переменная</code>, другой адрес — <code>--адрес</code>. Для LiteLLM и прочих возьми образец <a href="https://github.com/ParkPavel/borshkit/blob/main/examples/openai-compat.json"><code>examples/openai-compat.json</code></a> и добавь его через <code>--файл</code>.</li>
+<li>Проверь: <code>borshkit исполнитель проверить freellmapi</code>. Если что-то не так, проверка скажет, что именно: сервер не запущен, адрес без <code>/v1</code>, ключ не принят или переменная не задана.</li>
+</ol>
+<p>Модель <code>auto</code> значит, что сервер сам выбирает, кому отправить запрос. Семейство модели тогда заранее неизвестно, поэтому для независимого ревью закрепи конкретную модель и укажи её семейство в <code>provider</code>.</p>
+<p><code>borshkit исполнитель проверить &lt;имя&gt;</code> сверяет, что программа установлена и понимает нужные флаги, а API отдаёт нужную модель. Результат сохраняется и показывается в <code>borshkit исполнители</code>.</p>
+<p>У каждого исполнителя есть <strong>политика данных</strong>: <code>local</code> (на твоей машине), <code>no-train</code> (не обучается на данных), <code>trains</code>, <code>unknown</code>. В строгом режиме приватности работают только <code>local</code> и <code>no-train</code>.</p>
+<h2 id="пулы">Пулы<a class="heading-anchor" href="read/concepts/executors.html#пулы" aria-label="Ссылка на раздел">#</a></h2>
+<p>Пул — упорядоченный список исполнителей в настройках:</p>
+<div class="code-block"><div class="code-toolbar"><span>json</span><button type="button" class="code-copy" aria-label="Скопировать блок кода">Копировать</button></div><pre tabindex="0"><code>&quot;pools&quot;: { &quot;код&quot;: { &quot;members&quot;: [&quot;claude&quot;, &quot;codex&quot;, &quot;groq-free&quot;], &quot;maxSwitches&quot;: 3 } }</code></pre></div><p>Работа идёт к первому, кто:</p>
+<ul>
+<li>разрешён режимом приватности;</li>
+<li>умеет то, что нужно роли (например, писать код или делать картинки);</li>
+<li>не из того же семейства моделей, что автор, — если роль это требует (ревьюер).</li>
+</ul>
+<p>Если исполнитель упёрся в лимит, нет связи, нужен вход или он молчит, работа переходит к следующему. В журнале работы видна вся цепочка: «claude — лимит исчерпан → codex — ок». Если пишущий исполнитель успел что-то изменить, его правки сохраняются отдельным коммитом «Незавершённая работа …», а его семейство моделей записывается в авторы задачи.</p>
+<p>Программа, которая выдала ответ, но завершилась с ошибкой, считается сбоем. Её ответ сохраняется в папке задачи (<code>unconfirmed/</code>) — посмотреть его можешь ты.</p>
+<p>В проекте без Git отдельной копии нет. Пишущие роли там запускаются только с флагом <code>--в-папке</code> и твоим подтверждением в терминале.</p>
+<h2 id="отдельная-копия-проекта">Отдельная копия проекта<a class="heading-anchor" href="read/concepts/executors.html#отдельная-копия-проекта" aria-label="Ссылка на раздел">#</a></h2>
+<p>В одной копии задачи одновременно работает только одна пишущая роль: вторая получит отказ, пока первая не закончит.</p>
+<p>Роли, которые пишут файлы, работают не в твоей папке, а в копии на ветке <code>borshkit/&lt;задача&gt;</code> (git worktree рядом с проектом, в <code>../&lt;проект&gt;.borshkit-worktrees/</code>). Игнорируемых файлов, включая <code>.env</code>, там нет. Каждое сохранение подписано именем исполнителя. В основную версию работу переносит <code>borshkit собрать &lt;задача&gt;</code> — только после приёмки и только по твоему подтверждению.</p>
+<h2 id="вопросы-автопилот-критическая-остановка">Вопросы, автопилот, критическая остановка<a class="heading-anchor" href="read/concepts/executors.html#вопросы-автопилот-критическая-остановка" aria-label="Ссылка на раздел">#</a></h2>
+<p>Иногда работе нужен ответ человека. Вопросы бывают двух видов:</p>
+<table>
+<thead>
+<tr>
+<th>Вид</th>
+<th>Пример</th>
+<th>Кто отвечает</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>рутинный</strong></td>
+<td>«Исполнитель молчит 60 секунд. Ждать или передать следующему?»</td>
+<td>ты; в автопилоте — ответ по умолчанию через <code>silenceSeconds</code> (60 с)</td>
+</tr>
+<tr>
+<td><strong>критический</strong></td>
+<td>пул исчерпан; собрать или отправить работу; ослабить защиту</td>
+<td>только ты, в терминале</td>
+</tr>
+</tbody></table>
+<p>При критическом вопросе Borshkit <strong>останавливается правильно</strong>:</p>
+<ol>
+<li>сохраняет точку возврата в истории пространства;</li>
+<li>пишет <code>stop-report.md</code> — что случилось и какие есть варианты;</li>
+<li>пишет <code>handoff.md</code> и <code>handoff.json</code> — контекст для следующего исполнителя;</li>
+<li>ставит работе статус «ждёт тебя».</li>
+</ol>
+<p>Продолжить: <code>borshkit вопрос ответить &lt;номер&gt; &lt;вариант&gt;</code>, затем <code>borshkit работа продолжить &lt;работа&gt;</code>. Новый исполнитель получит передачу.</p>
+<p>Автопилот включается в настройках (<code>&quot;autopilot&quot;: true</code>) через предложение и твоё подтверждение. Звуки и уведомления — у твоего основного CLI.</p>
+<h2 id="диспетчерская">Диспетчерская<a class="heading-anchor" href="read/concepts/executors.html#диспетчерская" aria-label="Ссылка на раздел">#</a></h2>
+<ul>
+<li><code>borshkit статус --следить</code> — живая картина: кому ушло, кто работает, что ждёт тебя;</li>
+<li><code>borshkit/STATUS.md</code> и <code>borshkit/status.html</code> — то же в файлах, для Obsidian и браузера;</li>
+<li><code>borshkit статус --строка</code> — короткая строка для строки статуса Claude Code.</li>
+</ul>
+<h2 id="связи">Связи<a class="heading-anchor" href="read/concepts/executors.html#связи" aria-label="Ссылка на раздел">#</a></h2>
+<ul>
+<li>Что поручают исполнителям: <a href="read/concepts/roles-and-skills.html">Роли и навыки</a></li>
+<li>Что можно отправлять наружу: <a href="read/concepts/privacy.html">Приватность</a></li>
+<li>Где всё хранится: <a href="read/concepts/space.html">Пространство</a></li>
+</ul>
+</article><nav class="page-neighbors" aria-label="Предыдущая и следующая статьи"><a href="read/concepts/evidence.html"><small>Назад</small>Доказательства и устаревание</a><a href="read/concepts/privacy.html"><small>Дальше</small>Приватность и настройки</a></nav><footer class="article-footer"><p>Не хватает ответа? <a href="https://github.com/ParkPavel/borshkit/issues">Сообщи об этом</a>.</p><a href="index.html">К обзору продукта</a></footer></main><aside class="docs-toc" aria-label="В этой статье"><p>В этой статье</p><nav><a href="read/concepts/executors.html#исполнители" class="toc-level-2">Исполнители</a><a href="read/concepts/executors.html#api-через-свой-сервер-freellmapi-litellm-ollama" class="toc-level-3">API через свой сервер: FreeLLMAPI, LiteLLM, Ollama</a><a href="read/concepts/executors.html#пулы" class="toc-level-2">Пулы</a><a href="read/concepts/executors.html#отдельная-копия-проекта" class="toc-level-2">Отдельная копия проекта</a><a href="read/concepts/executors.html#вопросы-автопилот-критическая-остановка" class="toc-level-2">Вопросы, автопилот, критическая остановка</a><a href="read/concepts/executors.html#диспетчерская" class="toc-level-2">Диспетчерская</a><a href="read/concepts/executors.html#связи" class="toc-level-2">Связи</a></nav></aside></div><p class="reader-status sr-only" id="reader-status" role="status"></p></body></html>

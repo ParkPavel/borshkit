@@ -6,3 +6,6 @@
 @media(max-width:720px){.release-note{display:block;padding-block:20px}.release-note p{margin-top:10px}.header nav{column-gap:16px;row-gap:0}.layer>span{font-size:14px}.copy{font-size:11px}pre{font-size:12px}.steps{min-width:0}.start{gap:35px}.mode-switch button{font-size:12px}.principles p{grid-template-columns:125px 1fr}}
 
 @media(max-width:720px){h1 span{font-size:clamp(25px,7.8vw,34px);letter-spacing:-1.2px;white-space:nowrap}}
+
+.support-section{display:grid;grid-template-columns:1fr 1fr;gap:80px;padding:55px 40px;margin:0 0 70px;background:#20271f;border:1px solid #56664b;border-radius:12px}.support-section p{color:#bdc8b6;font-size:15px;max-width:520px}.support-actions{align-self:center;display:flex;flex-direction:column;align-items:flex-start;gap:20px}.support-actions p{font-size:12px;margin:0;max-width:330px}.support-section .eyebrow{font-size:11px;color:var(--accent)}
+@media(max-width:720px){.support-section{grid-template-columns:1fr;padding:30px 24px;gap:20px;margin-bottom:45px}}

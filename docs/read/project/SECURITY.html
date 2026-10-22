@@ -1,0 +1,67 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base href="../../"><meta name="description" content="Безопасность — документация Borshkit"><meta name="theme-color" content="#141619"><title>Безопасность · Borshkit</title><link rel="canonical" href="https://parkpavel.github.io/borshkit/read/project/SECURITY.html"><link rel="stylesheet" href="site.css"><link rel="stylesheet" href="reader.css"><script src="reader.js" defer></script></head><body class="docs-page"><a class="skip" href="read/project/SECURITY.html#article">К статье</a><header class="docs-header"><a class="brand" href="index.html">borshkit<span class="brand-dot">.</span></a><a class="docs-label" href="read/index.html">Документация <span>0.13</span></a><nav aria-label="Навигация проекта"><a href="index.html">Обзор</a><a href="https://github.com/ParkPavel/borshkit/releases/tag/0.13.0">Скачать</a><a class="support-link" href="https://web.tribute.tg/d/Sh8">Поддержать</a><a href="https://github.com/ParkPavel/borshkit">GitHub</a></nav></header><div class="docs-tools"><button type="button" id="menu-toggle" aria-controls="docs-nav" aria-expanded="false">Разделы</button><label class="search-label" for="docs-search">Найти в документации</label><input id="docs-search" type="search" placeholder="Задача, проверка, Copilot…" autocomplete="off" aria-controls="search-results"><span class="search-shortcut" aria-hidden="true">/</span></div><div class="search-output" id="search-results" aria-live="polite" hidden></div><div class="docs-layout"><aside id="docs-nav" class="docs-sidebar"><nav aria-label="Разделы документации"><section><h2>Начать здесь</h2><a href="read/index.html">Документация Borshkit</a><a href="read/guide/quickstart.html">Быстрый старт: первая задача</a><a href="read/guide/workflow.html">Руководство: от цели до результата</a><a href="read/guide/setup.html">Мастер настройки команды</a></section><section><h2>Работать с задачами</h2><a href="read/guide/handoff.html">Передать работу другому харнесу</a><a href="read/guide/native-integrations.html">Copilot, Roo и Cline: нативный запуск</a><a href="read/guide/team-operations.html">Работа команды, телефон и перенос</a><a href="read/concepts/acceptance.html">Приёмка по целям</a><a href="read/concepts/evidence.html">Доказательства и устаревание</a><a href="read/concepts/executors.html">Исполнители, пулы и автопилот</a><a href="read/concepts/privacy.html">Приватность и настройки</a><a href="read/concepts/knowledge.html">База знаний: заметки, связи, SQL</a><a href="read/concepts/glossary.html">Словарь</a></section><section><h2>Справочник</h2><a href="read/reference/commands.html">Все команды</a><a href="read/reference/contract.html">Формат задачи (`contract.json`)</a><a href="read/reference/team-resources.html">Команда, оценки ролей и ресурсы</a><a href="read/architecture.html">Текущая архитектура</a><a href="read/roadmap.html">Статус пяти направлений — 0.13.0</a><a href="read/release.html">Как выпускается Borshkit</a><a href="read/ingredients.html">Рецепт: из чего сварен Borshkit</a><a href="read/library/index.html">Библиотека: навыки и проверенные ссылки</a><a href="read/project/SECURITY.html" aria-current="page">Безопасность</a><a href="read/project/CONTRIBUTING.html">Как помочь Borshkit</a><a href="read/project/CHANGELOG.html">Изменения</a></section><details><summary>Ещё материалы</summary><a href="read/project/AGENTS.html">Для агентов, которые разрабатывают Borshkit</a><a href="read/project/CONTRIBUTORS-REFERENCES.html">Контрибьюторы проектов, на которых построен Borshkit</a><a href="read/project/README.de.html">Borshkit</a><a href="read/project/README.en.html">Borshkit</a><a href="read/project/README.fr.html">Borshkit</a><a href="read/project/README.ko.html">Borshkit</a><a href="read/project/README.html">Borshkit</a><a href="read/project/README.zh-TW.html">Borshkit</a><a href="read/concepts/research.html">Исследования: источники и цитаты</a><a href="read/concepts/roles-and-skills.html">Роли и навыки</a><a href="read/concepts/space.html">Пространство и Git простыми словами</a><a href="read/concepts/team-workspace.html">Borshkit как профессиональная команда</a><a href="read/guide/website.html">Сайт и документация как единый продукт</a><a href="read/reference/overview.de.html">Details und Grenzen — 0.13</a><a href="read/reference/overview.en.html">Details and limitations — 0.13</a><a href="read/reference/overview.fr.html">Détails et limites — 0.13</a><a href="read/reference/overview.ko.html">상세 설명과 한계 — 0.13</a><a href="read/reference/overview.ru.html">Подробности и ограничения — 0.13</a><a href="read/reference/overview.zh-TW.html">詳細資料與限制 — 0.13</a><a href="read/spec.html">Borshkit (Борщкит) — Modular AI Workspace</a><a href="read/verification-0.13.html">Проверка выпуска 0.13.0</a><a href="read/verification-2026-10-20.html">Проверка модернизации — 20 октября 2026</a></details><details><summary>История и отчёты</summary><a href="read/discussions/audit-2026-10-07.html">Ответ на независимый аудит 0.10.1</a><a href="read/discussions/modernization-2026-10-08.html">Аудит и программа модернизации — 2026-10-08</a><a href="read/discussions/modernization-2026-10-09.html">Контроль модернизации — 2026-10-09</a><a href="read/discussions/professionalism-2026-10-22.html">Аудит оформления и достоверности — 22 октября 2026</a><a href="read/discussions/space-history-backup.html">Черновик обсуждения: резервная копия истории пространства</a><a href="read/graph/README.html">Граф документации</a></details></nav><a class="sidebar-support" href="https://web.tribute.tg/d/Sh8"><strong>Поддержать Borshkit</strong><span>Помоги развивать открытый инструмент.</span></a></aside><main id="article" tabindex="-1" class="docs-article"><div class="article-meta"><span>ДОКУМЕНТАЦИЯ</span><a href="https://github.com/ParkPavel/borshkit/blob/main/SECURITY.md">Исходник на GitHub</a></div><article lang="ru"><h1 id="безопасность">Безопасность<a class="heading-anchor" href="read/project/SECURITY.html#безопасность" aria-label="Ссылка на раздел">#</a></h1>
+<h2 id="как-сообщить-об-уязвимости">Как сообщить об уязвимости<a class="heading-anchor" href="read/project/SECURITY.html#как-сообщить-об-уязвимости" aria-label="Ссылка на раздел">#</a></h2>
+<p>Не публикуй уязвимость в открытом issue. Используй <a href="https://github.com/ParkPavel/borshkit/security/advisories/new">приватное сообщение об уязвимости на GitHub</a> или напиши владельцу репозитория.</p>
+<h2 id="от-чего-borshkit-защищает-и-где-защита-заканчивается">От чего Borshkit защищает и где защита заканчивается<a class="heading-anchor" href="read/project/SECURITY.html#от-чего-borshkit-защищает-и-где-защита-заканчивается" aria-label="Ссылка на раздел">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>Угроза</th>
+<th>Защита</th>
+<th>Граница</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Ключи уходят к модели</td>
+<td>пакет для исполнителя проверяется до отправки; дочерние процессы получают только разрешённые переменные окружения</td>
+<td>поиск по шаблонам ловит не всё</td>
+</tr>
+<tr>
+<td>Агент читает <code>.env</code></td>
+<td>пишущие роли работают в отдельной копии (git worktree), куда игнорируемые файлы не попадают</td>
+<td>агент, запущенный прямо в корне проекта, видит всё, что разрешают его собственные права</td>
+</tr>
+<tr>
+<td>Агент читает файлы проекта после отправки задания</td>
+<td>в копии нет игнорируемых файлов; строгий режим допускает только исполнителей <code>local</code> и <code>no-train</code></td>
+<td>Borshkit проверяет только задание, которое отправляет сам. Что Claude Code или Codex читают из отслеживаемых файлов копии, он не видит и не фильтрует</td>
+</tr>
+<tr>
+<td>Ключи в окружении</td>
+<td>исполнители получают только разрешённые переменные окружения</td>
+<td>проверки задач (тесты, сборка) запускаются с твоим полным окружением — тестам бывают нужны ключи</td>
+</tr>
+<tr>
+<td>Агент пишет за границы задачи</td>
+<td>записи API-исполнителей проверяются по <code>paths</code> задачи до записи; запись в <code>.git</code> и в папку пространства запрещена; сверка находит правки вне границ (в проекте без Git — по хешам файлов)</td>
+<td>агенты-CLI пишут сами: их правки вне границ видны только при сверке, а не предотвращаются</td>
+</tr>
+<tr>
+<td>Агент ослабляет защиту</td>
+<td>настройки меняются только через предложения; ослабление — после терминальной фразы либо проверенного passkey; действие и ревизия связаны подписью, nonce одноразовый; правка в обход замечается</td>
+<td>терминальная фраза — барьер UX; passkey требует доверенного первоначального сопряжения, HTTPS и реестра вне доступной агенту области; владелец ОС может обойти код сервиса</td>
+</tr>
+<tr>
+<td>Потеря работы</td>
+<td>нет <code>reset --hard</code>, принудительной отправки и удаления веток; «вернуть» сначала сохраняет копию</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Ключ в истории проекта</td>
+<td><code>сохранить-проект</code> проверяет изменения на ключи; <code>отправить</code> проверяет <strong>все</strong> коммиты, которых ещё нет на выбранном удалённом репозитории</td>
+<td>только известные форматы ключей</td>
+</tr>
+<tr>
+<td>Ложное «готово»</td>
+<td>приёмка по доказательствам, привязанным к состоянию; ревью привязано к состоянию, которое видел ревьюер; импортированное ревью и ревью неизвестного семейства моделей сами ничего не принимают; собрать можно только то, что принято вместе с текущей основной версией</td>
+<td>доказательство показывает только то, что измеряет проверка</td>
+</tr>
+<tr>
+<td>Навык из чужого пакета влияет на работу</td>
+<td>навыки подключаются только к своей роли или по флагу <code>--навыки</code>; чужие хуки не ставятся; текст пакета зафиксирован по версии и виден в репозитории</td>
+<td>навык — это инструкция модели; что в нём написано, решает его автор</td>
+</tr>
+</tbody></table>
+<p>Хуки Claude Code — второй, советующий слой, а не песочница.</p>
+<h2 id="удалённое-подтверждение-и-поставка">Удалённое подтверждение и поставка<a class="heading-anchor" href="read/project/SECURITY.html#удалённое-подтверждение-и-поставка" aria-label="Ссылка на раздел">#</a></h2>
+<p><a href="read/guide/team-operations.html">Руководство</a> описывает RP/origin, подписи, отзыв, сроки, негативные проверки и границы доверия. Реальный телефонный браузер и HTTPS требуют отдельного испытания; чтение кода и криптографические fixture-тесты не являются pentest. Локальные checksum и provenance не являются подписью сборки; GitHub attestation доступна после успешного workflow выпуска.</p>
+</article><nav class="page-neighbors" aria-label="Предыдущая и следующая статьи"><a href="read/library/index.html"><small>Назад</small>Библиотека: навыки и проверенные ссылки</a><a href="read/project/CONTRIBUTING.html"><small>Дальше</small>Как помочь Borshkit</a></nav><footer class="article-footer"><p>Не хватает ответа? <a href="https://github.com/ParkPavel/borshkit/issues">Сообщи об этом</a>.</p><a href="index.html">К обзору продукта</a></footer></main><aside class="docs-toc" aria-label="В этой статье"><p>В этой статье</p><nav><a href="read/project/SECURITY.html#как-сообщить-об-уязвимости" class="toc-level-2">Как сообщить об уязвимости</a><a href="read/project/SECURITY.html#от-чего-borshkit-защищает-и-где-защита-заканчивается" class="toc-level-2">От чего Borshkit защищает и где защита заканчивается</a><a href="read/project/SECURITY.html#удалённое-подтверждение-и-поставка" class="toc-level-2">Удалённое подтверждение и поставка</a></nav></aside></div><p class="reader-status sr-only" id="reader-status" role="status"></p></body></html>

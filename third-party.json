@@ -191,5 +191,17 @@
     "url": "https://github.com/cline/cline",
     "license": "Apache-2.0",
     "takes": "публичный startNewTask; без автоматической имитации кнопок согласия, код не копируется"
+  },
+  {
+    "name": "Marked",
+    "url": "https://github.com/markedjs/marked",
+    "license": "MIT",
+    "authors": "Christopher Jeffrey and contributors",
+    "version": "15.0.12",
+    "files": [
+      "scripts/vendor/marked/marked.mjs",
+      "scripts/vendor/marked/LICENSE"
+    ],
+    "takes": "Markdown → HTML только при сборке статической документации; runtime CLI без новых зависимостей"
   }
 ]

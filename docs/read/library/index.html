@@ -1,0 +1,662 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base href="../../"><meta name="description" content="Библиотека: навыки и проверенные ссылки — документация Borshkit"><meta name="theme-color" content="#141619"><title>Библиотека: навыки и проверенные ссылки · Borshkit</title><link rel="canonical" href="https://parkpavel.github.io/borshkit/read/library/index.html"><link rel="stylesheet" href="site.css"><link rel="stylesheet" href="reader.css"><script src="reader.js" defer></script></head><body class="docs-page"><a class="skip" href="read/library/index.html#article">К статье</a><header class="docs-header"><a class="brand" href="index.html">borshkit<span class="brand-dot">.</span></a><a class="docs-label" href="read/index.html">Документация <span>0.13</span></a><nav aria-label="Навигация проекта"><a href="index.html">Обзор</a><a href="https://github.com/ParkPavel/borshkit/releases/tag/0.13.0">Скачать</a><a class="support-link" href="https://web.tribute.tg/d/Sh8">Поддержать</a><a href="https://github.com/ParkPavel/borshkit">GitHub</a></nav></header><div class="docs-tools"><button type="button" id="menu-toggle" aria-controls="docs-nav" aria-expanded="false">Разделы</button><label class="search-label" for="docs-search">Найти в документации</label><input id="docs-search" type="search" placeholder="Задача, проверка, Copilot…" autocomplete="off" aria-controls="search-results"><span class="search-shortcut" aria-hidden="true">/</span></div><div class="search-output" id="search-results" aria-live="polite" hidden></div><div class="docs-layout"><aside id="docs-nav" class="docs-sidebar"><nav aria-label="Разделы документации"><section><h2>Начать здесь</h2><a href="read/index.html">Документация Borshkit</a><a href="read/guide/quickstart.html">Быстрый старт: первая задача</a><a href="read/guide/workflow.html">Руководство: от цели до результата</a><a href="read/guide/setup.html">Мастер настройки команды</a></section><section><h2>Работать с задачами</h2><a href="read/guide/handoff.html">Передать работу другому харнесу</a><a href="read/guide/native-integrations.html">Copilot, Roo и Cline: нативный запуск</a><a href="read/guide/team-operations.html">Работа команды, телефон и перенос</a><a href="read/concepts/acceptance.html">Приёмка по целям</a><a href="read/concepts/evidence.html">Доказательства и устаревание</a><a href="read/concepts/executors.html">Исполнители, пулы и автопилот</a><a href="read/concepts/privacy.html">Приватность и настройки</a><a href="read/concepts/knowledge.html">База знаний: заметки, связи, SQL</a><a href="read/concepts/glossary.html">Словарь</a></section><section><h2>Справочник</h2><a href="read/reference/commands.html">Все команды</a><a href="read/reference/contract.html">Формат задачи (`contract.json`)</a><a href="read/reference/team-resources.html">Команда, оценки ролей и ресурсы</a><a href="read/architecture.html">Текущая архитектура</a><a href="read/roadmap.html">Статус пяти направлений — 0.13.0</a><a href="read/release.html">Как выпускается Borshkit</a><a href="read/ingredients.html">Рецепт: из чего сварен Borshkit</a><a href="read/library/index.html" aria-current="page">Библиотека: навыки и проверенные ссылки</a><a href="read/project/SECURITY.html">Безопасность</a><a href="read/project/CONTRIBUTING.html">Как помочь Borshkit</a><a href="read/project/CHANGELOG.html">Изменения</a></section><details><summary>Ещё материалы</summary><a href="read/project/AGENTS.html">Для агентов, которые разрабатывают Borshkit</a><a href="read/project/CONTRIBUTORS-REFERENCES.html">Контрибьюторы проектов, на которых построен Borshkit</a><a href="read/project/README.de.html">Borshkit</a><a href="read/project/README.en.html">Borshkit</a><a href="read/project/README.fr.html">Borshkit</a><a href="read/project/README.ko.html">Borshkit</a><a href="read/project/README.html">Borshkit</a><a href="read/project/README.zh-TW.html">Borshkit</a><a href="read/concepts/research.html">Исследования: источники и цитаты</a><a href="read/concepts/roles-and-skills.html">Роли и навыки</a><a href="read/concepts/space.html">Пространство и Git простыми словами</a><a href="read/concepts/team-workspace.html">Borshkit как профессиональная команда</a><a href="read/guide/website.html">Сайт и документация как единый продукт</a><a href="read/reference/overview.de.html">Details und Grenzen — 0.13</a><a href="read/reference/overview.en.html">Details and limitations — 0.13</a><a href="read/reference/overview.fr.html">Détails et limites — 0.13</a><a href="read/reference/overview.ko.html">상세 설명과 한계 — 0.13</a><a href="read/reference/overview.ru.html">Подробности и ограничения — 0.13</a><a href="read/reference/overview.zh-TW.html">詳細資料與限制 — 0.13</a><a href="read/spec.html">Borshkit (Борщкит) — Modular AI Workspace</a><a href="read/verification-0.13.html">Проверка выпуска 0.13.0</a><a href="read/verification-2026-10-20.html">Проверка модернизации — 20 октября 2026</a></details><details><summary>История и отчёты</summary><a href="read/discussions/audit-2026-10-07.html">Ответ на независимый аудит 0.10.1</a><a href="read/discussions/modernization-2026-10-08.html">Аудит и программа модернизации — 2026-10-08</a><a href="read/discussions/modernization-2026-10-09.html">Контроль модернизации — 2026-10-09</a><a href="read/discussions/professionalism-2026-10-22.html">Аудит оформления и достоверности — 22 октября 2026</a><a href="read/discussions/space-history-backup.html">Черновик обсуждения: резервная копия истории пространства</a><a href="read/graph/README.html">Граф документации</a></details></nav><a class="sidebar-support" href="https://web.tribute.tg/d/Sh8"><strong>Поддержать Borshkit</strong><span>Помоги развивать открытый инструмент.</span></a></aside><main id="article" tabindex="-1" class="docs-article"><div class="article-meta"><span>ДОКУМЕНТАЦИЯ</span><a href="https://github.com/ParkPavel/borshkit/blob/main/library/README.md">Исходник на GitHub</a></div><article lang="ru"><h1 id="библиотека-навыки-и-проверенные-ссылки">Библиотека: навыки и проверенные ссылки<a class="heading-anchor" href="read/library/index.html#библиотека-навыки-и-проверенные-ссылки" aria-label="Ссылка на раздел">#</a></h1>
+<p>Здесь две вещи:</p>
+<ol>
+<li><strong>Пакеты навыков</strong> — тексты с опытом других проектов, скопированные в <code>packs/</code> с лицензиями. Роль получает только свои навыки; другие можно добавить к работе флагом <code>--навыки пакет/навык</code>.</li>
+<li><strong>Каталог ссылок</strong> — первоисточники для фронтенда, дизайна и доступности. Роли получают ссылки из своей части каталога и сверяются с ними, а не с памятью модели.</li>
+</ol>
+<blockquote>
+<p>Каждая ссылка проверена 2026-10-06: страницы — ответом 200, репозитории GitHub — клонированием, лицензия прочитана из файла LICENSE. «Не указана» — в репозитории нет файла лицензии (license: none); «на сайте» — условия на самом сайте (see-site). Отклонённые кандидаты и причины — в <a href="https://github.com/ParkPavel/borshkit/blob/main/library/catalog.json"><code>catalog.json</code></a>, поле <code>rejected</code>.</p>
+</blockquote>
+<p>В терминале: <code>borshkit навыки</code> и <code>borshkit библиотека [категория]</code>.</p>
+<blockquote>
+<p>Файл собирается командой <code>node scripts/library.mjs</code> из <code>catalog.json</code> и <code>packs/*/pack.json</code>. Не правь его руками.</p>
+</blockquote>
+<h2 id="пакеты-навыков">Пакеты навыков<a class="heading-anchor" href="read/library/index.html#пакеты-навыков" aria-label="Ссылка на раздел">#</a></h2>
+<h3 id="фронтенд-навыки-ecc">Фронтенд-навыки ECC<a class="heading-anchor" href="read/library/index.html#фронтенд-навыки-ecc" aria-label="Ссылка на раздел">#</a></h3>
+<p>Источник: <a href="https://github.com/affaan-m/ECC">affaan-m/ECC</a> @ <code>ef648e0</code> · лицензия MIT (<a href="https://github.com/ParkPavel/borshkit/blob/main/packs/ecc/LICENSE">текст</a>) · <a href="https://github.com/sponsors/affaan-m">поддержать автора</a></p>
+<table>
+<thead>
+<tr>
+<th>Навык</th>
+<th>Когда нужен</th>
+<th>Роли</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/ParkPavel/borshkit/blob/main/packs/ecc/skills/accessibility/SKILL.md"><code>ecc/accessibility</code></a></td>
+<td>доступность по WCAG 2.2 AA для веба, iOS и Android</td>
+<td><code>a11y-reviewer</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/ParkPavel/borshkit/blob/main/packs/ecc/skills/frontend-a11y/SKILL.md"><code>ecc/frontend-a11y</code></a></td>
+<td>доступность в React и Next.js: формы, модальные окна, фокус, клавиатура</td>
+<td><code>a11y-reviewer</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/ParkPavel/borshkit/blob/main/packs/ecc/skills/frontend-design-direction/SKILL.md"><code>ecc/frontend-design-direction</code></a></td>
+<td>выбрать визуальное направление для интерфейса продукта</td>
+<td><code>ui-engineer</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/ParkPavel/borshkit/blob/main/packs/ecc/skills/make-interfaces-feel-better/SKILL.md"><code>ecc/make-interfaces-feel-better</code></a></td>
+<td>отступы, шрифты, тени, области нажатия, состояния</td>
+<td><code>ui-engineer</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/ParkPavel/borshkit/blob/main/packs/ecc/skills/liquid-glass-design/SKILL.md"><code>ecc/liquid-glass-design</code></a></td>
+<td>материал Liquid Glass в iOS 26: SwiftUI, UIKit, WidgetKit</td>
+<td><code>ios-designer</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/ParkPavel/borshkit/blob/main/packs/ecc/skills/swiftui-patterns/SKILL.md"><code>ecc/swiftui-patterns</code></a></td>
+<td>архитектура SwiftUI: состояние, навигация, производительность</td>
+<td><code>ios-designer</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/ParkPavel/borshkit/blob/main/packs/ecc/skills/motion-foundations/SKILL.md"><code>ecc/motion-foundations</code></a></td>
+<td>основа анимаций в React: токены, пружины, reduced motion</td>
+<td><code>motion-reviewer</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/ParkPavel/borshkit/blob/main/packs/ecc/skills/motion-patterns/SKILL.md"><code>ecc/motion-patterns</code></a></td>
+<td>готовые анимации в React: модальные окна, списки, переходы</td>
+<td>по запросу</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ParkPavel/borshkit/blob/main/packs/ecc/skills/react-patterns/SKILL.md"><code>ecc/react-patterns</code></a></td>
+<td>React 18/19: хуки, серверные компоненты, Suspense, формы</td>
+<td>по запросу</td>
+</tr>
+</tbody></table>
+<h3 id="дизайн-инженерия-и-анимация-emil-kowalski">Дизайн-инженерия и анимация (Emil Kowalski)<a class="heading-anchor" href="read/library/index.html#дизайн-инженерия-и-анимация-emil-kowalski" aria-label="Ссылка на раздел">#</a></h3>
+<p>Источник: <a href="https://github.com/emilkowalski/skills">emilkowalski/skills</a> @ <code>e8a175d</code> · лицензия MIT (<a href="https://github.com/ParkPavel/borshkit/blob/main/packs/emil/LICENSE">текст</a>)</p>
+<table>
+<thead>
+<tr>
+<th>Навык</th>
+<th>Когда нужен</th>
+<th>Роли</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/ParkPavel/borshkit/blob/main/packs/emil/skills/emil-design-eng/SKILL.md"><code>emil/emil-design-eng</code></a></td>
+<td>главный навык: полировка интерфейса, решения об анимации, мелкие детали</td>
+<td><code>ui-engineer</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/ParkPavel/borshkit/blob/main/packs/emil/skills/animate/SKILL.md"><code>emil/animate</code></a></td>
+<td>сделать анимацию с нуля: стоит ли анимировать, кривая, длительность, прерывание</td>
+<td>по запросу</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ParkPavel/borshkit/blob/main/packs/emil/skills/animate-expo/SKILL.md"><code>emil/animate-expo</code></a></td>
+<td>анимации в React Native и Expo: жесты, шторки, отклик</td>
+<td>по запросу</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ParkPavel/borshkit/blob/main/packs/emil/skills/review-animations/SKILL.md"><code>emil/review-animations</code></a></td>
+<td>строгое ревью анимаций</td>
+<td><code>motion-reviewer</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/ParkPavel/borshkit/blob/main/packs/emil/skills/improve-animations/SKILL.md"><code>emil/improve-animations</code></a></td>
+<td>аудит всех анимаций проекта и планы исправлений</td>
+<td>по запросу</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ParkPavel/borshkit/blob/main/packs/emil/skills/find-animation-opportunities/SKILL.md"><code>emil/find-animation-opportunities</code></a></td>
+<td>где анимация нужна, а где нет</td>
+<td>по запросу</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ParkPavel/borshkit/blob/main/packs/emil/skills/animation-vocabulary/SKILL.md"><code>emil/animation-vocabulary</code></a></td>
+<td>словарь: как точно назвать эффект</td>
+<td><code>motion-reviewer</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/ParkPavel/borshkit/blob/main/packs/emil/skills/apple-design/SKILL.md"><code>emil/apple-design</code></a></td>
+<td>принципы Apple: жесты, пружины, прерываемые переходы, материалы</td>
+<td><code>ios-designer</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/ParkPavel/borshkit/blob/main/packs/emil/skills/write-swift/SKILL.md"><code>emil/write-swift</code></a></td>
+<td>современный Swift: типы-значения, параллельность Swift 6, тесты</td>
+<td>по запросу</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ParkPavel/borshkit/blob/main/packs/emil/skills/pick-ui-library/SKILL.md"><code>emil/pick-ui-library</code></a></td>
+<td>какую библиотеку взять под задачу интерфейса</td>
+<td><code>ui-engineer</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/ParkPavel/borshkit/blob/main/packs/emil/skills/prototype/SKILL.md"><code>emil/prototype</code></a></td>
+<td>несколько разных вариантов интерфейса с переключателем</td>
+<td>по запросу</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ParkPavel/borshkit/blob/main/packs/emil/skills/mobile-native/SKILL.md"><code>emil/mobile-native</code></a></td>
+<td>веб-приложение на телефоне как родное: 100vh, нажатия, безопасные зоны</td>
+<td>по запросу</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ParkPavel/borshkit/blob/main/packs/emil/skills/break-ui/SKILL.md"><code>emil/break-ui</code></a></td>
+<td>сломать интерфейс худшими данными: длинные имена, пустые списки, эмодзи</td>
+<td><code>designer</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/ParkPavel/borshkit/blob/main/packs/emil/skills/ask-sonner/SKILL.md"><code>emil/ask-sonner</code></a></td>
+<td>уведомления-тосты на Sonner</td>
+<td>по запросу</td>
+</tr>
+</tbody></table>
+<h3 id="ленивый-сеньор-ponytail">Ленивый сеньор (Ponytail)<a class="heading-anchor" href="read/library/index.html#ленивый-сеньор-ponytail" aria-label="Ссылка на раздел">#</a></h3>
+<p>Источник: <a href="https://github.com/DietrichGebert/ponytail">DietrichGebert/ponytail</a> @ <code>552acd5</code> · лицензия MIT (<a href="https://github.com/ParkPavel/borshkit/blob/main/packs/ponytail/LICENSE">текст</a>) · <a href="https://github.com/sponsors/DietrichGebert">поддержать автора</a></p>
+<table>
+<thead>
+<tr>
+<th>Навык</th>
+<th>Когда нужен</th>
+<th>Роли</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/ParkPavel/borshkit/blob/main/packs/ponytail/SKILL.md"><code>ponytail/ponytail</code></a></td>
+<td>сделать минимально и просто; уровень задаёт флаг --линза</td>
+<td><code>implementer</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/ParkPavel/borshkit/blob/main/packs/ponytail/REVIEW.md"><code>ponytail/ponytail-review</code></a></td>
+<td>ревью лишней сложности</td>
+<td><code>simplicity-reviewer</code></td>
+</tr>
+</tbody></table>
+<h2 id="каталог-ссылок">Каталог ссылок<a class="heading-anchor" href="read/library/index.html#каталог-ссылок" aria-label="Ссылка на раздел">#</a></h2>
+<h3 id="навыки-для-агентов">Навыки для агентов<a class="heading-anchor" href="read/library/index.html#навыки-для-агентов" aria-label="Ссылка на раздел">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>Что</th>
+<th>Зачем</th>
+<th>Лицензия</th>
+<th>Роли</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/emilkowalski/skills">Emil Kowalski Skills</a></td>
+<td>Навыки, чтобы решать, делать и проверять анимации и полировку интерфейса; есть отдельные для Expo, Swift и Sonner.</td>
+<td>MIT</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://github.com/justinwetch/HIGAgentSkills">Apple HIG Agent Skill</a></td>
+<td>Сжатые Apple HIG для iOS, iPadOS, macOS, tvOS, visionOS и watchOS с точными значениями и правилами Apple.</td>
+<td>не указана</td>
+<td><code>ios-designer</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/anthropics/skills/tree/main/skills/frontend-design">Anthropic frontend-design skill</a></td>
+<td>Навык, который заставляет агента выбрать осознанное визуальное направление, шрифты и сетку вместо шаблонных решений.</td>
+<td>Apache-2.0</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://github.com/vercel-labs/agent-skills">Vercel Agent Skills</a></td>
+<td>Навыки про производительность React, композицию компонентов, React Native и проверку интерфейса по правилам Vercel.</td>
+<td>не указана</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://github.com/vercel-labs/web-interface-guidelines">Web Interface Guidelines</a></td>
+<td>Список конкретных правил для веб-интерфейса: клавиатура, фокус, области нажатия, формы, анимация, скорость.</td>
+<td>MIT</td>
+<td><code>ui-engineer</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/affaan-m/ECC/tree/main/skills">ECC skills (frontend subset)</a></td>
+<td>Большая коллекция навыков; для интерфейса — frontend-patterns, accessibility, design-system, motion-*, swiftui-patterns, liquid-glass-design.</td>
+<td>MIT</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://github.com/pbakaus/impeccable">Impeccable</a></td>
+<td>Навык и команды по дизайну для агентов плюс правила, которые находят типичные визуальные ошибки сгенерированных интерфейсов.</td>
+<td>Apache-2.0</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://github.com/twostraws/SwiftUI-Agent-Skill">SwiftUI Pro (Paul Hudson)</a></td>
+<td>Навык, который ведёт агента к современным API SwiftUI для навигации, раскладки, анимации, состояния и VoiceOver.</td>
+<td>MIT</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://github.com/AvdLee/SwiftUI-Agent-Skill">SwiftUI Expert Skill (Antoine van der Lee)</a></td>
+<td>Справочники по SwiftUI: состояние, композиция представлений, скорость списков и прокрутки, Liquid Glass.</td>
+<td>MIT</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://github.com/expo/skills">Expo Skills</a></td>
+<td>Официальные навыки Expo: Expo Router, родной интерфейс, анимация, сборки EAS, обновления SDK.</td>
+<td>MIT</td>
+<td>—</td>
+</tr>
+</tbody></table>
+<h3 id="компоненты-интерфейса">Компоненты интерфейса<a class="heading-anchor" href="read/library/index.html#компоненты-интерфейса" aria-label="Ссылка на раздел">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>Что</th>
+<th>Зачем</th>
+<th>Лицензия</th>
+<th>Роли</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/shadcn-ui/ui">shadcn/ui</a></td>
+<td>Компоненты React, которые копируются в проект; построены на Radix/Base UI и Tailwind, есть CLI и реестр.</td>
+<td>MIT</td>
+<td><code>ui-engineer</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/radix-ui/primitives">Radix Primitives</a></td>
+<td>Доступные компоненты React без стилей (диалог, всплывающее окно, меню, вкладки), которые сами управляют фокусом и клавиатурой.</td>
+<td>MIT</td>
+<td><code>ui-engineer</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/adobe/react-spectrum">React Aria (Adobe React Spectrum monorepo)</a></td>
+<td>Хуки и компоненты Adobe без стилей для доступного React: клавиатура, программы чтения с экрана, локализация.</td>
+<td>Apache-2.0</td>
+<td><code>ui-engineer</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/mui/base-ui">Base UI</a></td>
+<td>Доступные компоненты React без стилей от авторов Radix, Floating UI и MUI.</td>
+<td>MIT</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://github.com/tailwindlabs/headlessui">Headless UI</a></td>
+<td>Доступные компоненты React и Vue без стилей, созданные для работы с Tailwind CSS.</td>
+<td>MIT</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://github.com/chakra-ui/ark">Ark UI</a></td>
+<td>Компоненты без стилей на конечных автоматах Zag.js для React, Solid, Vue и Svelte.</td>
+<td>MIT</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://github.com/emilkowalski/sonner">Sonner</a></td>
+<td>Уведомления-тосты для React со стопкой и закрытием смахиванием.</td>
+<td>MIT</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://github.com/pacocoursey/cmdk">cmdk</a></td>
+<td>Командное меню (Cmd+K) для React без стилей, с встроенным поиском.</td>
+<td>MIT</td>
+<td>—</td>
+</tr>
+</tbody></table>
+<h3 id="анимация">Анимация<a class="heading-anchor" href="read/library/index.html#анимация" aria-label="Ссылка на раздел">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>Что</th>
+<th>Зачем</th>
+<th>Лицензия</th>
+<th>Роли</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/motiondivision/motion">Motion (formerly Framer Motion)</a></td>
+<td>Библиотека анимации для React, JavaScript и Vue: пружины, жесты, анимация раскладки и исчезновения.</td>
+<td>MIT</td>
+<td><code>motion-reviewer</code>, <code>ui-engineer</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/greensock/GSAP">GSAP</a></td>
+<td>Анимация на временной шкале для CSS, SVG и canvas в любом фреймворке, плюс плагины прокрутки. Лицензия не открытая.</td>
+<td>GSAP Standard (не открытая)</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://github.com/software-mansion/react-native-reanimated">React Native Reanimated</a></td>
+<td>Анимации React Native в потоке интерфейса, включая переходы раскладки и общих элементов.</td>
+<td>MIT</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://github.com/airbnb/lottie-web">Lottie (web)</a></td>
+<td>Проигрывает в браузере анимации After Effects, сохранённые в JSON; есть версии для iOS, Android и React Native.</td>
+<td>MIT</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://github.com/formkit/auto-animate">AutoAnimate</a></td>
+<td>Анимация добавления, удаления и перемещения элементов списка одной строкой, в любом фреймворке.</td>
+<td>MIT</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API">View Transition API (MDN)</a></td>
+<td>Справочник по встроенному в браузер View Transition API: анимация между состояниями страницы и переходами.</td>
+<td>на сайте</td>
+<td><code>motion-reviewer</code></td>
+</tr>
+<tr>
+<td><a href="https://developer.apple.com/design/human-interface-guidelines/motion">Apple HIG: Motion</a></td>
+<td>Правила Apple: когда и как анимировать, и как уважать настройку «Уменьшение движения».</td>
+<td>на сайте</td>
+<td><code>ios-designer</code>, <code>motion-reviewer</code></td>
+</tr>
+</tbody></table>
+<h3 id="ios-android-и-мобильные">iOS, Android и мобильные<a class="heading-anchor" href="read/library/index.html#ios-android-и-мобильные" aria-label="Ссылка на раздел">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>Что</th>
+<th>Зачем</th>
+<th>Лицензия</th>
+<th>Роли</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://developer.apple.com/design/human-interface-guidelines/">Apple Human Interface Guidelines</a></td>
+<td>Официальные правила дизайна Apple: компоненты, раскладка, типографика, поведение платформ.</td>
+<td>на сайте</td>
+<td><code>designer</code>, <code>ios-designer</code></td>
+</tr>
+<tr>
+<td><a href="https://developer.apple.com/documentation/swiftui">SwiftUI documentation</a></td>
+<td>Справочник API и уроки Apple по интерфейсам на SwiftUI.</td>
+<td>на сайте</td>
+<td><code>ios-designer</code></td>
+</tr>
+<tr>
+<td><a href="https://developer.apple.com/documentation/technologyoverviews/liquid-glass">Liquid Glass (Apple Developer)</a></td>
+<td>Обзор материала Liquid Glass от Apple и как перейти на него в SwiftUI, UIKit и AppKit.</td>
+<td>на сайте</td>
+<td><code>ios-designer</code></td>
+</tr>
+<tr>
+<td><a href="https://developer.apple.com/design/resources/">Apple Design Resources</a></td>
+<td>Официальные наборы интерфейса для Figma и Sketch, шаблоны и рамки устройств Apple.</td>
+<td>на сайте</td>
+<td><code>readme-designer</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/expo/expo">Expo</a></td>
+<td>Фреймворк и SDK для приложений на React Native: маршрутизация по файлам, родные модули, сборки в облаке.</td>
+<td>MIT</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://github.com/facebook/react-native">React Native</a></td>
+<td>Фреймворк Meta для родных приложений iOS и Android на React.</td>
+<td>MIT</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://developer.android.com/compose">Jetpack Compose</a></td>
+<td>Документация Google по декларативному интерфейсу Android, включая компоненты и темы Material 3.</td>
+<td>на сайте</td>
+<td>—</td>
+</tr>
+</tbody></table>
+<h3 id="дизайн-системы">Дизайн-системы<a class="heading-anchor" href="read/library/index.html#дизайн-системы" aria-label="Ссылка на раздел">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>Что</th>
+<th>Зачем</th>
+<th>Лицензия</th>
+<th>Роли</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://m3.material.io/">Material Design 3</a></td>
+<td>Дизайн-система Google: компоненты, цвет, шрифт, движение, раскладка для Android, веба и Flutter.</td>
+<td>на сайте</td>
+<td><code>designer</code>, <code>motion-reviewer</code></td>
+</tr>
+<tr>
+<td><a href="https://fluent2.microsoft.design/">Fluent 2</a></td>
+<td>Дизайн-система Microsoft и описания компонентов для веба, Windows, iOS и Android.</td>
+<td>на сайте</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://carbondesignsystem.com/">IBM Carbon</a></td>
+<td>Открытая дизайн-система IBM: компоненты, токены, визуализация данных, доступность.</td>
+<td>на сайте</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://primer.style/">GitHub Primer</a></td>
+<td>Дизайн-система GitHub: компоненты React, CSS, токены, иконки Octicons.</td>
+<td>на сайте</td>
+<td><code>readme-designer</code></td>
+</tr>
+<tr>
+<td><a href="https://design-system.service.gov.uk/">GOV.UK Design System</a></td>
+<td>Компоненты и шаблоны правительства Великобритании, проверенные исследованиями; сильные разделы о формах и доступности.</td>
+<td>на сайте</td>
+<td><code>designer</code></td>
+</tr>
+<tr>
+<td><a href="https://atlassian.design/">Atlassian Design System</a></td>
+<td>Основы, токены, компоненты и правила текстов Atlassian.</td>
+<td>на сайте</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://shopify.dev/docs/api/polaris">Shopify Polaris</a></td>
+<td>Актуальная Polaris от Shopify (веб-компоненты) для интерфейсов админки и приложений Shopify.</td>
+<td>на сайте</td>
+<td>—</td>
+</tr>
+</tbody></table>
+<h3 id="доступность">Доступность<a class="heading-anchor" href="read/library/index.html#доступность" aria-label="Ссылка на раздел">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>Что</th>
+<th>Зачем</th>
+<th>Лицензия</th>
+<th>Роли</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://www.w3.org/TR/WCAG22/">WCAG 2.2</a></td>
+<td>Стандарт W3C с проверяемыми критериями доступности веб-содержимого.</td>
+<td>на сайте</td>
+<td><code>a11y-reviewer</code>, <code>ui-engineer</code></td>
+</tr>
+<tr>
+<td><a href="https://www.w3.org/WAI/ARIA/apg/">WAI-ARIA Authoring Practices Guide</a></td>
+<td>Шаблоны W3C: какое поведение клавиатуры и какие роли ARIA нужны меню, вкладкам, диалогам.</td>
+<td>на сайте</td>
+<td><code>a11y-reviewer</code>, <code>ui-engineer</code></td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/en-US/docs/Web/Accessibility">MDN Accessibility</a></td>
+<td>Руководства MDN и справочник ARIA по доступным веб-страницам.</td>
+<td>на сайте</td>
+<td><code>a11y-reviewer</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/dequelabs/axe-core">axe-core</a></td>
+<td>Движок правил доступности для браузера и тестов: автоматически находит нарушения WCAG.</td>
+<td>MPL-2.0</td>
+<td><code>a11y-reviewer</code>, <code>tester</code></td>
+</tr>
+<tr>
+<td><a href="https://inclusive-components.design/">Inclusive Components</a></td>
+<td>Статьи Heydon Pickering о том, как сделать доступными переключатели, меню, вкладки, карточки.</td>
+<td>на сайте</td>
+<td><code>a11y-reviewer</code></td>
+</tr>
+</tbody></table>
+<h3 id="стили-и-токены">Стили и токены<a class="heading-anchor" href="read/library/index.html#стили-и-токены" aria-label="Ссылка на раздел">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>Что</th>
+<th>Зачем</th>
+<th>Лицензия</th>
+<th>Роли</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/tailwindlabs/tailwindcss">Tailwind CSS</a></td>
+<td>CSS-фреймворк из утилит; тема — токены дизайна, заданные в CSS.</td>
+<td>MIT</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://www.designtokens.org/tr/2025.10/format/">Design Tokens Format Module 2025.10</a></td>
+<td>Спецификация группы W3C: формат JSON для обмена токенами дизайна между инструментами.</td>
+<td>на сайте</td>
+<td><code>ui-engineer</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/argyleink/open-props">Open Props</a></td>
+<td>Готовые CSS-переменные: цвета, отступы, шрифты, тени, кривые и анимации.</td>
+<td>MIT</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://github.com/radix-ui/colors">Radix Colors</a></td>
+<td>Шкалы цветов из 12 ступеней, светлые и тёмные, рассчитанные на доступный контраст.</td>
+<td>MIT</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://utopia.fyi/">Utopia</a></td>
+<td>Калькуляторы плавных шкал шрифта и отступов на CSS clamp().</td>
+<td>на сайте</td>
+<td>—</td>
+</tr>
+</tbody></table>
+<h3 id="иконки-и-шрифты">Иконки и шрифты<a class="heading-anchor" href="read/library/index.html#иконки-и-шрифты" aria-label="Ссылка на раздел">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>Что</th>
+<th>Зачем</th>
+<th>Лицензия</th>
+<th>Роли</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/lucide-icons/lucide">Lucide</a></td>
+<td>Единый набор контурных SVG-иконок с пакетами для React, Vue, Svelte и других.</td>
+<td>ISC</td>
+<td><code>readme-designer</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/phosphor-icons/homepage">Phosphor Icons</a></td>
+<td>Семейство иконок в шести начертаниях — от тонкого до двухцветного.</td>
+<td>MIT</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://github.com/tailwindlabs/heroicons">Heroicons</a></td>
+<td>SVG-иконки в контурном и залитом стилях от команды Tailwind CSS.</td>
+<td>MIT</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://developer.apple.com/sf-symbols/">SF Symbols</a></td>
+<td>Библиотека иконок Apple и приложение к ней; иконки согласованы со шрифтом San Francisco.</td>
+<td>на сайте</td>
+<td><code>ios-designer</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/rsms/inter">Inter</a></td>
+<td>Шрифт для экранов, часто используется в интерфейсах.</td>
+<td>OFL-1.1</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://github.com/vercel/geist-font">Geist</a></td>
+<td>Шрифты Vercel — без засечек и моноширинный — для интерфейсов и кода.</td>
+<td>OFL-1.1</td>
+<td>—</td>
+</tr>
+</tbody></table>
+<h3 id="проверка-качества">Проверка качества<a class="heading-anchor" href="read/library/index.html#проверка-качества" aria-label="Ссылка на раздел">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>Что</th>
+<th>Зачем</th>
+<th>Лицензия</th>
+<th>Роли</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/storybookjs/storybook">Storybook</a></td>
+<td>Мастерская, где компоненты собирают, описывают и тестируют по отдельности.</td>
+<td>MIT</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://github.com/microsoft/playwright">Playwright</a></td>
+<td>Автоматизация браузера и сквозные тесты в Chromium, Firefox и WebKit, со сравнением скриншотов.</td>
+<td>Apache-2.0</td>
+<td><code>tester</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/GoogleChrome/lighthouse">Lighthouse</a></td>
+<td>Аудит страницы: скорость, доступность, SEO, лучшие практики — из CLI или Chrome DevTools.</td>
+<td>Apache-2.0</td>
+<td><code>tester</code></td>
+</tr>
+<tr>
+<td><a href="https://web.dev/articles/vitals">Core Web Vitals (web.dev)</a></td>
+<td>Что такое LCP, INP и CLS, их пороги и как их измерять.</td>
+<td>на сайте</td>
+<td>—</td>
+</tr>
+</tbody></table>
+<h3 id="учиться">Учиться<a class="heading-anchor" href="read/library/index.html#учиться" aria-label="Ссылка на раздел">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>Что</th>
+<th>Зачем</th>
+<th>Лицензия</th>
+<th>Роли</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://web.dev/learn/css">Learn CSS (web.dev)</a></td>
+<td>Бесплатный курс по CSS: блочная модель, раскладка, каскад, цвет и другое.</td>
+<td>на сайте</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://developer.mozilla.org/en-US/">MDN Web Docs</a></td>
+<td>Справочник по HTML, CSS и веб-API с таблицами поддержки браузерами.</td>
+<td>на сайте</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://www.refactoringui.com/">Refactoring UI (paid)</a></td>
+<td>Платная книга с практичными приёмами визуального дизайна для разработчиков: иерархия, отступы, цвет, глубина. <strong>Платно.</strong></td>
+<td>на сайте</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://lawsofux.com/">Laws of UX</a></td>
+<td>Короткие описания психологических принципов (законы Фиттса, Хика, Якоба и др.) в дизайне интерфейсов.</td>
+<td>на сайте</td>
+<td><code>designer</code></td>
+</tr>
+</tbody></table>
+</article><nav class="page-neighbors" aria-label="Предыдущая и следующая статьи"><a href="read/ingredients.html"><small>Назад</small>Рецепт: из чего сварен Borshkit</a><a href="read/project/SECURITY.html"><small>Дальше</small>Безопасность</a></nav><footer class="article-footer"><p>Не хватает ответа? <a href="https://github.com/ParkPavel/borshkit/issues">Сообщи об этом</a>.</p><a href="index.html">К обзору продукта</a></footer></main><aside class="docs-toc" aria-label="В этой статье"><p>В этой статье</p><nav><a href="read/library/index.html#пакеты-навыков" class="toc-level-2">Пакеты навыков</a><a href="read/library/index.html#фронтенд-навыки-ecc" class="toc-level-3">Фронтенд-навыки ECC</a><a href="read/library/index.html#дизайн-инженерия-и-анимация-emil-kowalski" class="toc-level-3">Дизайн-инженерия и анимация (Emil Kowalski)</a><a href="read/library/index.html#ленивый-сеньор-ponytail" class="toc-level-3">Ленивый сеньор (Ponytail)</a><a href="read/library/index.html#каталог-ссылок" class="toc-level-2">Каталог ссылок</a><a href="read/library/index.html#навыки-для-агентов" class="toc-level-3">Навыки для агентов</a><a href="read/library/index.html#компоненты-интерфейса" class="toc-level-3">Компоненты интерфейса</a><a href="read/library/index.html#анимация" class="toc-level-3">Анимация</a><a href="read/library/index.html#ios-android-и-мобильные" class="toc-level-3">iOS, Android и мобильные</a><a href="read/library/index.html#дизайн-системы" class="toc-level-3">Дизайн-системы</a><a href="read/library/index.html#доступность" class="toc-level-3">Доступность</a><a href="read/library/index.html#стили-и-токены" class="toc-level-3">Стили и токены</a><a href="read/library/index.html#иконки-и-шрифты" class="toc-level-3">Иконки и шрифты</a><a href="read/library/index.html#проверка-качества" class="toc-level-3">Проверка качества</a><a href="read/library/index.html#учиться" class="toc-level-3">Учиться</a></nav></aside></div><p class="reader-status sr-only" id="reader-status" role="status"></p></body></html>

@@ -81,3 +81,7 @@ Borshkit — это борщ. Его не придумали с нуля: соб
 - [VS Code Language Model API](https://github.com/microsoft/vscode) (MIT): публичный Language Model API; код не копируется.
 - [Roo Code API](https://github.com/RooCodeInc/Roo-Code) (Apache-2.0): публичные startNewTask, cancelCurrentTask и события; код не копируется.
 - [Cline API](https://github.com/cline/cline) (Apache-2.0): публичный startNewTask; без автоматической имитации кнопок согласия, код не копируется.
+
+## Сборка документации сайта
+
+[Marked](https://github.com/markedjs/marked), Christopher Jeffrey и контрибьюторы, версия 15.0.12, MIT. Скопирован ESM renderer в `scripts/vendor/marked/` вместе с LICENSE; используется только сборщиком статических страниц, а не CLI во время работы.

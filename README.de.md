@@ -1,33 +1,65 @@
 # Borshkit
 
+[![Borshkit — tasks, context, evidence](assets/product/hero.webp)](https://parkpavel.github.io/borshkit/)
+
+<sub>Illustration des Ablaufs: Aufgaben, Kontext und Nachweise.</sub>
+
 **Aufgaben, portabler Kontext und prüfbare Ergebnisse für KI-gestützte Entwicklung.**
 
 Beschreibe das Ergebnis. Lass einen Agenten arbeiten. Erhalte Nachweise zum genauen Dateistand und eine klare Checkliste für deine Prüfung.
 
 <a href="README.md">ru</a> · <a href="README.en.md">en</a> · <a href="README.de.md">de</a> · <a href="README.ko.md">ko</a> · <a href="README.zh-TW.md">zh-TW</a> · <a href="README.fr.md">fr</a>
 
-[Release 0.13.0](https://github.com/ParkPavel/borshkit/releases/tag/0.13.0) · [CI](https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml) · [Dokumentation (Russisch)](docs/README.md)
+[![Release](https://img.shields.io/github/v/release/ParkPavel/borshkit?style=flat-square&color=d6edaf)](https://github.com/ParkPavel/borshkit/releases) [![CI](https://img.shields.io/github/actions/workflow/status/ParkPavel/borshkit/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml) [![Apache-2.0](https://img.shields.io/github/license/ParkPavel/borshkit?style=flat-square&color=aeb4bb)](LICENSE)
+
+[![Loslegen](https://img.shields.io/badge/Loslegen-d6edaf?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/guide/quickstart.html) [![Dokumentation](https://img.shields.io/badge/Dokumentation-aeb4bb?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/index.html) [![Download](https://img.shields.io/badge/Download-aeb4bb?style=for-the-badge&labelColor=20252b)](https://github.com/ParkPavel/borshkit/releases/tag/0.13.0) [![Unterstützen](https://img.shields.io/badge/Unterst%C3%BCtzen-d6edaf?style=for-the-badge&labelColor=20252b)](https://web.tribute.tg/d/Sh8)
 
 ## Starten
 
 0.13.0 · Node.js 22+ · Git
 
-Installiere das geprüfte Archiv aus GitHub Releases. Das Paket ist noch nicht in der npm-Registry veröffentlicht. Für Änderungen am Quellcode: [git clone und npm link](docs/release.md).
+Installiere das geprüfte Archiv aus GitHub Releases. Das Paket ist noch nicht in der npm-Registry veröffentlicht. Für Änderungen am Quellcode: [git clone und npm link](https://parkpavel.github.io/borshkit/read/release.html).
 
 ```sh
 npm install -g https://github.com/ParkPavel/borshkit/releases/download/0.13.0/borshkit.tgz
 borshkit help
 ```
 
-[Quickstart](docs/guide/quickstart.md) · [Guide](docs/guide/workflow.md) · [Commands](docs/reference/commands.md) · [Website](https://parkpavel.github.io/borshkit/)
+[Quickstart](https://parkpavel.github.io/borshkit/read/guide/quickstart.html) · [Guide](https://parkpavel.github.io/borshkit/read/guide/workflow.html) · [Commands](https://parkpavel.github.io/borshkit/read/reference/commands.html) · [Website](https://parkpavel.github.io/borshkit/)
 
 ## Heute verfügbar
 
-CLI, Claude-Code-Plugin und VSIX. Ausführung über Claude Code, Codex, Gemini und APIs; native Copilot/Roo/Cline-APIs in VS Code mit klaren Grenzen. Aufgabenübergabe und statische Karten für JS/TS, Python, Go und Swift. [Funktionen und Grenzen](docs/guide/native-integrations.md).
+CLI, Claude-Code-Plugin und VSIX. Ausführung über Claude Code, Codex, Gemini und APIs; native Copilot/Roo/Cline-APIs in VS Code mit klaren Grenzen. Aufgabenübergabe und statische Karten für JS/TS, Python, Go und Swift. [Funktionen und Grenzen](https://parkpavel.github.io/borshkit/read/guide/native-integrations.html).
 
 PASS: Prüfung bestanden. FAIL: Prüfung nicht bestanden. UNKNOWN: Nachweise fehlen. Live-Tests mit Modellen und Geräten stehen für Rückmeldungen aus der Community aus. CLI-Meldungen und die meisten Anleitungen sind auf Russisch; Befehle haben englische Aliase.
 
-[Architecture](docs/architecture.md) · [Roadmap](docs/roadmap.md) · [Details und Grenzen](docs/reference/overview.de.md) · [Context handoff](docs/guide/handoff.md)
+[Architecture](https://parkpavel.github.io/borshkit/read/architecture.html) · [Roadmap](https://parkpavel.github.io/borshkit/read/roadmap.html) · [Details und Grenzen](https://parkpavel.github.io/borshkit/read/reference/overview.de.html) · [Context handoff](https://parkpavel.github.io/borshkit/read/guide/handoff.html)
+
+
+| Aufgaben | Kontext | Nachweise |
+|---|---|---|
+| [Ziele, Umfang und Kriterien](https://parkpavel.github.io/borshkit/read/reference/contract.html) | [Übergabe zwischen Umgebungen](https://parkpavel.github.io/borshkit/read/guide/handoff.html) | [Prüfungen für einen Dateistand](https://parkpavel.github.io/borshkit/read/concepts/evidence.html) |
+
+<details>
+<summary>Brauche ich ein bezahltes KI-Modell?</summary>
+
+Aufgaben und lokale Prüfungen brauchen kein Modell. Agenten nutzen eine separat konfigurierte Umgebung und deren Tarif.
+
+</details>
+
+<details>
+<summary>Was wird übergeben?</summary>
+
+Vertrag, Entscheidungen und begrenzter Kontext mit Herkunft. Chatverlauf und vertrauenswürdige Abnahme werden nicht übertragen.
+
+</details>
+
+> ### Borshkit unterstützen
+>
+> Open Source lebt von Menschen. Unterstütze Entwicklungszeit und einen leichter zugänglichen Einstieg.
+>
+> [![Borshkit unterstützen](https://img.shields.io/badge/Borshkit%20unterst%C3%BCtzen-d6edaf?style=for-the-badge&labelColor=20252b)](https://web.tribute.tg/d/Sh8)
+
 
 <details>
 <summary>Credits / Источники</summary>
@@ -51,10 +83,12 @@ Borshkit ist ein Borschtsch: gekocht aus den besten Zutaten, die andere angebaut
 | [Agent Reach](https://github.com/panniantong/agent-reach) | Wege, auf denen der Rechercheur Inhalte im Web sammelt |
 | [free-llm-api-resources](https://github.com/raullenchai/free-llm-api-resources) | eine Orientierungshilfe bei der Wahl kostenloser APIs (nur Link) |
 
-Das vollständige Rezept mit Versionen und Lizenzen steht in [docs/ingredients.md](docs/ingredients.md) (auf Russisch). **Alle Mitwirkenden** dieser Projekte, 1262 Einträge: [CONTRIBUTORS-REFERENCES.md](CONTRIBUTORS-REFERENCES.md). Danke an jede und jeden von euch!
+Das vollständige Rezept mit Versionen und Lizenzen steht in [docs/ingredients.md](https://parkpavel.github.io/borshkit/read/ingredients.html) (auf Russisch). **Alle Mitwirkenden** dieser Projekte, 1262 Einträge: [CONTRIBUTORS-REFERENCES.md](CONTRIBUTORS-REFERENCES.md). Danke an jede und jeden von euch!
 
 
 API-Referenzen (kein Code kopiert): [VS Code Language Model API](https://github.com/microsoft/vscode) · [Roo Code API](https://github.com/RooCodeInc/Roo-Code) · [Cline API](https://github.com/cline/cline)
+
+[Marked](https://github.com/markedjs/marked) · MIT · Markdown → HTML documentation.
 
 </details>
 

@@ -1,0 +1,199 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base href="../"><meta name="description" content="Рецепт: из чего сварен Borshkit — документация Borshkit"><meta name="theme-color" content="#141619"><title>Рецепт: из чего сварен Borshkit · Borshkit</title><link rel="canonical" href="https://parkpavel.github.io/borshkit/read/ingredients.html"><link rel="stylesheet" href="site.css"><link rel="stylesheet" href="reader.css"><script src="reader.js" defer></script></head><body class="docs-page"><a class="skip" href="read/ingredients.html#article">К статье</a><header class="docs-header"><a class="brand" href="index.html">borshkit<span class="brand-dot">.</span></a><a class="docs-label" href="read/index.html">Документация <span>0.13</span></a><nav aria-label="Навигация проекта"><a href="index.html">Обзор</a><a href="https://github.com/ParkPavel/borshkit/releases/tag/0.13.0">Скачать</a><a class="support-link" href="https://web.tribute.tg/d/Sh8">Поддержать</a><a href="https://github.com/ParkPavel/borshkit">GitHub</a></nav></header><div class="docs-tools"><button type="button" id="menu-toggle" aria-controls="docs-nav" aria-expanded="false">Разделы</button><label class="search-label" for="docs-search">Найти в документации</label><input id="docs-search" type="search" placeholder="Задача, проверка, Copilot…" autocomplete="off" aria-controls="search-results"><span class="search-shortcut" aria-hidden="true">/</span></div><div class="search-output" id="search-results" aria-live="polite" hidden></div><div class="docs-layout"><aside id="docs-nav" class="docs-sidebar"><nav aria-label="Разделы документации"><section><h2>Начать здесь</h2><a href="read/index.html">Документация Borshkit</a><a href="read/guide/quickstart.html">Быстрый старт: первая задача</a><a href="read/guide/workflow.html">Руководство: от цели до результата</a><a href="read/guide/setup.html">Мастер настройки команды</a></section><section><h2>Работать с задачами</h2><a href="read/guide/handoff.html">Передать работу другому харнесу</a><a href="read/guide/native-integrations.html">Copilot, Roo и Cline: нативный запуск</a><a href="read/guide/team-operations.html">Работа команды, телефон и перенос</a><a href="read/concepts/acceptance.html">Приёмка по целям</a><a href="read/concepts/evidence.html">Доказательства и устаревание</a><a href="read/concepts/executors.html">Исполнители, пулы и автопилот</a><a href="read/concepts/privacy.html">Приватность и настройки</a><a href="read/concepts/knowledge.html">База знаний: заметки, связи, SQL</a><a href="read/concepts/glossary.html">Словарь</a></section><section><h2>Справочник</h2><a href="read/reference/commands.html">Все команды</a><a href="read/reference/contract.html">Формат задачи (`contract.json`)</a><a href="read/reference/team-resources.html">Команда, оценки ролей и ресурсы</a><a href="read/architecture.html">Текущая архитектура</a><a href="read/roadmap.html">Статус пяти направлений — 0.13.0</a><a href="read/release.html">Как выпускается Borshkit</a><a href="read/ingredients.html" aria-current="page">Рецепт: из чего сварен Borshkit</a><a href="read/library/index.html">Библиотека: навыки и проверенные ссылки</a><a href="read/project/SECURITY.html">Безопасность</a><a href="read/project/CONTRIBUTING.html">Как помочь Borshkit</a><a href="read/project/CHANGELOG.html">Изменения</a></section><details><summary>Ещё материалы</summary><a href="read/project/AGENTS.html">Для агентов, которые разрабатывают Borshkit</a><a href="read/project/CONTRIBUTORS-REFERENCES.html">Контрибьюторы проектов, на которых построен Borshkit</a><a href="read/project/README.de.html">Borshkit</a><a href="read/project/README.en.html">Borshkit</a><a href="read/project/README.fr.html">Borshkit</a><a href="read/project/README.ko.html">Borshkit</a><a href="read/project/README.html">Borshkit</a><a href="read/project/README.zh-TW.html">Borshkit</a><a href="read/concepts/research.html">Исследования: источники и цитаты</a><a href="read/concepts/roles-and-skills.html">Роли и навыки</a><a href="read/concepts/space.html">Пространство и Git простыми словами</a><a href="read/concepts/team-workspace.html">Borshkit как профессиональная команда</a><a href="read/guide/website.html">Сайт и документация как единый продукт</a><a href="read/reference/overview.de.html">Details und Grenzen — 0.13</a><a href="read/reference/overview.en.html">Details and limitations — 0.13</a><a href="read/reference/overview.fr.html">Détails et limites — 0.13</a><a href="read/reference/overview.ko.html">상세 설명과 한계 — 0.13</a><a href="read/reference/overview.ru.html">Подробности и ограничения — 0.13</a><a href="read/reference/overview.zh-TW.html">詳細資料與限制 — 0.13</a><a href="read/spec.html">Borshkit (Борщкит) — Modular AI Workspace</a><a href="read/verification-0.13.html">Проверка выпуска 0.13.0</a><a href="read/verification-2026-10-20.html">Проверка модернизации — 20 октября 2026</a></details><details><summary>История и отчёты</summary><a href="read/discussions/audit-2026-10-07.html">Ответ на независимый аудит 0.10.1</a><a href="read/discussions/modernization-2026-10-08.html">Аудит и программа модернизации — 2026-10-08</a><a href="read/discussions/modernization-2026-10-09.html">Контроль модернизации — 2026-10-09</a><a href="read/discussions/professionalism-2026-10-22.html">Аудит оформления и достоверности — 22 октября 2026</a><a href="read/discussions/space-history-backup.html">Черновик обсуждения: резервная копия истории пространства</a><a href="read/graph/README.html">Граф документации</a></details></nav><a class="sidebar-support" href="https://web.tribute.tg/d/Sh8"><strong>Поддержать Borshkit</strong><span>Помоги развивать открытый инструмент.</span></a></aside><main id="article" tabindex="-1" class="docs-article"><div class="article-meta"><span>ДОКУМЕНТАЦИЯ</span><a href="https://github.com/ParkPavel/borshkit/blob/main/docs/ingredients.md">Исходник на GitHub</a></div><article lang="ru"><h1 id="рецепт-из-чего-сварен-borshkit">Рецепт: из чего сварен Borshkit<a class="heading-anchor" href="read/ingredients.html#рецепт-из-чего-сварен-borshkit" aria-label="Ссылка на раздел">#</a></h1>
+<p>Borshkit — это борщ. Его не придумали с нуля: собрали из лучших ингредиентов, которые другие люди вырастили и открыто выложили. Здесь перечислено всё, что попало в кастрюлю: что взято, откуда, на каких условиях и кому сказать спасибо.</p>
+<blockquote>
+<p><strong>Про термическую обработку.</strong> Некоторые ингредиенты прошли её дважды. <a href="https://github.com/github/spec-kit">Spec Kit</a> сначала потушили в <a href="https://github.com/ParkPavel/claudex">Claudex</a> как контракт задачи. Потом ещё раз — как проверку спецификации до начала работы. И только после этого он доварился в Borshkit. <a href="https://github.com/emilkowalski/skills">Навыки Emil Kowalski</a> тоже попали к нам двумя путями: сначала через библиотеку Claudex, потом напрямую. Ничего не подгорело: лицензии сохранены, авторы названы, версии записаны.</p>
+</blockquote>
+<p>Версии зафиксированы на дату сбора, 2026-10-06. Машиночитаемый список — <a href="https://github.com/ParkPavel/borshkit/blob/main/third-party.json"><code>third-party.json</code></a>. Встроенная проверка <code>attribution</code> сверяет его с этой страницей и с README.</p>
+<h2 id="основа-код-и-тексты-которые-лежат-внутри">Основа: код и тексты, которые лежат внутри<a class="heading-anchor" href="read/ingredients.html#основа-код-и-тексты-которые-лежат-внутри" aria-label="Ссылка на раздел">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>Ингредиент</th>
+<th>Авторы</th>
+<th>Лицензия</th>
+<th>Что взято</th>
+<th>Как</th>
+<th>Поддержать</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/ParkPavel/claudex">Claudex</a> @ <code>ed73017</code></td>
+<td>Pavel Park</td>
+<td>Apache-2.0</td>
+<td>контракт задачи, снимок состояния, доказательства и сверка, поиск ключей, адаптеры CLI, классы сбоев, схема ответа ревью</td>
+<td><strong>код адаптирован</strong> в <code>core/</code> (см. <a href="https://github.com/ParkPavel/borshkit/blob/main/NOTICE"><code>NOTICE</code></a>)</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://github.com/DietrichGebert/ponytail">Ponytail</a> @ <code>552acd5</code></td>
+<td>DietrichGebert и контрибьюторы</td>
+<td>MIT</td>
+<td>«ленивый сеньор» для <code>implementer</code> и <code>simplicity-reviewer</code></td>
+<td><strong>тексты навыков скопированы</strong> в <code>packs/ponytail/</code>; хуки не ставятся</td>
+<td><a href="https://github.com/sponsors/DietrichGebert">GitHub Sponsors</a></td>
+</tr>
+<tr>
+<td><a href="https://github.com/emilkowalski/skills">emilkowalski/skills</a> @ <code>e8a175d</code></td>
+<td>Emil Kowalski</td>
+<td>MIT</td>
+<td>14 навыков дизайн-инженерии и анимации</td>
+<td><strong>скопированы</strong> в <code>packs/emil/</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://github.com/affaan-m/ECC">ECC</a> @ <code>ef648e0</code></td>
+<td>Affaan Mustafa и контрибьюторы</td>
+<td>MIT</td>
+<td>9 фронтенд-навыков (доступность, анимация, SwiftUI, Liquid Glass, React); идея устанавливаемых модулей</td>
+<td><strong>навыки скопированы</strong> в <code>packs/ecc/</code>; остальной ECC — нет</td>
+<td><a href="https://github.com/sponsors/affaan-m">GitHub Sponsors</a>, <a href="https://ecc.tools">ecc.tools</a></td>
+</tr>
+</tbody></table>
+<h2 id="зажарка-идеи-которые-пришли-через-claudex">Зажарка: идеи, которые пришли через Claudex<a class="heading-anchor" href="read/ingredients.html#зажарка-идеи-которые-пришли-через-claudex" aria-label="Ссылка на раздел">#</a></h2>
+<p>Код этих проектов в Borshkit не входит. Входят идеи, которые Claudex адаптировал, а Borshkit унаследовал.</p>
+<table>
+<thead>
+<tr>
+<th>Ингредиент</th>
+<th>Авторы</th>
+<th>Лицензия</th>
+<th>Что взято</th>
+<th>Поддержать</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/github/spec-kit">Spec Kit</a> @ <code>9fb13c1</code></td>
+<td>GitHub, Inc. и контрибьюторы</td>
+<td>MIT</td>
+<td>путь «намерение → спецификация → план → задачи → сверка»; проверка спецификации до работы (<code>задача анализ</code>)</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://github.com/obra/superpowers">Superpowers</a> @ <code>8ca22db</code></td>
+<td>Jesse Vincent и контрибьюторы</td>
+<td>MIT</td>
+<td>отдельная копия (worktree) для пишущего агента; тест до исправления; ревью до завершения</td>
+<td><a href="https://github.com/sponsors/obra">GitHub Sponsors</a></td>
+</tr>
+<tr>
+<td><a href="https://github.com/Graphify-Labs/graphify">Graphify</a> @ <code>5c7b847</code></td>
+<td>Safi Shamsi и контрибьюторы</td>
+<td>Apache-2.0</td>
+<td>карта кода, где у каждой связи записано происхождение (извлечено / заявлено)</td>
+<td><a href="https://github.com/sponsors/safishamsi">GitHub Sponsors</a></td>
+</tr>
+<tr>
+<td><a href="https://github.com/kvyb/prompt-agent">prompt-agent</a> @ <code>f603198</code></td>
+<td>kvyb</td>
+<td>не указана</td>
+<td>оценивать прошлые работы по эффективности и точкам сбоя (<code>оценка</code>)</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://github.com/justinwetch/HIGAgentSkills">HIGAgentSkills</a> @ <code>77f32a4</code></td>
+<td>Justin Wetch</td>
+<td>не указана</td>
+<td>маршрутизация по Apple HIG; у нас — только ссылка в каталоге</td>
+<td>—</td>
+</tr>
+</tbody></table>
+<h2 id="специи-внешние-инструменты-и-первоисточники">Специи: внешние инструменты и первоисточники<a class="heading-anchor" href="read/ingredients.html#специи-внешние-инструменты-и-первоисточники" aria-label="Ссылка на раздел">#</a></h2>
+<p>Не копируются. Borshkit вызывает их или ссылается на них.</p>
+<table>
+<thead>
+<tr>
+<th>Что</th>
+<th>Зачем</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/panniantong/agent-reach">Agent Reach</a> @ <code>a19a171</code> (Panniantong и контрибьюторы, MIT)</td>
+<td>маршруты для сбора из интернета: <code>материал добавить --команда …</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/raullenchai/free-llm-api-resources">free-llm-api-resources</a> @ <code>fb47629</code> (Jun Siang Cheah, зеркало у raullenchai; лицензия не указана)</td>
+<td>подсказка при выборе бесплатных API; только ссылка, данные не копируются</td>
+</tr>
+<tr>
+<td><a href="https://r.jina.ai">Jina Reader</a></td>
+<td>очищенный текст страницы: <code>материал добавить --через jina</code></td>
+</tr>
+<tr>
+<td><a href="https://developer.apple.com/design/human-interface-guidelines/">Apple Human Interface Guidelines</a></td>
+<td>первоисточник для <code>ios-designer</code></td>
+</tr>
+<tr>
+<td><a href="https://code.claude.com/docs/en/hooks">Документация хуков Claude Code</a></td>
+<td>формат хуков плагина</td>
+</tr>
+<tr>
+<td><a href="read/library/index.html">Каталог библиотеки</a></td>
+<td>63 проверенные ссылки для фронтенда, дизайна и доступности</td>
+</tr>
+</tbody></table>
+<h2 id="кухонная-утварь">Кухонная утварь<a class="heading-anchor" href="read/ingredients.html#кухонная-утварь" aria-label="Ссылка на раздел">#</a></h2>
+<p><a href="https://nodejs.org">Node.js</a> 22+ (встроенные <code>node:sqlite</code>, <code>node:test</code>, <code>fetch</code>; внешних зависимостей нет) · <a href="https://git-scm.com">Git</a> · <a href="https://sqlite.org">SQLite</a> с полнотекстовым поиском FTS5 · <a href="https://obsidian.md">Obsidian</a> — читать пространство как граф · <a href="https://code.claude.com">Claude Code</a> и Codex CLI — исполнители по подписке.</p>
+<h2 id="попробовали-но-не-положили">Попробовали, но не положили<a class="heading-anchor" href="read/ingredients.html#попробовали-но-не-положили" aria-label="Ссылка на раздел">#</a></h2>
+<ul>
+<li><strong>TypeSafe agent skill</strong> — Claudex оценил его и не взял: внешний сервис, пока недостаточно надёжный для пути работы.</li>
+<li><strong>Код Graphify</strong> — Claudex включает его копию; Borshkit — нет: нужна была только идея происхождения связей.</li>
+<li><strong>Хуки Ponytail и установщик ECC</strong> — они сделали бы режим глобальным для всех проектов. Borshkit подключает только тексты и только к своим ролям.</li>
+<li><strong>Отклонённые ссылки каталога</strong> — например, Vaul (автор пишет, что проект больше не поддерживается) и архивный Polaris React. Причины записаны в <a href="https://github.com/ParkPavel/borshkit/blob/main/library/catalog.json"><code>library/catalog.json</code></a>.</li>
+</ul>
+<h2 id="повара">Повара<a class="heading-anchor" href="read/ingredients.html#повара" aria-label="Ссылка на раздел">#</a></h2>
+<p>По решению D14 перечислены <strong>все</strong> контрибьюторы всех ингредиентов: <a href="read/project/CONTRIBUTORS-REFERENCES.html">CONTRIBUTORS-REFERENCES.md</a> — 1262 записи в 11 проектах (один человек может быть в нескольких).</p>
+<table>
+<thead>
+<tr>
+<th>Проект</th>
+<th>Людей</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ECC</td>
+<td>413</td>
+</tr>
+<tr>
+<td>Graphify</td>
+<td>328</td>
+</tr>
+<tr>
+<td>Spec Kit</td>
+<td>312</td>
+</tr>
+<tr>
+<td>Ponytail</td>
+<td>114</td>
+</tr>
+<tr>
+<td>Superpowers</td>
+<td>43</td>
+</tr>
+<tr>
+<td>Agent Reach</td>
+<td>39</td>
+</tr>
+<tr>
+<td>free-llm-api-resources</td>
+<td>6</td>
+</tr>
+<tr>
+<td>emilkowalski/skills</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Claudex, prompt-agent, HIGAgentSkills</td>
+<td>по 1</td>
+</tr>
+</tbody></table>
+<p>Список собран из истории коммитов на зафиксированных версиях: имена и логины GitHub, которые авторы сами опубликовали. Адресов почты в нём нет. Боты указаны отдельно. С доступом к API GitHub список можно пересобрать по аккаунтам: <code>borshkit атрибуция контрибьюторы владелец/репо …</code>.</p>
+<p>Спасибо каждому. Без вашей открытой работы этого борща бы не было.</p>
+<h2 id="api-интеграций-013">API интеграций 0.13<a class="heading-anchor" href="read/ingredients.html#api-интеграций-013" aria-label="Ссылка на раздел">#</a></h2>
+<ul>
+<li><a href="https://github.com/microsoft/vscode">VS Code Language Model API</a> (MIT): публичный Language Model API; код не копируется.</li>
+<li><a href="https://github.com/RooCodeInc/Roo-Code">Roo Code API</a> (Apache-2.0): публичные startNewTask, cancelCurrentTask и события; код не копируется.</li>
+<li><a href="https://github.com/cline/cline">Cline API</a> (Apache-2.0): публичный startNewTask; без автоматической имитации кнопок согласия, код не копируется.</li>
+</ul>
+<h2 id="сборка-документации-сайта">Сборка документации сайта<a class="heading-anchor" href="read/ingredients.html#сборка-документации-сайта" aria-label="Ссылка на раздел">#</a></h2>
+<p><a href="https://github.com/markedjs/marked">Marked</a>, Christopher Jeffrey и контрибьюторы, версия 15.0.12, MIT. Скопирован ESM renderer в <code>scripts/vendor/marked/</code> вместе с LICENSE; используется только сборщиком статических страниц, а не CLI во время работы.</p>
+</article><nav class="page-neighbors" aria-label="Предыдущая и следующая статьи"><a href="read/release.html"><small>Назад</small>Как выпускается Borshkit</a><a href="read/library/index.html"><small>Дальше</small>Библиотека: навыки и проверенные ссылки</a></nav><footer class="article-footer"><p>Не хватает ответа? <a href="https://github.com/ParkPavel/borshkit/issues">Сообщи об этом</a>.</p><a href="index.html">К обзору продукта</a></footer></main><aside class="docs-toc" aria-label="В этой статье"><p>В этой статье</p><nav><a href="read/ingredients.html#основа-код-и-тексты-которые-лежат-внутри" class="toc-level-2">Основа: код и тексты, которые лежат внутри</a><a href="read/ingredients.html#зажарка-идеи-которые-пришли-через-claudex" class="toc-level-2">Зажарка: идеи, которые пришли через Claudex</a><a href="read/ingredients.html#специи-внешние-инструменты-и-первоисточники" class="toc-level-2">Специи: внешние инструменты и первоисточники</a><a href="read/ingredients.html#кухонная-утварь" class="toc-level-2">Кухонная утварь</a><a href="read/ingredients.html#попробовали-но-не-положили" class="toc-level-2">Попробовали, но не положили</a><a href="read/ingredients.html#повара" class="toc-level-2">Повара</a><a href="read/ingredients.html#api-интеграций-013" class="toc-level-2">API интеграций 0.13</a><a href="read/ingredients.html#сборка-документации-сайта" class="toc-level-2">Сборка документации сайта</a></nav></aside></div><p class="reader-status sr-only" id="reader-status" role="status"></p></body></html>
