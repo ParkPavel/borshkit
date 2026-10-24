@@ -8,10 +8,10 @@ related: ["../reference/commands.md", "../concepts/acceptance.md", "../concepts/
 
 ## 1. Установить
 
-Основной путь — готовый архив [релиза 0.13.0](https://github.com/ParkPavel/borshkit/releases/tag/0.13.0):
+Основной путь — готовый архив [релиза 0.13.1](https://github.com/ParkPavel/borshkit/releases/tag/0.13.1):
 
 ```sh
-npm install -g https://github.com/ParkPavel/borshkit/releases/download/0.13.0/borshkit.tgz
+npm install -g https://github.com/ParkPavel/borshkit/releases/download/0.13.1/borshkit.tgz
 borshkit помощь
 ```
 

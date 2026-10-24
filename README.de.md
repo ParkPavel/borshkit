@@ -12,16 +12,18 @@ Beschreibe das Ergebnis. Lass einen Agenten arbeiten. Erhalte Nachweise zum gena
 
 [![Release](https://img.shields.io/github/v/release/ParkPavel/borshkit?style=flat-square&color=d6edaf)](https://github.com/ParkPavel/borshkit/releases) [![CI](https://img.shields.io/github/actions/workflow/status/ParkPavel/borshkit/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml) [![Apache-2.0](https://img.shields.io/github/license/ParkPavel/borshkit?style=flat-square&color=aeb4bb)](LICENSE)
 
-[![Loslegen](https://img.shields.io/badge/Loslegen-d6edaf?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/guide/quickstart.html) [![Dokumentation](https://img.shields.io/badge/Dokumentation-aeb4bb?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/index.html) [![Download](https://img.shields.io/badge/Download-aeb4bb?style=for-the-badge&labelColor=20252b)](https://github.com/ParkPavel/borshkit/releases/tag/0.13.0) [![Unterstützen](https://img.shields.io/badge/Unterst%C3%BCtzen-d6edaf?style=for-the-badge&labelColor=20252b)](https://web.tribute.tg/d/Sh8)
+[![Loslegen](https://img.shields.io/badge/Loslegen-d6edaf?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/guide/quickstart.html) [![Dokumentation](https://img.shields.io/badge/Dokumentation-aeb4bb?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/index.html) [![Download](https://img.shields.io/badge/Download-aeb4bb?style=for-the-badge&labelColor=20252b)](https://github.com/ParkPavel/borshkit/releases/tag/0.13.1) [![Unterstützen](https://img.shields.io/badge/Unterst%C3%BCtzen-d6edaf?style=for-the-badge&labelColor=20252b)](https://web.tribute.tg/d/Sh8)
 
 ## Starten
 
-0.13.0 · Node.js 22+ · Git
+0.13.1 · Node.js 22+ · Git
+
+**Neu in 0.13.1:** genaue Prozessdiagnose, begrenzte Wartezeiten und BLOCKED/UNKNOWN bei nicht ausführbaren Prüfungen. [Änderungen und bekannte Einschränkungen](https://parkpavel.github.io/borshkit/read/release-0.13.1.html) (Russisch).
 
 Installiere das geprüfte Archiv aus GitHub Releases. Das Paket ist noch nicht in der npm-Registry veröffentlicht. Für Änderungen am Quellcode: [git clone und npm link](https://parkpavel.github.io/borshkit/read/release.html).
 
 ```sh
-npm install -g https://github.com/ParkPavel/borshkit/releases/download/0.13.0/borshkit.tgz
+npm install -g https://github.com/ParkPavel/borshkit/releases/download/0.13.1/borshkit.tgz
 borshkit help
 ```
 
