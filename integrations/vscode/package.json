@@ -2,7 +2,7 @@
   "name": "borshkit-workspace",
   "displayName": "Borshkit — команда и состояние",
   "publisher": "borshkit",
-  "version": "0.13.0",
+  "version": "0.13.1",
   "engines": {
     "vscode": "^1.90.0"
   },

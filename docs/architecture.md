@@ -27,7 +27,7 @@ Borshkit — локальная CLI на Node.js 22+, без зависимос�
 | Copilot / Roo / Cline | файлы правил | нативный путь из VSIX | Copilot LM API без инструментов; Roo start/cancel/events; Cline start, статус/отмена UNKNOWN/UNSUPPORTED |
 | OpenAI-совместимый API | не требуется | API-адаптер | зависит от схемы ответа и возможностей endpoint |
 
-Адаптеры тестируются поддельными программами и ответами API. Это проверяет протокол, а не качество живых моделей. VSIX опубликован в [GitHub Release 0.13.0](https://github.com/ParkPavel/borshkit/releases/tag/0.13.0); в VS Code Marketplace расширение не опубликовано.
+Адаптеры тестируются поддельными программами и ответами API. Это проверяет протокол, а не качество живых моделей. VSIX опубликован в [GitHub Release 0.13.1](https://github.com/ParkPavel/borshkit/releases/tag/0.13.1); в VS Code Marketplace расширение не опубликовано.
 
 ## Передача и нативные среды
 
