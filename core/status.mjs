@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { exec, exists, git, readJSON } from './io.mjs';
+import { exists, git, readJSON } from './io.mjs';
+import { runCommand } from './process.mjs';
 import { STATUS_WORDS } from './accept.mjs';
 import { validateSettings } from './space.mjs';
 import { settingsIntegrity } from './config.mjs';
@@ -45,13 +46,13 @@ export function formatStatus(s) {
 }
 
 /** Environment and space health in plain words; every line is ok or says what to do. */
-export async function doctor(space) {
+export async function doctor(space, { runCommandImpl = runCommand } = {}) {
   const checks = [];
   const add = (ok, text, fix = null) => checks.push({ ok, text, fix });
   const major = Number(process.versions.node.split('.')[0]);
   add(major >= 22, `Node.js ${process.versions.node}`, major >= 22 ? null : 'нужен Node.js 22 или новее');
-  try { add(true, (await exec('git', ['--version'], { windowsHide: true })).stdout.trim()); }
-  catch { add(false, 'Git не найден', 'установи Git: он нужен для точек возврата'); }
+  try { add(true, (await runCommandImpl('git', ['--version'], { timeout: 10000 })).stdout.trim()); }
+  catch (e) { add(false, 'Не удалось проверить Git', e.message); }
   if (space) {
     try { validateSettings(await readJSON(space.settingsFile)); add(true, 'Настройки в порядке, ключей в них нет'); }
     catch (e) { add(false, 'Настройки не прошли проверку', e.message); }

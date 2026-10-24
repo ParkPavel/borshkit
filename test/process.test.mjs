@@ -32,3 +32,48 @@ test('on Windows an npm shim runs its script through Node without a shell', { sk
   await fs.writeFile(path.join(dir, 'broken.cmd'), '@echo off\r\ncall something %*\r\n');
   await assert.rejects(commandSpec(path.join(dir, 'broken.cmd')), /полный путь к \.exe или \.js/);
 });
+
+import { EventEmitter } from 'node:events';
+import { PassThrough } from 'node:stream';
+import { startProcess, checkFailureStatus, processFacts } from '../core/process.mjs';
+
+test('commands preserve failure facts and never confuse POSIX exit 5 with NTSTATUS', async () => {
+  await assert.rejects(runCommand(process.execPath, ['-e', 'process.stderr.write("diagnostic");process.exit(5)']), e => {
+    assert.equal(checkFailureStatus(e), 'FAIL'); assert.equal(e.code, 5);
+    assert.match(e.message, /0x00000005/); assert.match(e.message, /diagnostic/); return true;
+  });
+  for (const code of [0xC0000005, 0xC0000005 | 0]) {
+    const c = new EventEmitter(); c.stdout = new PassThrough(); c.stderr = new PassThrough();
+    const r = startProcess('fixture', [], { spawnImpl() { queueMicrotask(() => c.emit('close', code, null)); return c; } });
+    await assert.rejects(r.done, e => {
+      assert.equal(checkFailureStatus(e), 'UNKNOWN'); assert.equal(processFacts(e).hex, '0xc0000005'); return true;
+    });
+  }
+});
+
+test('timeout, cancellation and overflow settle even if termination never closes pipes', async () => {
+  for (const reason of ['timeout', 'aborted', 'overflow']) {
+    const child = new EventEmitter(); child.stdout = new PassThrough(); child.stderr = new PassThrough();
+    let kills = 0, unrefs = 0; child.unref = () => unrefs++;
+    const controller = new AbortController();
+    const run = startProcess('fixture', [], { spawnImpl: () => child, killImpl: () => kills++, reapMs: 10,
+      timeout: 30, maxBuffer: 8, signal: controller.signal });
+    const rejected = assert.rejects(run.done, e => {
+      assert.equal(e.reason, reason); assert.equal(checkFailureStatus(e), 'UNKNOWN');
+      assert.equal(e.timedOut, reason === 'timeout'); return true;
+    });
+    if (reason === 'aborted') controller.abort();
+    if (reason === 'overflow') child.stdout.write('0123456789');
+    await rejected;
+    assert.equal(kills, 1); assert.equal(unrefs, 1);
+    assert.equal(child.stdout.destroyed, true);
+  }
+});
+
+test('real command cancellation and timeout return bounded diagnostics', async () => {
+  const started = Date.now();
+  await assert.rejects(runCommand(process.execPath, ['-e', 'setInterval(()=>{},100)'], { timeout: 100 }), e => e.timedOut && e.infrastructure);
+  const controller = new AbortController(); controller.abort();
+  await assert.rejects(runCommand(process.execPath, ['-e', 'process.exit(0)'], { signal: controller.signal }), e => e.reason === 'aborted');
+  assert.ok(Date.now() - started < 10000);
+});

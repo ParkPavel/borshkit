@@ -1,7 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { spawn } from 'node:child_process';
-import { commandSpec } from './process.mjs';
+import { commandSpec, startProcess, processDiagnostic } from './process.mjs';
 import { childEnv } from './privacy.mjs';
 import { classifyFailure, errorText, httpHint, MISSING_KEY } from './executors.mjs';
 import { resetTime, resourcesFromHeaders } from './resources.mjs';
@@ -12,30 +11,20 @@ import { assert } from './io.mjs';
 // onEvent({ kind, toolRunning }) so the dispatcher can tell silence from work.
 // CLI arguments adapted from Claudex src/adapters.mjs (Apache-2.0, same author).
 
-function stopTree(child) {
-  if (!child.pid || child.exitCode !== null) return;
-  try { process.platform === 'win32' ? spawn('taskkill.exe', ['/PID', String(child.pid), '/T', '/F'], { windowsHide: true }) : process.kill(-child.pid, 'SIGKILL'); }
-  catch { try { child.kill('SIGKILL'); } catch { /* already gone */ } }
-}
 async function spawnLines({ command, args, cwd, env, input, onLine, onStart, timeoutMs }) {
-  const spec = await commandSpec(command);
-  const child = spawn(spec.executable, [...spec.prefix, ...args], { cwd, env, windowsHide: true, shell: false, detached: process.platform !== 'win32', stdio: ['pipe', 'pipe', 'pipe'] });
-  child.once('spawn', () => onStart());
-  let buffer = '', stderr = '', stoppedBy = null;
-  const timer = setTimeout(() => { stoppedBy = 'TIMEOUT'; stopTree(child); }, timeoutMs);
-  const done = new Promise(resolve => {
-    child.stdout.on('data', chunk => {
-      buffer += chunk.toString();
+  const started = Date.now();
+  const spec = await commandSpec(command, { env, timeout: timeoutMs });
+  let buffer = '', stoppedBy = null;
+  const run = startProcess(spec.executable, [...spec.prefix, ...args], { cwd, env, input, onStart, timeout: Math.max(1, (timeoutMs ?? 120000) - (Date.now() - started)),
+    onStdout: text => {
+      buffer += text;
       let i;
       while ((i = buffer.indexOf('\n')) >= 0) { const line = buffer.slice(0, i).trim(); buffer = buffer.slice(i + 1); if (line) onLine(line); }
-    });
-    child.stderr.on('data', chunk => { stderr = (stderr + chunk.toString()).slice(-20000); });
-    child.on('error', e => { stderr += e.message; });
-    child.on('close', code => { clearTimeout(timer); if (buffer.trim()) onLine(buffer.trim()); resolve({ code, stderr, stoppedBy }); });
-  });
-  child.stdin.on('error', () => {});
-  child.stdin.end(input);
-  return { done, stop: reason => { stoppedBy = reason; stopTree(child); } };
+    } });
+  const done = run.done.then(r => ({ ...r, stoppedBy }), e => ({ code: e.code, stderr: e.stderr,
+    diagnostic: processDiagnostic(e), stoppedBy: stoppedBy ?? (e.timedOut ? 'TIMEOUT' : e.infrastructure ? 'INFRASTRUCTURE' : null) }))
+    .then(r => { if (buffer.trim()) onLine(buffer.trim()); return r; });
+  return { done, stop: reason => { stoppedBy = reason; run.stop(); } };
 }
 const parse = line => { try { return JSON.parse(line); } catch { return null; } };
 const failureOf = (message, stoppedBy) => stoppedBy ?? classifyFailure(message);
@@ -114,8 +103,8 @@ async function startCli({ executor: e, prompt, schema, cwd, writable, onEvent, t
     onEvent({ kind: ev?.type ?? 'output', toolRunning });
   };
   const run = await spawnLines({ command: e.command, args, cwd, env: childEnv(process.env, e.envAllow ?? []), input: prompt, onLine, onStart: () => onEvent({ kind: 'spawn', toolRunning: false }), timeoutMs });
-  const done = run.done.then(({ code, stderr, stoppedBy }) => {
-    if (stoppedBy) return { ok: false, failure: stoppedBy, error: stoppedBy === 'TIMEOUT' ? 'превышено время' : 'остановлен', usage };
+  const done = run.done.then(({ code, stderr, stoppedBy, diagnostic }) => {
+    if (stoppedBy) return { ok: false, failure: stoppedBy, error: `${stoppedBy === 'TIMEOUT' ? 'превышено время' : 'сбой запуска или остановка'}${diagnostic ? `: ${diagnostic}` : ''}`, usage };
     // A structured answer counts only from a process that also says it succeeded.
     // If the two disagree, the job fails and the answer is kept for a person.
     if(e.kind==='gemini-cli' && !geminiModelSeen) error='Gemini не подтвердил фактическую модель';
