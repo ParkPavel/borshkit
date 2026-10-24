@@ -1,6 +1,6 @@
 import path from 'node:path';
-import { assert, atomicJSON, exists, readJSON } from './io.mjs';
-import { runCommand } from './process.mjs';
+import { assert, atomicJSON, exists, readJSON, withLock } from './io.mjs';
+import { runCommand, processFacts, processDiagnostic, checkFailureStatus } from './process.mjs';
 import { executorFingerprint, recordResources, resourcesFromHeaders } from './resources.mjs';
 
 // Executors (spec §4): who does the work. The manifest is declared by a person
@@ -122,7 +122,7 @@ export function classifyFailure(message) {
   for (const [pattern, kind] of FAILURES) if (pattern.test(message)) return kind;
   return 'OTHER';
 }
-export const FAILURE_WORDS = { NETWORK: 'нет связи', QUOTA: 'лимит исчерпан', MODEL: 'модель недоступна', AUTH: 'нужен вход', EXECUTABLE: 'программа не найдена', PRIVACY: 'запрещено режимом приватности', TIMEOUT: 'не уложился во время', SILENT: 'молчал и был заменён', INVALID: 'ответ не по схеме', OTHER: 'ошибка' };
+export const FAILURE_WORDS = { NETWORK: 'нет связи', QUOTA: 'лимит исчерпан', MODEL: 'модель недоступна', AUTH: 'нужен вход', EXECUTABLE: 'программа не найдена', PRIVACY: 'запрещено режимом приватности', TIMEOUT: 'не уложился во время', SILENT: 'молчал и был заменён', INVALID: 'ответ не по схеме', INFRASTRUCTURE: 'сбой запуска среды', OTHER: 'ошибка' };
 
 const REQUIRED_FLAGS = {
   'claude-cli': ['--print', '--output-format', '--json-schema', '--tools', '--strict-mcp-config', '--no-session-persistence'],
@@ -136,43 +136,74 @@ export async function readProbes(space) { return (await exists(probesFile(space)
  * --help for its flags, or the API's model list. The result is a fact about
  * this machine, stored beside the settings rather than inside them.
  */
-export async function probeExecutor(space, id, { fetchImpl = globalThis.fetch, env = process.env } = {}) {
+export async function probeExecutor(space, id, { fetchImpl = globalThis.fetch, env = process.env, runCommandImpl = runCommand, timeoutMs = 30000, signal } = {}) {
+  assert(Number.isFinite(timeoutMs) && timeoutMs > 0, 'Таймаут проверки должен быть положительным');
   const e = space.settings.executors?.[id];
   assert(e, `Исполнитель ${id} не объявлен`);
   const now = new Date();
-  const probe = { at: now.toISOString(), expiresAt: new Date(now.getTime() + 3600000).toISOString(), fingerprint: executorFingerprint(e), ok: true, missing: [], version: null };
+  const probe = { at: now.toISOString(), expiresAt: new Date(now.getTime() + 3600000).toISOString(), fingerprint: executorFingerprint(e), ok: true, status: 'PASS', missing: [], version: null, attempts: [] };
+  let requestSignal;
+  const cliProbe = async args => {
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      try {
+        const result = await runCommandImpl(e.command, args, { timeout: timeoutMs, env, signal });
+        probe.attempts.push({ step: args.at(-1), attempt, status: 'PASS' });
+        return result.stdout;
+      } catch (err) {
+        probe.attempts.push({ step: args.at(-1), attempt, status: checkFailureStatus(err) === 'UNKNOWN' ? 'BLOCKED' : 'FAIL', ...processFacts(err) });
+        // Only read-only diagnostics; never retry model work, writes or timeouts.
+        const transient = Number.isInteger(err.code) && (err.code >>> 0) === 0xC0000005
+          || ['EAGAIN', 'EBUSY', 'ENOMEM'].includes(err.code);
+        if (attempt === 2 || !transient || err.timedOut || signal?.aborted) throw err;
+      }
+    }
+  };
   try {
     if (e.kind === 'claude-cli' || e.kind === 'codex-cli' || e.kind === 'gemini-cli') {
-      const help = (await runCommand(e.command, e.kind === 'codex-cli' ? ['exec', '--help'] : ['--help'], { timeout: 30000 })).stdout;
-      probe.version = (await runCommand(e.command, ['--version'], { timeout: 30000 })).stdout.trim() || null;
+      const help = await cliProbe(e.kind === 'codex-cli' ? ['exec', '--help'] : ['--help']);
+      probe.version = (await cliProbe(['--version'])).trim() || null;
       for (const flag of REQUIRED_FLAGS[e.kind]) if (!help.includes(flag)) probe.missing.push(`флаг ${flag}`);
     } else if (e.kind === 'command') {
-      probe.version = (await runCommand(e.command, ['--version'], { timeout: 30000 })).stdout.trim() || null;
+      probe.version = (await cliProbe(['--version'])).trim() || null;
     } else {
       const headers = e.apiKeyEnv && env[e.apiKeyEnv] ? e.kind==='gemini-api'?{'x-goog-api-key':env[e.apiKeyEnv]}:{ authorization: `Bearer ${env[e.apiKeyEnv]}` } : {};
       if (e.apiKeyEnv && !env[e.apiKeyEnv]) probe.missing.push(MISSING_KEY(e.apiKeyEnv));
       const url = new URL('models', e.baseUrl.endsWith('/') ? e.baseUrl : `${e.baseUrl}/`).href;
       let response;
-      try { response = await fetchImpl(url, { headers }); }
+      requestSignal = signal ? AbortSignal.any([signal, AbortSignal.timeout(timeoutMs)]) : AbortSignal.timeout(timeoutMs);
+      try { response = await fetchImpl(url, { headers, signal: requestSignal }); }
       catch (err) {
         const text = errorText(err), kind = classifyFailure(text);
-        throw new Error(kind === 'NETWORK' ? `${text} — сервер ${new URL(url).origin} не отвечает; проверь, что он запущен` : text);
+        throw Object.assign(new Error(kind === 'NETWORK' ? `${text} — сервер ${new URL(url).origin} не отвечает; проверь, что он запущен` : text, { cause: err }), { infrastructure: true, timedOut: err.name === 'TimeoutError', reason: err.name === 'TimeoutError' ? 'timeout' : 'network' });
       }
       probe.rateLimit = { limit: response.headers.get('x-ratelimit-limit-requests'), remaining: response.headers.get('x-ratelimit-remaining-requests') };
       const resources = resourcesFromHeaders(response.headers, 'models', now);
       if (resources) await recordResources(space, id, resources, { source: 'HTTP_HEADERS', executor: e, now });
       // A missing key variable is already said above; a 401 adds nothing new.
       if (!response.ok && !(e.apiKeyEnv && !env[e.apiKeyEnv] && [401, 403].includes(response.status))) { const hint = httpHint(response.status, e, url); probe.missing.push(`сервер ответил ${response.status}${hint ? `: ${hint}` : ''}`); }
-      else {
+      else if (response.ok) {
         const body = await response.json();
-        const ids = e.kind==='gemini-api'?(body.models??[]).map(m=>m.name?.replace(/^models\//,'')):(body.data??[]).map(m=>m.id);
-        if (ids.length && !ids.includes(e.model)) probe.missing.push(`модели ${e.model} нет в списке сервера`);
+        const models = e.kind === 'gemini-api' ? body?.models : body?.data;
+        assert(Array.isArray(models), 'Сервер не вернул список моделей');
+        const ids = models.map(m => e.kind === 'gemini-api' ? m?.name?.replace(/^models\//, '') : m?.id);
+        if (!ids.includes(e.model)) probe.missing.push(`модели ${e.model} нет в списке сервера`);
       }
     }
-  } catch (err) { const text = errorText(err); probe.missing.push(`${classifyFailure(text)}: ${text.split('\n')[0]}`); }
+  } catch (err) {
+    const text = errorText(err);
+    const cli = ['claude-cli', 'codex-cli', 'gemini-cli', 'command'].includes(e.kind);
+    const blocked = cli ? checkFailureStatus(err) === 'UNKNOWN' : true;
+    probe.status = blocked ? 'BLOCKED' : 'FAIL';
+    const classified = classifyFailure(text);
+    const kind = err.timedOut || err.name === 'TimeoutError' || requestSignal?.reason?.name === 'TimeoutError' ? 'TIMEOUT' : cli && blocked && classified === 'OTHER' ? 'INFRASTRUCTURE' : classified;
+    probe.missing.push(`${kind}: ${text.split('\n')[0]}${cli && !text.includes('код=') ? `; ${processDiagnostic(err)}` : ''}${err.stderr?.trim() ? `; stderr: ${err.stderr.trim().slice(0, 500).replaceAll('\n', ' ')}` : ''}`);
+  }
   probe.ok = !probe.missing.length;
-  const all = await readProbes(space);
-  all[id] = probe;
-  await atomicJSON(probesFile(space), all);
+  if (!probe.ok && probe.status === 'PASS') probe.status = 'FAIL';
+  await withLock(space.state, async () => {
+    const all = await readProbes(space);
+    all[id] = probe;
+    await atomicJSON(probesFile(space), all);
+  });
   return probe;
 }

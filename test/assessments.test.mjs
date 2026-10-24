@@ -45,3 +45,11 @@ test('an assessed answer that writes outside its temporary case fails', async t 
   const r = await runAssessment(s, 'fixture', suite());
   assert.equal(r.result, 'FAIL'); assert.match(r.rows[0].errors.join(' '), /недопустимый путь/);
 });
+
+test('an unavailable independent check yields UNKNOWN and cannot qualify the model', async t => {
+  const s = await configured(t), input = suite();
+  input.cases[0].checks = [{ command: 'borshkit-nonexistent-check-7f9', args: [] }];
+  const r = await runAssessment(s, 'fixture', input);
+  assert.equal(r.result, 'UNKNOWN'); assert.equal(r.rows[0].checks[0].status, 'UNKNOWN');
+  await assert.rejects(proposeAssessment(s, r.file), /Оценка устарела/);
+});

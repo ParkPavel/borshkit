@@ -654,7 +654,7 @@ export async function main(argv = process.argv.slice(2)) {
   if (command === 'executors') {
     const space = await open(flags), probes = await readProbes(space);
     const list = Object.entries(space.settings.executors ?? {}).map(([id, e]) => ({ id, ...e, probe: probes[id] ?? null }));
-    return print(flags, list, list.length ? list.map(e => `${e.probe ? (e.probe.ok ? '✅' : '❌') : '⚪'} ${e.id} · ${e.kind} · ${e.provider} · данные: ${e.dataPolicy} · выход: ${e.modalities.output.join(', ')}${e.probe && !e.probe.ok ? ` · ${e.probe.missing.join('; ')}` : ''}`).join('\n')
+    return print(flags, list, list.length ? list.map(e => `${e.probe ? (e.probe.ok ? '✅' : e.probe.status === 'BLOCKED' ? '⏸' : '❌') : '⚪'} ${e.id} · ${e.kind} · ${e.provider} · данные: ${e.dataPolicy} · выход: ${e.modalities.output.join(', ')}${e.probe && !e.probe.ok ? ` · ${e.probe.missing.join('; ')}` : ''}`).join('\n')
       + `${Object.keys(space.settings.pools ?? {}).length ? `\nПулы: ${Object.entries(space.settings.pools).map(([n, p]) => `${n} = ${p.members.join(' → ')}`).join('; ')}` : ''}` : 'Исполнителей пока нет. Добавь: borshkit исполнитель добавить claude');
   }
   if (command === 'team' || command === 'resources') {
@@ -680,7 +680,7 @@ export async function main(argv = process.argv.slice(2)) {
     const [rawSub, id] = positional.slice(1), sub = SUB[rawSub] ?? rawSub;
     const space = await open(flags);
     assert(id, 'Укажи имя исполнителя');
-    if (sub === 'probe') { const p = await probeExecutor(space, id); return print(flags, p, p.ok ? `✅ ${id}: подключение проверено до ${p.expiresAt}${p.version ? ` (${p.version})` : ''}; качество роли не оценивалось` : `❌ ${id}: ${p.missing.join('; ')}`); }
+    if (sub === 'probe') { const p = await probeExecutor(space, id); return print(flags, p, p.ok ? `✅ ${id}: подключение проверено до ${p.expiresAt}${p.version ? ` (${p.version})` : ''}; качество роли не оценивалось${p.attempts.some(a => a.attempt > 1) ? '; после сбоя запуска среды выполнен диагностический повтор' : ''}` : `${p.status === 'BLOCKED' ? '⏸ BLOCKED — проверка заблокирована' : '❌ FAIL'} ${id}: ${p.missing.join('; ')}`); }
     if (sub === 'fingerprint') { assert(space.settings.executors[id], 'Исполнитель не объявлен'); return console.log(executorFingerprint(space.settings.executors[id])); }
     if (sub === 'qualify') {
       const e = space.settings.executors[id];

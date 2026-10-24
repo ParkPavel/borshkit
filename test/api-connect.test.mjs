@@ -50,3 +50,27 @@ test('an API job without its key variable stops before any request and names the
   assert.equal(r.failure, 'AUTH');
   assert.match(r.error, /ROUTER_API_KEY не задана/);
 });
+
+test('empty or malformed model lists cannot establish availability', async t => {
+  const s = await space(t); s.settings.executors = { api: { ...await readJSON(manifest), apiKeyEnv: undefined } };
+  for (const body of [{ data: [] }, {}, { data: 'wrong' }]) {
+    const p = await probeExecutor(s, 'api', { fetchImpl: async () => new Response(JSON.stringify(body)) });
+    assert.equal(p.ok, false);
+  }
+});
+
+test('API probe deadlines cover both headers and stalled response bodies', async t => {
+  const s = await space(t); s.settings.executors = { api: { ...await readJSON(manifest), apiKeyEnv: undefined } };
+  const srv = http.createServer((req, res) => {
+    if (req.url.startsWith('/body/')) { res.writeHead(200, { 'content-type': 'application/json' }); res.write('{'); }
+  });
+  await new Promise(r => srv.listen(0, '127.0.0.1', r));
+  t.after(() => { srv.closeAllConnections(); srv.close(); });
+  for (const route of ['headers', 'body']) {
+    s.settings.executors.api.baseUrl = `http://127.0.0.1:${srv.address().port}/${route}/`;
+    const started = Date.now();
+    const p = await probeExecutor(s, 'api', { timeoutMs: 100 });
+    assert.equal(p.status, 'BLOCKED'); assert.equal(p.ok, false);
+    assert.ok(Date.now() - started < 5000);
+  }
+});

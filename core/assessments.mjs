@@ -9,7 +9,7 @@ import { executorFingerprint } from './resources.mjs';
 import { buildPrompt, shippedLines, loadRole, roleFingerprint, SCHEMAS, validateOutput } from './roles.mjs';
 import { startExecutor } from './adapters.mjs';
 import { childEnv, outboundFindings } from './privacy.mjs';
-import { runCommand } from './process.mjs';
+import { runCommand, checkFailureStatus } from './process.mjs';
 import { reserveExecution, settleExecution } from './operations.mjs';
 import { proposeSettings } from './config.mjs';
 
@@ -56,7 +56,7 @@ export async function runAssessment(space, executorId, suite, { fetchImpl = glob
           scratch: path.join(root, 'scratch', c.id), timeoutMs: c.timeoutMs ?? 120000, fetchImpl, env: process.env, maxOutputTokens: estimate?.outputTokens,
           image: role.output==='image' && ['openai-compat','gemini-api'].includes(executor.kind), onEvent: e => { if (['spawn', 'request'].includes(e.kind)) launched = true; } });
         result = await handle.done;
-      } finally { await settleExecution(space, reserved.id, { usage: result?.usage, launched }); }
+      } catch (e) { result = { ok: false, failure: 'INFRASTRUCTURE', error: e.message }; } finally { await settleExecution(space, reserved.id, { usage: result?.usage, launched }); }
       const errors = [], checks = [];
       if (!result.ok) errors.push(result.error ?? 'исполнитель не завершил задание');
       else {
@@ -79,16 +79,18 @@ export async function runAssessment(space, executorId, suite, { fetchImpl = glob
           try {
             await runCommand(check.command, check.args, { cwd: dir, env: childEnv(), timeout: Math.min(check.timeoutMs ?? 30000, 900000) });
             checks.push({ status: 'PASS', command: check.command, args: check.args });
-          } catch (e) { checks.push({ status: 'FAIL', command: check.command, args: check.args, error: String(e.message).slice(0, 500) }); }
+          } catch (e) { checks.push({ status: checkFailureStatus(e), command: check.command, args: check.args, error: String(e.message).slice(0, 500) }); }
         }
       }
-      rows.push({ id: c.id, status: !errors.length && checks.length === c.checks.length && checks.every(k => k.status === 'PASS') ? 'PASS' : 'FAIL',
+      const blocked = !result.ok && !['INVALID', 'MODEL'].includes(result.failure);
+      const status = errors.length ? (blocked ? 'UNKNOWN' : 'FAIL') : checks.some(k => k.status === 'FAIL') ? 'FAIL' : checks.some(k => k.status === 'UNKNOWN') ? 'UNKNOWN' : checks.length === c.checks.length ? 'PASS' : 'UNKNOWN';
+      rows.push({ id: c.id, status,
         errors, checks, usage: result.usage ?? null, reservation: reserved.id });
     }
   } finally { await fs.rm(root, { recursive: true, force: true }); }
   assert(roleDigest === await roleFingerprint(await loadRole(suite.role)) && fingerprint === executorFingerprint(space.settings.executors[executorId]), 'Инструкции или конфигурация изменились во время оценки');
   const report = { schemaVersion: 1, id, executorId, model: executor.model, provider: executor.provider, role: suite.role, fingerprint, roleDigest, suiteDigest,
-    at: at.toISOString(), expiresAt: new Date(at.getTime() + expiresHours * 3600000).toISOString(), result: rows.every(r => r.status === 'PASS') ? 'PASS' : 'FAIL', rows,
+    at: at.toISOString(), expiresAt: new Date(at.getTime() + expiresHours * 3600000).toISOString(), result: rows.some(r => r.status === 'FAIL') ? 'FAIL' : rows.every(r => r.status === 'PASS') ? 'PASS' : 'UNKNOWN', rows,
     runtime: { node: process.version, platform: process.platform }, scope: 'только указанный набор заданий; это не приёмка задач и не универсальный рейтинг моделей' };
   const file = path.join(space.dir, 'assessments', `${id}.json`);
   await atomicJSON(file, report);

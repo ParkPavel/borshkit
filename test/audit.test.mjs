@@ -222,3 +222,24 @@ test('F10: a lesson from a task over the whole project is bound to the whole pro
   await write(s.project, { 'README.md': 'другое\n' });
   assert.deepEqual((await buildKnowledge(s)).stale, ['knowledge/lessons/all.md']);
 });
+
+test('evaluation excludes infrastructure failure and changes made by a hidden check', async t => {
+  const s = await space(t);
+  await task(s, 'ev-safe', { goals: [{ id: 'G1', text: 'g', criteria: ['C1'] }], criteria: [{ id: 'C1', text: 'тесты', class: 'auto' }], checks: [{ id: 'ok', ...node('process.exit(0)'), criteria: ['C1'] }] });
+  await verifyAll(s, 'ev-safe'); await converge(s, 'ev-safe');
+  const unknown = await evaluate(s, { 'ev-safe': { command: 'borshkit-check-not-found-7f9', args: [] } });
+  assert.equal(unknown.rows[0].truth, 'UNKNOWN'); assert.equal(unknown.rows[0].falsePass, null);
+  assert.equal(unknown.summary.confirmedQuality, null); assert.equal(unknown.summary.evaluated, 0);
+  assert.deepEqual(unknown.summary.unknown, ['ev-safe']);
+  const changed = await evaluate(s, { 'ev-safe': node("require('fs').writeFileSync('src/app.js','changed');process.exit(1)") });
+  assert.equal(changed.rows[0].comparable, false); assert.equal(changed.rows[0].falsePass, null);
+});
+
+test('streaming executors timeout and preserve structured answers only after clean exit', async t => {
+  const dir = await tempDir(t);
+  const h = await startExecutor({ executor: { kind: 'command', command: process.execPath,
+    args: ['-e', 'console.log(JSON.stringify({type:"result",result:{ok:1}}));setInterval(()=>{},100)'] },
+    prompt: '', schema: {}, cwd: dir, writable: false, timeoutMs: 150, onEvent() {}, scratch: dir });
+  const r = await h.done;
+  assert.equal(r.ok, false); assert.equal(r.failure, 'TIMEOUT'); assert.match(r.error, /таймаут=да/);
+});
