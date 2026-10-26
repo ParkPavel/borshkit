@@ -12,21 +12,21 @@
 
 [![Release](https://img.shields.io/github/v/release/ParkPavel/borshkit?style=flat-square&color=d6edaf)](https://github.com/ParkPavel/borshkit/releases) [![CI](https://img.shields.io/github/actions/workflow/status/ParkPavel/borshkit/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml) [![Apache-2.0](https://img.shields.io/github/license/ParkPavel/borshkit?style=flat-square&color=aeb4bb)](LICENSE)
 
-[![Начать](https://img.shields.io/badge/%D0%9D%D0%B0%D1%87%D0%B0%D1%82%D1%8C-d6edaf?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/guide/quickstart.html) [![Документация](https://img.shields.io/badge/%D0%94%D0%BE%D0%BA%D1%83%D0%BC%D0%B5%D0%BD%D1%82%D0%B0%D1%86%D0%B8%D1%8F-aeb4bb?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/index.html) [![Скачать](https://img.shields.io/badge/%D0%A1%D0%BA%D0%B0%D1%87%D0%B0%D1%82%D1%8C-aeb4bb?style=for-the-badge&labelColor=20252b)](https://github.com/ParkPavel/borshkit/releases/tag/0.13.1) [![Поддержать](https://img.shields.io/badge/%D0%9F%D0%BE%D0%B4%D0%B4%D0%B5%D1%80%D0%B6%D0%B0%D1%82%D1%8C-d6edaf?style=for-the-badge&labelColor=20252b)](https://web.tribute.tg/d/Sh8)
+[![Начать](https://img.shields.io/badge/%D0%9D%D0%B0%D1%87%D0%B0%D1%82%D1%8C-d6edaf?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/guide/quickstart.html) [![Документация](https://img.shields.io/badge/%D0%94%D0%BE%D0%BA%D1%83%D0%BC%D0%B5%D0%BD%D1%82%D0%B0%D1%86%D0%B8%D1%8F-aeb4bb?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/index.html) [![Скачать](https://img.shields.io/badge/%D0%A1%D0%BA%D0%B0%D1%87%D0%B0%D1%82%D1%8C-aeb4bb?style=for-the-badge&labelColor=20252b)](https://github.com/ParkPavel/borshkit/releases/tag/0.14.0) [![Поддержать](https://img.shields.io/badge/%D0%9F%D0%BE%D0%B4%D0%B4%D0%B5%D1%80%D0%B6%D0%B0%D1%82%D1%8C-d6edaf?style=for-the-badge&labelColor=20252b)](https://web.tribute.tg/d/Sh8)
 
-**Новый вектор в исходниках:** работай в уже открытом Claude/Codex; `borshkit` открывает меню задач, остановки и настроек. [Как это устроено](docs/guide/workspace.md). В архив 0.13.1 этот интерфейс ещё не входит.
+**Промежуточный выпуск 0.14.0 (Pre-release):** работай в текущем Claude/Codex; `borshkit` открывает меню задач, остановки и настроек. [Руководство](docs/guide/workspace.md). Стабильная версия — 0.13.1.
 
 ## Начать
 
-0.13.1 · Node.js 22+ · Git
+0.14.0 Pre-release · Node.js 22+ · Git
 
 **В 0.13.1:** подробная диагностика запуска, ограниченные таймауты и честные BLOCKED/UNKNOWN при сбое проверки. [Изменения и известные ограничения](https://parkpavel.github.io/borshkit/read/release-0.13.1.html).
 
 Основной путь — проверенный архив GitHub Release. Публикации в реестре npm пока нет. Для правок исходников используй [клонирование и npm link](https://parkpavel.github.io/borshkit/read/release.html).
 
 ```sh
-npm install -g https://github.com/ParkPavel/borshkit/releases/download/0.13.1/borshkit.tgz
-borshkit помощь
+npm install -g https://github.com/ParkPavel/borshkit/releases/download/0.14.0/borshkit.tgz
+borshkit
 ```
 
 [Quickstart](https://parkpavel.github.io/borshkit/read/guide/quickstart.html) · [Руководство](https://parkpavel.github.io/borshkit/read/guide/workflow.html) · [Команды](https://parkpavel.github.io/borshkit/read/reference/commands.html) · [Сайт](https://parkpavel.github.io/borshkit/)

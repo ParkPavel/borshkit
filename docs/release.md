@@ -9,13 +9,15 @@ documents: ["../.github/workflows/release.yml", "../scripts/verify-release.mjs",
 
 [Состав 0.13.1, обновление и известные ограничения](release-0.13.1.md).
 
+Промежуточный выпуск **0.14.0** публикуется как Pre-release. [Изменения, установка и ограничения](release-0.14.0.md). Ссылка `latest` продолжает указывать на стабильный 0.13.1.
+
 ## Проверяемая процедура
 
 1. Согласовать версии `package.json`, `.claude-plugin/plugin.json`, `integrations/vscode/package.json` и changelog.
 2. Выполнить `npm run verify`; получить успешный CI точного коммита на Linux, Windows и macOS. Слить PR.
-3. Создать тег `0.13.1` на этом коммите и draft GitHub Release с описанием реализованного и ограничений.
+3. Создать тег выбранной версии (для промежуточного выпуска `0.14.0`) на этом коммите и draft GitHub Release с описанием реализованного и ограничений.
 4. Запустить `Release archive` через `workflow_dispatch`, передав тег. Workflow проверяет версию, прогоняет verify, собирает архивы вне checkout, устанавливает точный tgz и проверяет VSIX. Создаёт checksum, provenance и GitHub OIDC attestation, прикладывает их к draft.
-5. Проверить скачанные артефакты и checksum. Только после успешного workflow опубликовать draft как latest.
+5. Проверить скачанные артефакты и checksum. Только после успешного workflow опубликовать draft: стабильный выпуск как latest, промежуточный — как Pre-release без смены latest.
 
 Workflow намеренно запускается явно: событие публикации не пересобирает и не заменяет уже проверенные архивы.
 

@@ -12,20 +12,20 @@
 
 [![Release](https://img.shields.io/github/v/release/ParkPavel/borshkit?style=flat-square&color=d6edaf)](https://github.com/ParkPavel/borshkit/releases) [![CI](https://img.shields.io/github/actions/workflow/status/ParkPavel/borshkit/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml) [![Apache-2.0](https://img.shields.io/github/license/ParkPavel/borshkit?style=flat-square&color=aeb4bb)](LICENSE)
 
-[![開始使用](https://img.shields.io/badge/%E9%96%8B%E5%A7%8B%E4%BD%BF%E7%94%A8-d6edaf?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/guide/quickstart.html) [![文件](https://img.shields.io/badge/%E6%96%87%E4%BB%B6-aeb4bb?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/index.html) [![下載](https://img.shields.io/badge/%E4%B8%8B%E8%BC%89-aeb4bb?style=for-the-badge&labelColor=20252b)](https://github.com/ParkPavel/borshkit/releases/tag/0.13.1) [![支持](https://img.shields.io/badge/%E6%94%AF%E6%8C%81-d6edaf?style=for-the-badge&labelColor=20252b)](https://web.tribute.tg/d/Sh8)
+[![開始使用](https://img.shields.io/badge/%E9%96%8B%E5%A7%8B%E4%BD%BF%E7%94%A8-d6edaf?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/guide/quickstart.html) [![文件](https://img.shields.io/badge/%E6%96%87%E4%BB%B6-aeb4bb?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/index.html) [![下載](https://img.shields.io/badge/%E4%B8%8B%E8%BC%89-aeb4bb?style=for-the-badge&labelColor=20252b)](https://github.com/ParkPavel/borshkit/releases/tag/0.14.0) [![支持](https://img.shields.io/badge/%E6%94%AF%E6%8C%81-d6edaf?style=for-the-badge&labelColor=20252b)](https://web.tribute.tg/d/Sh8)
 
-**0.13.1 之後的原始碼：**直接在目前的 Claude/Codex 工作階段中操作；`borshkit` 開啟終端機選單。[指南（俄文）](docs/guide/workspace.md)。這些變更尚未包含在 0.13.1 發行封存檔中。
+**0.14.0 預覽版（Pre-release）：**在目前的 Claude/Codex 工作階段操作；`borshkit` 開啟工作與設定選單。[指南（俄文）](docs/guide/workspace.md)。穩定版：0.13.1。
 
 ## 開始使用
 
-0.13.1 · Node.js 22+ · Git
+0.14.0 Pre-release · Node.js 22+ · Git
 
 **0.13.1：**詳細的程序診斷、有上限的等待時間，以及無法完成檢查時明確的 BLOCKED/UNKNOWN 狀態。[變更與已知限制](https://parkpavel.github.io/borshkit/read/release-0.13.1.html)（俄文）。
 
 請安裝已驗證的 GitHub Release 壓縮檔。套件尚未發布至 npm 登錄庫。修改原始碼請用 [git clone 和 npm link](https://parkpavel.github.io/borshkit/read/release.html)。
 
 ```sh
-npm install -g https://github.com/ParkPavel/borshkit/releases/download/0.13.1/borshkit.tgz
+npm install -g https://github.com/ParkPavel/borshkit/releases/download/0.14.0/borshkit.tgz
 borshkit help
 ```
 
