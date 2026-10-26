@@ -12,9 +12,16 @@ export const PRIVACY_WORDS = { moderate: 'умеренный', strict: 'стро
  * executor declares (its own login, for example).
  */
 const BASE_ENV = /^(PATH|PATHEXT|HOME|USERPROFILE|APPDATA|LOCALAPPDATA|SYSTEMROOT|SYSTEMDRIVE|COMSPEC|WINDIR|TEMP|TMP|TMPDIR|LANG|LANGUAGE|LC_[A-Z]+|TERM|COLORTERM|TZ|SHELL|USER|USERNAME|LOGNAME|XDG_[A-Z_]+|HTTPS?_PROXY|NO_PROXY|https?_proxy|no_proxy|NODE_EXTRA_CA_CERTS|SSL_CERT_FILE)$/;
-export function childEnv(env = process.env, allow = []) {
-  const extra = new Set(allow);
-  return Object.fromEntries(Object.entries(env).filter(([name]) => BASE_ENV.test(name) || extra.has(name)));
+export function childEnv(env = process.env, allow = [], { platform = process.platform } = {}) {
+  const canonical = name => platform === 'win32' ? name.toUpperCase() : name;
+  const extra = new Set(allow.map(canonical)), seen = new Set();
+  // Match Windows names case-insensitively and select duplicates consistently
+  // with Node's documented lexicographic choice. POSIX names remain distinct.
+  return Object.fromEntries(Object.entries(env).sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).filter(([name]) => {
+    const key = canonical(name);
+    if (seen.has(key) || !(BASE_ENV.test(key) || extra.has(key))) return false;
+    seen.add(key); return true;
+  }));
 }
 /** Names (never values) of environment variables that look like credentials. */
 export const KEYLIKE = /(KEY|TOKEN|SECRET|PASSWORD|PASSWD|CREDENTIAL|COOKIE|AUTH)/i;

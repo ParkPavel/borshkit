@@ -108,14 +108,15 @@ async function saveEvidence(space, t, evidence) {
 }
 
 /** Run one automated check in the project and keep its log bound to the state it ran on. */
-export async function verifyCheck(space, taskId, checkId) {
+export async function verifyCheck(space, taskId, checkId, { signal } = {}) {
   const t = await readyTask(space, taskId), check = t.contract.checks.find(c => c.id === checkId);
   assert(check, `В задаче нет проверки «${checkId}»`);
   const before = await context(space, t), evidenceId = crypto.randomUUID();
   let status = 'PASS', log = '', error = null;
-  if (check.builtin) ({ status, log, error = null } = await BUILTINS[check.builtin](space, t.contract, check, t.repo));
+  if (signal?.aborted) { status = 'UNKNOWN'; error = 'Проверка отменена пользователем'; log = error; }
+  else if (check.builtin) ({ status, log, error = null } = await BUILTINS[check.builtin](space, t.contract, check, t.repo));
   else try {
-    const result = await runCommand(check.command, check.args, { cwd: t.repo, timeout: check.timeoutMs ?? 120000, maxBuffer: 8 * 1024 * 1024 });
+    const result = await runCommand(check.command, check.args, { cwd: t.repo, signal, timeout: check.timeoutMs ?? 120000, maxBuffer: 8 * 1024 * 1024 });
     log = result.stdout + result.stderr;
   } catch (e) { status = checkFailureStatus(e); error = e.message; log = `${e.stdout ?? ''}${e.stderr ?? ''}\n${e.message}\n`; }
   const after = await context(space, t);

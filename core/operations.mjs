@@ -42,6 +42,7 @@ export async function executionStatus(space) {
 /** Limits use one ledger lock across all jobs and assessment runs. Unknown
  * billing holds the reservation and blocks a finite budget until reconciled. */
 export async function reserveExecution(space, { taskId, executorId, executor = space.settings.executors[executorId], estimate = null, now = new Date() }) {
+  await recoverExecution(space);
   const release = await acquireLock(path.join(space.state, 'execution.lock'), { waitMs: 30000 });
   try {
     const current = await readJSON(space.settingsFile), p = current.execution ?? {}, status = await executionStatus(space);

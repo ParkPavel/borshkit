@@ -73,10 +73,10 @@ export async function checkProposal(space, id) {
 }
 /**
  * Apply a proposal. Changes toward strictness apply at once; a weakening needs
- * `confirmedByPerson`, granted after a typed terminal confirmation or a
+ * `confirmedByPerson`, granted after explicit terminal/host confirmation or a
  * verified assertion from a separately enrolled owner device.
  */
-export async function applyProposal(space, id, { confirmedByPerson = false, approvalDigest = null } = {}) {
+export async function applyProposal(space, id, { confirmedByPerson = false, approvalDigest = null, confirmationSource = null } = {}) {
   const release = await acquireLock(path.join(space.state, 'settings.lock'), { waitMs: 30000 });
   try {
     const proposal = await checkProposal(space, id);
@@ -86,7 +86,7 @@ export async function applyProposal(space, id, { confirmedByPerson = false, appr
     const weak = weakenings(space.settings, after);
     assert(!weak.length || confirmedByPerson, `Это ослабляет защиту — нужно твоё подтверждение в терминале:\n  ${weak.join('\n  ')}`);
     await writeSettings(space, after);
-    await atomicJSON(file, { ...proposal, status: 'applied', appliedAt: new Date().toISOString(), confirmedByPerson });
+    await atomicJSON(file, { ...proposal, status: 'applied', appliedAt: new Date().toISOString(), confirmedByPerson, confirmationSource });
     await journal(space, `Применены настройки ${id}${weak.length ? ' (ослабление подтверждено тобой)' : ''}.`);
     await saveSpace(space, `Настройки: предложение ${id}`, proposal.from === PERSON ? {} : { author: proposal.from, email: `${proposal.from}@borshkit` });
     return { ...proposal, status: 'applied', weakens: weak };

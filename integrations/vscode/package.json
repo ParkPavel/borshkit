@@ -13,7 +13,8 @@
     "onCommand:borshkit.team",
     "onCommand:borshkit.nativeStart",
     "onCommand:borshkit.nativeCancel",
-    "onCommand:borshkit.nativeStatus"
+    "onCommand:borshkit.nativeStatus",
+    "onCommand:borshkit.workspace"
   ],
   "capabilities": {
     "untrustedWorkspaces": {
@@ -22,6 +23,10 @@
   },
   "contributes": {
     "commands": [
+      {
+        "command": "borshkit.workspace",
+        "title": "Borshkit: открыть рабочее пространство"
+      },
       {
         "command": "borshkit.setup",
         "title": "Borshkit: настройка команды"

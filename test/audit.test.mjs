@@ -243,3 +243,12 @@ test('streaming executors timeout and preserve structured answers only after cle
   const r = await h.done;
   assert.equal(r.ok, false); assert.equal(r.failure, 'TIMEOUT'); assert.match(r.error, /таймаут=да/);
 });
+
+test('CLI adapters use the provided caller environment and preserve the credential allowlist', async t => {
+  const dir = await tempDir(t);
+  const h = await startExecutor({ executor: { kind: 'command', command: process.execPath,
+    args: ['-e', 'console.log(JSON.stringify({type:"result",result:{marker:process.env.BORSH_TEST_MARKER??null,secret:process.env.BORSH_PRIVATE_TOKEN??null}}))'], envAllow: ['BORSH_TEST_MARKER'] },
+    env: { BORSH_TEST_MARKER: 'fixture', BORSH_PRIVATE_TOKEN: 'private' }, prompt: '', schema: {}, cwd: dir, writable: false, timeoutMs: 5000, onEvent() {}, scratch: dir });
+  const r = await h.done;
+  assert.equal(r.ok, true); assert.deepEqual(r.result, { marker: 'fixture', secret: null });
+});
