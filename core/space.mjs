@@ -14,7 +14,7 @@ const SPACE_AUTHOR = ['Borshkit', 'space@borshkit'];
 
 export function defaultSettings(folder) {
   return { schemaVersion: 1, product: 'borshkit', folder, privacy: 'moderate', autopilot: false, silenceSeconds: 60,
-    trustedAgent: null, executors: {}, pools: {}, acceptance: { modelTrust: {} } };
+    trustedAgent: null, executors: {}, pools: {}, execution: { maxActiveRuns: 2, maxActiveTasks: 2 }, acceptance: { modelTrust: {} } };
 }
 export function validateSettings(s) {
   assert(s && s.schemaVersion === 1 && s.product === 'borshkit', 'Неизвестный формат настроек');
@@ -150,13 +150,14 @@ Git — это «машина времени» для файлов: каждое
 
 ## Что дальше
 
-1. \`borshkit мастер\` — выбрать среду, безопасность, модели и роли. В терминале доступен \`--диалог\`, в приложении — пошаговые команды. Выбор сохраняется; применение настроек и запуск отдельны.
-2. \`borshkit задача новая <имя> --цель "что должно получиться"\` — создать задачу.
-3. \`borshkit задача анализ <имя>\` — проверить, понятно ли описаны критерии.
-4. \`borshkit работа запустить <имя> --роль implementer --исполнитель claude\` — поручить работу.
-5. \`borshkit задача итог <имя>\` — узнать, что доказано и что ждёт тебя.
+1. Открой меню командой \`borshkit\` или попроси текущий Claude/Codex: «Покажи рабочее пространство Borshkit».
+2. Опиши цель обычным языком. Помощник уточнит критерии и создаст задачу; в терминале выбери «Новая задача».
+3. Работай инструментами текущей среды. Дополнительные агенты, отдельные worktree и фоновые сервисы запускаются только по отдельному выбору.
+4. В обзоре видны задачи, работы, запросы на подтверждение и настройки. Проверки показывают N/M; для размышления модели процент не выдумывается.
+5. После правок запусти согласованные проверки. Ответ агента «готово» не заменяет доказательства результата.
 
-Подробно, с объяснением каждого шага: https://github.com/ParkPavel/borshkit/blob/main/docs/guide/quickstart.md
+Подробно: https://parkpavel.github.io/borshkit/read/guide/workspace.html
+
 `;
 }
 

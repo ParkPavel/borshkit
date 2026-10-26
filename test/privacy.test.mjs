@@ -117,3 +117,11 @@ test('shipped role and skill lines skip the personal-data check, never the secre
   const key = 'sk-ant-api03-' + 'a'.repeat(90);
   assert.ok(outboundFindings(key, 'moderate', { shipped: new Set([key]) }).some(f => f.action === 'block'), 'a secret blocks even on a shipped line');
 });
+
+test('Windows environment names retain system paths and deduplicate casing without exposing extra credentials', () => {
+  const env = { Path: 'second', PATH: 'first', SystemRoot: 'system', ComSpec: 'shell', Temp: 'temp', Private_Token: 'private', Codex_Home: 'config' };
+  const win = childEnv(env, ['CODEX_HOME'], { platform: 'win32' });
+  assert.deepEqual(win, { Codex_Home: 'config', ComSpec: 'shell', PATH: 'first', SystemRoot: 'system', Temp: 'temp' });
+  assert.deepEqual(childEnv(env, [], { platform: 'linux' }), { PATH: 'first' });
+  assert.equal(Object.keys(win).some(k => k.toLowerCase() === 'private_token'), false);
+});

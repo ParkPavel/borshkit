@@ -1,3 +1,4 @@
+import { jobStopRequested } from './runtime-control.mjs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
@@ -169,14 +170,18 @@ async function runJobUnlocked(space, { taskId, role: roleId, executor = null, po
   const probes = await readProbes(space);
   const now = new Date();
   const job = { id: `j-${now.getTime().toString(36)}-${crypto.randomBytes(3).toString('hex')}`, taskId, role: roleId, status: 'QUEUED', pool, lens, skills, resumeOf, imagePath,
-    createdAt: now.toISOString(), attempts: [], executor: null, lastEventAt: null, toolRunning: false, activity: 'ждёт исполнителя' };
-  let lastWrite = 0;
+    heartbeatAt: now.toISOString(), ownerPid: process.pid, runToken: crypto.randomUUID(), processId: null, createdAt: now.toISOString(), attempts: [], executor: null, lastEventAt: null, toolRunning: false, activity: 'ждёт исполнителя' };
+  let lastWrite = 0, writeTail = Promise.resolve();
   const save = async (force = false) => {
     job.updatedAt = new Date().toISOString();
     if (!force && Date.now() - lastWrite < 1000) return;
     lastWrite = Date.now();
-    await atomicJSON(jobFile(space, job.id), job);
-    await writeStatusFiles(space).catch(() => {});
+    const snapshot = structuredClone(job);
+    writeTail = writeTail.then(async () => {
+      await atomicJSON(jobFile(space, job.id), snapshot);
+      await writeStatusFiles(space).catch(() => {});
+    });
+    await writeTail;
   };
   await save(true);
   await journal(space, `Работа ${job.id}: роль ${roleId} для задачи «${taskId}».`);
@@ -191,6 +196,7 @@ async function runJobUnlocked(space, { taskId, role: roleId, executor = null, po
   let outcome = null, switches = 0;
   const retried = new Set();
   for (let i = 0; i < candidates.length; i++) {
+    if (await jobStopRequested(space, job)) { job.status = 'STOPPED'; job.activity = 'Остановлено до следующего запуска'; await save(true); return job; }
     const id = candidates[i], e = executors[id];
     const attempt = { executor: id, provider: e.provider, model: e.model ?? null, kind: e.kind, fingerprint: executorFingerprint(e), endpoint: e.kind === 'gemini-api' ? 'generateContent' : e.kind === 'openai-compat' ? role.output === 'image' ? 'images/generations' : 'chat/completions' : null, startedAt: new Date().toISOString(), launchedAt: null, outcome: 'running' };
     const skip = async (failure, reason) => { Object.assign(attempt, { outcome: 'skipped', failure, reason, endedAt: new Date().toISOString() }); job.attempts.push(attempt); await save(true); };
@@ -236,16 +242,19 @@ async function runJobUnlocked(space, { taskId, role: roleId, executor = null, po
       schema: SCHEMAS[role.output], cwd: work.path, writable, timeoutMs: role.timeoutMs ?? 1800000, fetchImpl, env,
       image: role.output === 'image' && ['openai-compat', 'gemini-api'].includes(e.kind), scratch: path.join(space.state, 'jobs', job.id),
       maxOutputTokens: estimate?.outputTokens,
-      onEvent: ({ kind, toolRunning }) => { if (['spawn', 'response'].includes(kind)) attempt.launchedAt ??= new Date().toISOString(); job.lastEventAt = new Date().toISOString(); job.toolRunning = toolRunning; job.activity = toolRunning ? 'выполняет инструмент' : kind === 'result' ? 'отвечает' : 'думает'; void save(); } }); }
+      onEvent: ({ kind, toolRunning, pid }) => { if (pid) job.processId = pid; if (['spawn', 'request', 'response'].includes(kind)) attempt.launchedAt ??= new Date().toISOString(); job.lastEventAt = new Date().toISOString(); job.toolRunning = toolRunning; job.activity = toolRunning ? 'выполняет инструмент' : kind === 'result' ? 'отвечает' : 'думает'; void save(kind === 'spawn' || kind === 'request').catch(() => {}); } }); }
     catch (e) { await settleExecution(space, reservation.id, { launched: false }); throw e; }
 
     // Silence watch: a routine question, answered by a person or, in autopilot, by its default.
+    let heartbeatAt = 0;
     let question = null, stoppedFor = null, watchBusy = false, watchClosed = false, pendingWatch = null;
     // A slow filesystem must not run two polls at once: both could create
     // questions and lose the person's answer when overwriting `question`.
     const poll = async () => {
       watchBusy = true;
       try {
+        if (Date.now() - heartbeatAt > 5000) { heartbeatAt = Date.now(); job.heartbeatAt = new Date().toISOString(); await save(true); }
+        if (await jobStopRequested(space, job)) { stoppedFor = 'stop'; handle.stop('STOPPED'); return; }
         if (!question && Date.now() - new Date(job.lastEventAt) > silenceMs) {
           const def = job.toolRunning ? 'wait' : 'switch';
           question = await ask(space, { kind: 'routine', jobId: job.id, taskId, defaultOption: def,
@@ -267,12 +276,15 @@ async function runJobUnlocked(space, { taskId, role: roleId, executor = null, po
     const watch = setInterval(() => {
       if (!watchClosed && !watchBusy) pendingWatch = poll();
     }, tickMs);
-    let result = await handle.done;
-    await settleExecution(space, reservation.id, { usage: result.usage, launched: Boolean(attempt.launchedAt) });
+    let result;
+    try { result = await handle.done; }
+    catch (e) { result = { ok: false, failure: 'INFRASTRUCTURE', error: e.message }; }
+    finally {
+      watchClosed = true; clearInterval(watch); await pendingWatch;
+      job.processId = null;
+      await settleExecution(space, reservation.id, { usage: result?.usage, launched: Boolean(attempt.launchedAt) });
+    }
     attempt.budgetReservation = reservation.id;
-    watchClosed = true;
-    clearInterval(watch);
-    await pendingWatch;
     if (result.resources) await recordResources(space, id, result.resources, { source: 'HTTP_HEADERS', executor: e });
     if (question && (await getQuestion(space, question.id)).status === 'open') await answer(space, question.id, 'wait', { by: 'Borshkit' }).catch(() => {});
     if (stoppedFor === 'stop') result = { ...result, ok: false, failure: 'STOPPED', error: 'остановлено по твоему ответу' };
@@ -298,7 +310,8 @@ async function runJobUnlocked(space, { taskId, role: roleId, executor = null, po
     if (result.failure === 'QUOTA' && result.retryAfter && result.retryAfter <= waitSeconds && !retried.has(id)) {
       retried.add(id);
       job.status = 'WAITING_LIMIT'; job.activity = `ждёт лимит ${result.retryAfter} с`; await save(true);
-      await sleep(result.retryAfter * 1000);
+      const until = Date.now() + result.retryAfter * 1000;
+      while (Date.now() < until && !await jobStopRequested(space, job)) await sleep(Math.min(250, until - Date.now()));
       i--; switches++; job.attempts.at(-1).retried = true; continue;
     }
     if (['QUOTA', 'SILENT'].includes(result.failure) && i < candidates.length - 1) {

@@ -14,6 +14,8 @@
 
 [![開始使用](https://img.shields.io/badge/%E9%96%8B%E5%A7%8B%E4%BD%BF%E7%94%A8-d6edaf?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/guide/quickstart.html) [![文件](https://img.shields.io/badge/%E6%96%87%E4%BB%B6-aeb4bb?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/index.html) [![下載](https://img.shields.io/badge/%E4%B8%8B%E8%BC%89-aeb4bb?style=for-the-badge&labelColor=20252b)](https://github.com/ParkPavel/borshkit/releases/tag/0.13.1) [![支持](https://img.shields.io/badge/%E6%94%AF%E6%8C%81-d6edaf?style=for-the-badge&labelColor=20252b)](https://web.tribute.tg/d/Sh8)
 
+**0.13.1 之後的原始碼：**直接在目前的 Claude/Codex 工作階段中操作；`borshkit` 開啟終端機選單。[指南（俄文）](docs/guide/workspace.md)。這些變更尚未包含在 0.13.1 發行封存檔中。
+
 ## 開始使用
 
 0.13.1 · Node.js 22+ · Git

@@ -77,3 +77,18 @@ test('real command cancellation and timeout return bounded diagnostics', async (
   await assert.rejects(runCommand(process.execPath, ['-e', 'process.exit(0)'], { signal: controller.signal }), e => e.reason === 'aborted');
   assert.ok(Date.now() - started < 10000);
 });
+
+test('owner interruption stops all registered children and removes shared signal listeners', async () => {
+  const oldExitCode = process.exitCode, beforeInt = process.listenerCount('SIGINT'), beforeTerm = process.listenerCount('SIGTERM');
+  const handles = [];
+  try {
+    for (let i = 0; i < 3; i++) {
+      const child = new EventEmitter(); child.stdout = new PassThrough(); child.stderr = new PassThrough(); child.unref = () => {};
+      const h = startProcess('fixture', [], { spawnImpl: () => child, killImpl: () => queueMicrotask(() => child.emit('close', null, 'SIGKILL')) });
+      handles.push(assert.rejects(h.done, e => e.reason === 'aborted'));
+    }
+    assert.equal(process.listenerCount('SIGTERM'), beforeTerm + 1);
+    process.emit('SIGTERM'); await Promise.all(handles);
+    assert.equal(process.listenerCount('SIGTERM'), beforeTerm); assert.equal(process.listenerCount('SIGINT'), beforeInt);
+  } finally { process.exitCode = oldExitCode; }
+});

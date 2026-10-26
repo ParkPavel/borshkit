@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+import { workspaceSnapshot, formatWorkspace, settingsReview, applyHostSettings } from '../core/workspace.mjs';
+import { workspaceMenu } from '../core/workspace-ui.mjs';
+import { requestJobStop } from '../core/runtime-control.mjs';
 import { prepareNative, finishNative } from '../core/native.mjs';
 import { exportHandoff, importHandoff } from '../core/handoff.mjs';
 import fs from 'node:fs/promises';
@@ -36,19 +39,19 @@ import { monitorPulse, monitorStatus, runMonitor, startMonitor, stopMonitor } fr
 import { exportPortable, importPortable } from '../core/portable.mjs';
 import { exportInstructions } from '../core/integrations.mjs';
 
-const COMMANDS = { начать: 'init', статус: 'status', задача: 'task', сохранить: 'save', доктор: 'doctor', помощь: 'help', материал: 'material', приватность: 'privacy', настройки: 'settings', эксперимент: 'experiment',
+const COMMANDS = { обзор: 'workspace', меню: 'workspace', начать: 'init', статус: 'status', задача: 'task', сохранить: 'save', доктор: 'doctor', помощь: 'help', материал: 'material', приватность: 'privacy', настройки: 'settings', эксперимент: 'experiment',
   исполнители: 'executors', исполнитель: 'executor', работа: 'job', вопрос: 'question', вопросы: 'question', роли: 'roles', знания: 'knowledge', атрибуция: 'attribution',
   оценка: 'eval', hook: 'hook', история: 'history', 'что-изменилось': 'changes', 'кто-что': 'who', вернуть: 'restore', 'сохранить-проект': 'save-project', собрать: 'merge', отправить: 'push',
   навыки: 'skills', библиотека: 'library', команда: 'team', ресурсы: 'resources', мастер: 'setup', стенд: 'assessment', бюджет: 'budget', координация: 'coordination', подтверждение: 'approval', монитор: 'monitor', перенос:'portable', интеграция:'integration', передача: 'handoff', поддержать: 'support' };
 const WHICH = { проект: 'project', пространство: 'space', project: 'project', space: 'space' };
-const SUB = { добавить: 'add', список: 'list', обновить: 'refresh', показать: 'show', предложить: 'propose', применить: 'apply', принять: 'accept', вернуть: 'revert', начать: 'start', ключ: 'key', завершить: 'end',
+const SUB = { остановить: 'stop', добавить: 'add', список: 'list', обновить: 'refresh', показать: 'show', предложить: 'propose', применить: 'apply', принять: 'accept', вернуть: 'revert', начать: 'start', ключ: 'key', завершить: 'end',
   проверить: 'probe', запустить: 'run', продолжить: 'resume', ответить: 'answer', собрать: 'build', найти: 'search', контекст: 'context', урок: 'lesson', экспорт: 'export', контрибьюторы: 'contributors', картинки: 'assets', план: 'plan', записать: 'record', оценить: 'qualify', отпечаток: 'fingerprint' };
 const MODES = { умеренный: 'moderate', строгий: 'strict', эксперимент: 'experiment' };
 const TASK = { новая: 'new', анализ: 'check', проверить: 'verify', отзыв: 'review', подтвердить: 'confirm', итог: 'converge', принять: 'accept', обновить: 'update' };
 const FLAGS = { цель: 'goal', вид: 'kind', база: 'base', папка: 'folder', проект: 'project', 'только-локально': 'local-only', исполнитель: 'executor', результат: 'result',
   текст: 'text', название: 'title', да: 'yes', 'ключи-отозваны': 'revoked', от: 'from', причина: 'reason', через: 'via', манифест: 'manifest', readme: 'readme',
   роль: 'role', роли: 'roles', срок: 'until', пул: 'pool', клоны: 'clones', к: 'to', скрытые: 'hidden', порог: 'threshold', сколько: 'limit', удалённый: 'remote', линза: 'lens', файл: 'file', следить: 'watch', строка: 'line', команда: 'command', семейство: 'provider', данные: 'data', модель: 'model', навыки: 'skills', 'в-папке': 'in-place', диалог: 'interactive', мастер: 'wizard', открыть: 'open' };
-const LONE = ['json', 'local-only', 'yes', 'revoked', 'help', 'watch', 'line', 'in-place', 'interactive', 'wizard', 'trusted-proxy', 'suggest', 'open'];
+const LONE = ['json', 'local-only', 'yes', 'revoked', 'help', 'watch', 'line', 'in-place', 'interactive', 'wizard', 'trusted-proxy', 'suggest', 'open', 'resources'];
 Object.assign(FLAGS, { 'вход-токены': 'input-tokens', 'выход-токены': 'output-tokens', адрес: 'address', переменная: 'key-env' });
 // Flags that complete a preset or a manifest: an explicit choice of the person.
 const MANIFEST_FLAGS = [['command', 'command'], ['provider', 'provider'], ['data', 'dataPolicy'], ['model', 'model'], ['address', 'baseUrl'], ['key-env', 'apiKeyEnv']];
@@ -77,7 +80,12 @@ export function parse(argv) {
   return { positional, flags };
 }
 
-const HELP = `Borshkit — Modular AI Workspace
+const HELP = `Borshkit — рабочее пространство в твоём Claude/Codex
+
+  borshkit обзор                  Меню в терминале, состояние в чате
+  borshkit обзор --json           Единый снимок для Claude/Codex/VS Code
+  borshkit обзор --json --resources  Измерить RAM и время CPU по запросу
+  borshkit работа остановить <id>   Управляемая остановка своей работы
 
   borshkit начать [--проект путь] [--папка имя] [--только-локально] [--мастер]
       создать пространство в корне проекта и спрятать его от истории проекта
@@ -349,7 +357,7 @@ async function privacy(rawMode, flags) {
   if (mode === space.settings.privacy) return print(flags, { privacy: mode }, `Режим приватности уже ${PRIVACY_WORDS[mode]}.`);
   const proposal = await proposeSettings(space, { privacy: mode }, { reason: 'смена режима приватности' });
   const weaker = proposal.weakens.length > 0;
-  const confirmed = weaker && await confirmPerson(`Ослабить защиту: ${proposal.weakens.join('; ')}?`, 'да, ослабить');
+  const confirmed = weaker && await confirmPerson(`Применить изменения доступа: ${proposal.weakens.join('; ')}?`, 'да');
   assert(!weaker || confirmed, PERSON_ONLY);
   await applyProposal(space, proposal.id, { confirmedByPerson: confirmed });
   return print(flags, { privacy: mode }, `Режим приватности: ${PRIVACY_WORDS[mode]}${mode === 'experiment' ? '\nДальше: borshkit эксперимент начать' : ''}`);
@@ -373,7 +381,7 @@ async function settings([rawSub, ...rest], flags) {
   if (sub === 'apply') {
     const proposal = await checkProposal(space, rest[0]);
     const weak = proposal.weakens?.length > 0;
-    const confirmed = weak && await confirmPerson(`Предложение ${proposal.id} от ${proposal.from} ослабляет защиту:\n  ${proposal.weakens.join('\n  ')}`, 'да, ослабить');
+    const confirmed = weak && await confirmPerson(`Предложение ${proposal.id} от ${proposal.from} ослабляет защиту:\n  ${proposal.weakens.join('\n  ')}`, 'да');
     assert(!weak || confirmed, PERSON_ONLY);
     const r = await applyProposal(space, proposal.id, { confirmedByPerson: confirmed });
     return print(flags, r, `Настройки применены (${r.id}).`);
@@ -496,6 +504,7 @@ async function gitShell(command, args, flags) {
 async function job([rawSub, ...rest], flags) {
   const sub = SUB[rawSub] ?? rawSub ?? 'list';
   const space = await open(flags);
+  if (sub === 'stop') { const r = await requestJobStop(space, rest[0]); return print(flags, r, r.note ?? r.state); }
   if (sub === 'list') return print(flags, await listJobs(space), formatCards(await cards(space, { recent: 20 })));
   const opts = { executor: typeof flags.executor === 'string' ? flags.executor : null, pool: typeof flags.pool === 'string' ? flags.pool : null };
   let j;
@@ -531,8 +540,25 @@ async function question([rawSub, id, option], flags) {
 
 export async function main(argv = process.argv.slice(2)) {
   const { positional, flags } = parse(argv);
-  const command = COMMANDS[positional[0]] ?? positional[0] ?? 'help';
+  const command = COMMANDS[positional[0]] ?? positional[0] ?? (process.stdin.isTTY && process.stdout.isTTY ? 'workspace' : 'help');
   if (command === 'help' || flags.help) return console.log(HELP);
+  if (command === 'workspace') {
+    let space;
+    try { space = await open(flags); }
+    catch (e) {
+      if (!e.message.startsWith('Пространство не найдено')) throw e;
+      if (flags.json || !process.stdin.isTTY || !process.stdout.isTTY) return print(flags, { state: 'NOT_INITIALIZED', project: process.cwd(), actions: ['init'] }, 'Здесь ещё нет пространства. Опиши задачу Claude/Codex или выполни borshkit начать.');
+      if (!await confirmPerson(`Создать рабочее пространство в ${process.cwd()}?`, 'да')) return;
+      space = (await initSpace({ project: process.cwd(), folder: flags.folder ?? DEFAULT_FOLDER })).space;
+    }
+    const sub = positional[1] ?? 'show';
+    if (sub === 'review-settings') { const r = await settingsReview(space, positional[2]); return print(flags, r, JSON.stringify(r, null, 2)); }
+    if (sub === 'apply-settings') { const r = await applyHostSettings(space, positional[2], { host: flags.host, digest: flags.digest, decision: flags.decision }); return print(flags, r, 'Настройки применены.'); }
+    if (sub === 'stop') { const r = await requestJobStop(space, positional[2]); return print(flags, r, r.note ?? `Состояние: ${r.state}`); }
+    assert(sub === 'show', 'Выбери обзор, настройки или остановку работы');
+    if (!flags.json && process.stdin.isTTY && process.stdout.isTTY) return workspaceMenu(space);
+    const view = await workspaceSnapshot(space, { resources: flags.resources === true }); return print(flags, view, formatWorkspace(view));
+  }
   if (command === 'version') return console.log((await readJSON(path.join(ROOT, 'package.json'))).version);
   if (command === 'init') {
     const r = await initSpace({ project: flags.project ? path.resolve(flags.project) : process.cwd(), folder: flags.folder ?? DEFAULT_FOLDER, localOnly: flags['local-only'] === true });
@@ -544,7 +570,7 @@ export async function main(argv = process.argv.slice(2)) {
     const { space, ...report } = r;
     await writeTeamFiles(space);
     const setup = await writeSetupFiles(space);
-    lines.push('Настрой команду: borshkit мастер. Понятный план шагов: SETUP.md.');
+    lines.push('Открой borshkit обзор или попроси текущий Claude/Codex показать рабочее пространство. Дополнительных исполнителей подключать необязательно.');
     if (flags.wizard) {
       if (process.stdin.isTTY && process.stdout.isTTY && !flags.json) await setupDialog(space);
       else lines.push(formatSetup(setup));
@@ -696,7 +722,7 @@ export async function main(argv = process.argv.slice(2)) {
     if (sub === 'add') {
       const manifest = manifestFrom(id, typeof flags.file === 'string' ? await readJSON(path.resolve(flags.file)) : presetFor(id), flags);
       const proposal = await proposeSettings(space, { executors: { ...(space.settings.executors ?? {}), [id]: manifest } }, { reason: `добавить исполнителя ${id}` });
-      const confirmed = await confirmPerson(`Добавить исполнителя ${id}: ${proposal.weakens.join('; ')}`, 'да, ослабить');
+      const confirmed = await confirmPerson(`Добавить исполнителя ${id}: ${proposal.weakens.join('; ')}`, 'да');
       assert(confirmed, `${PERSON_ONLY} Предложение сохранено: ${proposal.id}`);
       await applyProposal(space, proposal.id, { confirmedByPerson: true });
       const p = await probeExecutor(space, id);

@@ -33,13 +33,13 @@ test('the plugin puts borshkit and borsch on the PATH of Claude Code\'s Bash too
     // Only shell built-ins: dirname/sed are processes that can fail to start under Git Bash.
     assert.doesNotMatch(text, /\$\(|`/);
   }
-  if (process.platform !== 'win32') assert.match((await run(path.join(ROOT, 'bin', 'borshkit'), ['помощь'])).stdout, /^Borshkit — Modular AI Workspace/);
+  if (process.platform !== 'win32') assert.match((await run(path.join(ROOT, 'bin', 'borshkit'), ['помощь'])).stdout, /^Borshkit — рабочее пространство/);
 });
 
-test('the pre-tool hook refuses destructive Git and pushing, and lets ordinary work through', () => {
-  for (const cmd of ['git push --force origin main', 'git push -f', 'git push origin :old', 'git push origin main', 'git reset --hard HEAD~1', 'git clean -fdx', 'git branch -D feature', 'git checkout -- .', 'echo x > borshkit/settings/workspace.json'])
+test('the pre-tool hook refuses destructive Git, delegates ordinary pushes to host permissions, and lets ordinary work through', () => {
+  for (const cmd of ['git push --force origin main', 'git push -f', 'git push origin :old', 'git reset --hard HEAD~1', 'git clean -fdx', 'git branch -D feature', 'git checkout -- .', 'echo x > borshkit/settings/workspace.json'])
     assert.ok(judgeCommand(cmd), cmd);
-  for (const cmd of ['git status', 'git diff', 'npm test', 'git commit -m "x"', 'git log --oneline', 'cat borshkit/STATUS.md', 'git checkout -b feat'])
+  for (const cmd of ['git push origin main', 'git status', 'git diff', 'npm test', 'git commit -m "x"', 'git log --oneline', 'cat borshkit/STATUS.md', 'git checkout -b feat'])
     assert.equal(judgeCommand(cmd), null, cmd);
 });
 
@@ -55,7 +55,7 @@ test('the hooks guard the space files and tell a new session where things stand'
   const start = await runHook('session-start', { cwd: s.project });
   assert.match(start.hookSpecificOutput.additionalContext, /^Borshkit · умеренный · работ: 0/);
   const pending = run(process.execPath, [path.join(ROOT, 'bin', 'borshkit.mjs'), 'hook', 'pre-tool'], { cwd: s.project, timeout: 30000 });
-  pending.child.stdin.end(JSON.stringify({ cwd: s.project, tool_name: 'Bash', tool_input: { command: 'git push origin main' } }));
+  pending.child.stdin.end(JSON.stringify({ cwd: s.project, tool_name: 'Bash', tool_input: { command: 'git push --force origin main' } }));
   const cli = await pending;
   assert.equal(JSON.parse(cli.stdout).hookSpecificOutput.permissionDecision, 'deny');
   assert.match(await fs.readFile(path.join(s.dir, 'AGENTS.md'), 'utf8'), /^# Как работать в пространстве Borshkit/);
@@ -110,8 +110,8 @@ test('the /borshkit:setup command keeps keys out of the chat, leaves applying to
   const [, front] = text.match(/^---\n([\s\S]*?)\n---\n/);
   assert.match(front, /^description: \S/m);
   assert.match(front, /^allowed-tools: Bash\(borshkit:\*\), Bash\(borsch:\*\), AskUserQuestion, Read$/m);
-  assert.match(text, /Ключи API никогда не спрашивай в чате/);
-  assert.match(text, /Не запускай `borshkit настройки применить` за него/);
+  assert.match(text, /Не проси секреты в чат/);
+  assert.match(text, /Только после явного ответа «Применить»/);
   const help = (await run(process.execPath, [path.join(ROOT, 'bin', 'borshkit.mjs'), 'помощь'])).stdout;
   const lines = help.split('\n');
   for (const [, command, sub] of text.matchAll(/`borshkit (мастер|исполнитель|настройки|задача|начать|доктор|роли)(?: ([а-яё]+))?/g))

@@ -5,13 +5,11 @@ import { statusLine } from './dispatch.mjs';
 import { listQuestions } from './questions.mjs';
 
 // Claude Code hooks (spec §10.4): a second, advisory layer over the structural
-// rules. PreToolUse refuses destructive Git, pushing around the critical
-// question, and edits of the space's settings and evidence; SessionStart tells
+// rules. PreToolUse refuses destructive Git and edits of the space's settings and evidence; SessionStart tells
 // the session where things stand. A native session can still do anything its
 // own permissions allow — this is guidance with teeth, not a sandbox.
 const DESTRUCTIVE = [
   [/\bgit\s+push\b[^\n;&|]*\s(--force\b|-f\b|--force-with-lease\b|--mirror\b|--delete\b|:\S)/, 'принудительная отправка или удаление на сервере перезаписывает чужую работу'],
-  [/\bgit\s+push\b/, 'отправка на GitHub — критическое действие: её делает человек командой «borshkit отправить» в терминале'],
   [/\bgit\s+reset\b[^\n;&|]*--hard\b/, '«git reset --hard» стирает несохранённую работу без возврата; используй «borshkit вернуть <файл>»'],
   [/\bgit\s+clean\b[^\n;&|]*-[a-zA-Z]*f/, '«git clean -f» удаляет файлы без копии'],
   [/\bgit\s+branch\b[^\n;&|]*\s-D\b/, 'удаление ветки может потерять несобранную работу'],
@@ -43,9 +41,10 @@ export async function runHook(name, input) {
     const questions = await listQuestions(space, { open: true });
     const lines = [await statusLine(space),
       ...questions.map(q => `${q.kind === 'critical' ? 'Критический вопрос' : 'Вопрос'} ${q.id}: ${q.text}`),
+      'Основной сценарий: работай здесь, инструментами текущего харнеса. Пользователь не обязан вводить CLI-команды. Показывай понятные карточки и варианты действий; обзор: borshkit обзор --json. Не запускай вложенных агентов, монитор или MCP без отдельного выбора.',
       'Это проект с пространством Borshkit (папка borshkit/). Начни с borshkit/START-HERE.md и borshkit/STATUS.md.',
       'Команда и ресурсы: borshkit команда; актуальные оценки ролей и план: borshkit команда план <задача>. Предложение, применение и запуск — отдельные действия.',
-      'Первичная настройка или продолжение выбора: borshkit мастер; отчёт — SETUP.md. Голос обрабатывает основная среда. Подтверждение с телефона требует доверенного сопряжения; merge и push подтверждаются в терминале.',
+      'Настройки: подготовь предложение, покажи borshkit обзор review-settings <id> --json, получи явное согласие через вопрос текущего харнеса и примени точный digest через обзор apply-settings. Голос обрабатывает основная среда; не сохраняй запись.',
       'Не правь borshkit/settings и доказательства задач — пользуйся командами borshkit. «Готово» — не приёмка: принимает Borshkit по доказательствам и человек.'];
     return { hookSpecificOutput: { hookEventName: 'SessionStart', additionalContext: lines.join('\n') } };
   }

@@ -14,6 +14,8 @@ Décris le résultat. Confie le travail à un agent. Obtiens des preuves liées 
 
 [![Commencer](https://img.shields.io/badge/Commencer-d6edaf?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/guide/quickstart.html) [![Documentation](https://img.shields.io/badge/Documentation-aeb4bb?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/index.html) [![Télécharger](https://img.shields.io/badge/T%C3%A9l%C3%A9charger-aeb4bb?style=for-the-badge&labelColor=20252b)](https://github.com/ParkPavel/borshkit/releases/tag/0.13.1) [![Soutenir](https://img.shields.io/badge/Soutenir-d6edaf?style=for-the-badge&labelColor=20252b)](https://web.tribute.tg/d/Sh8)
 
+**Dans les sources après 0.13.1 :** travaillez dans la session Claude/Codex actuelle ; `borshkit` ouvre le menu du terminal. [Guide (russe)](docs/guide/workspace.md). Ces changements ne sont pas dans l’archive 0.13.1.
+
 ## Commencer
 
 0.13.1 · Node.js 22+ · Git

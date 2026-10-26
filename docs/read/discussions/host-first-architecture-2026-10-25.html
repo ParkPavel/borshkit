@@ -1,0 +1,78 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base href="../../"><meta name="description" content="25 октября: работа в основной среде и контроль запуска — документация Borshkit"><meta name="theme-color" content="#141619"><title>25 октября: работа в основной среде и контроль запуска · Borshkit</title><link rel="canonical" href="https://parkpavel.github.io/borshkit/read/discussions/host-first-architecture-2026-10-25.html"><link rel="stylesheet" href="site.css"><link rel="stylesheet" href="reader.css"><script src="reader.js" defer></script></head><body class="docs-page"><a class="skip" href="read/discussions/host-first-architecture-2026-10-25.html#article">К статье</a><header class="docs-header"><a class="brand" href="index.html">borshkit<span class="brand-dot">.</span></a><a class="docs-label" href="read/index.html">Документация <span>0.13.1</span></a><nav aria-label="Навигация проекта"><a href="index.html">Обзор</a><a href="https://github.com/ParkPavel/borshkit/releases/tag/0.13.1">Скачать</a><a class="support-link" href="https://web.tribute.tg/d/Sh8">Поддержать</a><a href="https://github.com/ParkPavel/borshkit">GitHub</a></nav></header><div class="docs-tools"><button type="button" id="menu-toggle" aria-controls="docs-nav" aria-expanded="false">Разделы</button><label class="search-label" for="docs-search">Найти в документации</label><input id="docs-search" type="search" placeholder="Задача, проверка, Copilot…" autocomplete="off" aria-controls="search-results"><span class="search-shortcut" aria-hidden="true">/</span></div><div class="search-output" id="search-results" aria-live="polite" hidden></div><div class="docs-layout"><aside id="docs-nav" class="docs-sidebar"><nav aria-label="Разделы документации"><section><h2>Начать здесь</h2><a href="read/index.html">Документация Borshkit</a><a href="read/guide/quickstart.html">Быстрый старт: первая задача</a><a href="read/guide/workflow.html">Руководство: от цели до результата</a><a href="read/guide/setup.html">Мастер настройки команды</a></section><section><h2>Работать с задачами</h2><a href="read/guide/handoff.html">Передать работу другому харнесу</a><a href="read/guide/native-integrations.html">Copilot, Roo и Cline: нативный запуск</a><a href="read/guide/team-operations.html">Работа команды, телефон и перенос</a><a href="read/concepts/acceptance.html">Приёмка по целям</a><a href="read/concepts/evidence.html">Доказательства и устаревание</a><a href="read/concepts/executors.html">Исполнители, пулы и автопилот</a><a href="read/concepts/privacy.html">Приватность и настройки</a><a href="read/concepts/knowledge.html">База знаний: заметки, связи, SQL</a><a href="read/concepts/glossary.html">Словарь</a></section><section><h2>Справочник</h2><a href="read/reference/commands.html">Все команды</a><a href="read/reference/contract.html">Формат задачи (`contract.json`)</a><a href="read/reference/team-resources.html">Команда, оценки ролей и ресурсы</a><a href="read/architecture.html">Текущая архитектура</a><a href="read/roadmap.html">Статус пяти направлений — 0.13.1</a><a href="read/release.html">Как выпускается Borshkit</a><a href="read/ingredients.html">Рецепт: из чего сварен Borshkit</a><a href="read/library/index.html">Библиотека: навыки и проверенные ссылки</a><a href="read/project/SECURITY.html">Безопасность</a><a href="read/project/CONTRIBUTING.html">Как помочь Borshkit</a><a href="read/project/CHANGELOG.html">Изменения</a></section><details><summary>Ещё материалы</summary><a href="read/project/AGENTS.html">Для агентов, которые разрабатывают Borshkit</a><a href="read/project/CONTRIBUTORS-REFERENCES.html">Контрибьюторы проектов, на которых построен Borshkit</a><a href="read/project/README.de.html">Borshkit</a><a href="read/project/README.en.html">Borshkit</a><a href="read/project/README.fr.html">Borshkit</a><a href="read/project/README.ko.html">Borshkit</a><a href="read/project/README.html">Borshkit</a><a href="read/project/README.zh-TW.html">Borshkit</a><a href="read/project/design-qa.html">Проверка продуктового оформления</a><a href="read/concepts/research.html">Исследования: источники и цитаты</a><a href="read/concepts/roles-and-skills.html">Роли и навыки</a><a href="read/concepts/space.html">Пространство и Git простыми словами</a><a href="read/concepts/team-workspace.html">Borshkit как профессиональная команда</a><a href="read/guide/website.html">Сайт и документация как единый продукт</a><a href="read/guide/workspace.html">Одна рабочая среда: Claude, Codex и терминал</a><a href="read/reference/overview.de.html">Details und Grenzen — 0.13</a><a href="read/reference/overview.en.html">Details and limitations — 0.13</a><a href="read/reference/overview.fr.html">Détails et limites — 0.13</a><a href="read/reference/overview.ko.html">상세 설명과 한계 — 0.13</a><a href="read/reference/overview.ru.html">Подробности и ограничения — 0.13</a><a href="read/reference/overview.zh-TW.html">詳細資料與限制 — 0.13</a><a href="read/release-0.13.1.html">Borshkit 0.13.1 — диагностика запуска и достоверная оценка</a><a href="read/spec.html">Borshkit (Борщкит) — Modular AI Workspace</a><a href="read/verification-0.13.html">Проверка выпуска 0.13.0</a><a href="read/verification-2026-10-20.html">Проверка модернизации — 20 октября 2026</a></details><details open><summary>История и отчёты</summary><a href="read/discussions/audit-2026-10-07.html">Ответ на независимый аудит 0.10.1</a><a href="read/discussions/audit-2026-10-24.html">Аудит надёжности и мини-спринт — 24 октября 2026</a><a href="read/discussions/host-first-architecture-2026-10-25.html" aria-current="page">25 октября: работа в основной среде и контроль запуска</a><a href="read/discussions/modernization-2026-10-08.html">Аудит и программа модернизации — 2026-10-08</a><a href="read/discussions/modernization-2026-10-09.html">Контроль модернизации — 2026-10-09</a><a href="read/discussions/professionalism-2026-10-22.html">Аудит оформления и достоверности — 22 октября 2026</a><a href="read/discussions/space-history-backup.html">Черновик обсуждения: резервная копия истории пространства</a><a href="read/graph/README.html">Граф документации</a></details></nav><a class="sidebar-support" href="https://web.tribute.tg/d/Sh8"><strong>Поддержать Borshkit</strong><span>Помоги развивать открытый инструмент.</span></a></aside><main id="article" tabindex="-1" class="docs-article"><div class="article-meta"><span>ИСТОРИЯ / ОТЧЁТ</span><a href="https://github.com/ParkPavel/borshkit/blob/main/docs/discussions/host-first-architecture-2026-10-25.md">Исходник на GitHub</a></div><article lang="ru"><h1 id="25-октября-работа-в-основной-среде-и-контроль-запуска">25 октября: работа в основной среде и контроль запуска<a class="heading-anchor" href="read/discussions/host-first-architecture-2026-10-25.html#25-октября-работа-в-основной-среде-и-контроль-запуска" aria-label="Ссылка на раздел">#</a></h1>
+<h2 id="запрос-и-основания">Запрос и основания<a class="heading-anchor" href="read/discussions/host-first-architecture-2026-10-25.html#запрос-и-основания" aria-label="Ссылка на раздел">#</a></h2>
+<p>Владелец сообщил о перегрузке Windows множеством забытых процессов и локальных MCP при работе через Claude. Логи, замеры памяти и дамп этой машины здесь не исследованы; причинность конкретного падения независимо не подтверждена. При этом отсутствие общего обзора и сложности настройки — самостоятельные проблемы продукта, не зависящие от диагноза падения.</p>
+<p>Приоритет согласован: кроссплатформенный доступ из Claude и Codex, прежде всего Claude в терминале VS Code. Изоляция отдельной оболочки больше не обязательный основной сценарий. Исходная версия 0.13.1 сохранена в <a href="https://github.com/ParkPavel/borshkit/tree/server/isolated-runtime">server/isolated-runtime</a>, коммит <code>10e4be4a353669d2734e1ce16bb423921e91ca88</code>. Ветка сохраняет старую реализацию; это не заявление о готовности отдельного серверного продукта.</p>
+<h2 id="мини-спринт-решений">Мини-спринт решений<a class="heading-anchor" href="read/discussions/host-first-architecture-2026-10-25.html#мини-спринт-решений" aria-label="Ссылка на раздел">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>Проблема</th>
+<th>Решение</th>
+<th>Проверяемая граница</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Вложенный агент и изоляция по умолчанию</td>
+<td>Текущий харнес выполняет работу; Borshkit даёт контракты и проверки</td>
+<td>Обзор не запускает исполнителя, MCP или монитор</td>
+</tr>
+<tr>
+<td>Непонятные команды и подтверждения</td>
+<td>Меню и инструкции для обычного диалога; точная разница настроек, применить/отмена</td>
+<td>Digest связывает предложение; согласие доверено разрешениям харнеса</td>
+</tr>
+<tr>
+<td>Нет общего состояния</td>
+<td>Один снимок задач, работ, вопросов, настроек и ресурсов</td>
+<td>Устаревший heartbeat даёт UNKNOWN; прошлый итог не выдаётся за текущую приёмку</td>
+</tr>
+<tr>
+<td>Забытые процессы</td>
+<td>Общий обработчик сигналов, запрос остановки конкретной работы, освобождение активного слота</td>
+<td>Нет завершения чужих PID; нет гарантии очистки после принудительного уничтожения родителя</td>
+</tr>
+<tr>
+<td>Ложное впечатление резерва памяти</td>
+<td>Раздельные OS-измерения и учёт токенов/USD</td>
+<td>Неизвестный счёт не исчезает вместе с процессом</td>
+</tr>
+<tr>
+<td>Разное окружение пробы и работы</td>
+<td>CLI использует переданный env; Windows whitelist учитывает регистр</td>
+<td>Секреты не наследуются целиком</td>
+</tr>
+<tr>
+<td>Ограниченная «команда»</td>
+<td>Текущему агенту не нужен манифест; дополнительные роли остаются опциональными</td>
+<td>Произвольный новый протокол требует адаптера; число активных вызовов ограничивается отдельно</td>
+</tr>
+</tbody></table>
+<h2 id="реализация-после-0131">Реализация после 0.13.1<a class="heading-anchor" href="read/discussions/host-first-architecture-2026-10-25.html#реализация-после-0131" aria-label="Ссылка на раздел">#</a></h2>
+<ul>
+<li><code>core/workspace.mjs</code> — общий снимок и применение показанного предложения настроек.</li>
+<li><code>core/workspace-ui.mjs</code>, <code>commands/workspace.md</code>, <code>core/integrations.mjs</code> — терминал, Claude и экспорт инструкций для Codex.</li>
+<li><code>core/runtime-control.mjs</code> — запрос остановки с токеном конкретной работы; ограниченное по времени измерение зарегистрированных PID через ps/Get-Process.</li>
+<li><code>core/jobs.mjs</code> — владелец, heartbeat, PID, последовательная запись состояния, обработка остановки и освобождение слота.</li>
+<li><code>core/process.mjs</code> — общий набор обработчиков сигналов для принадлежащих процессу команд; обработчики снимаются после завершения.</li>
+<li><code>core/operations.mjs</code> — восстановление активных слотов завершившихся владельцев; неизвестный расход провайдера остаётся UNKNOWN.</li>
+</ul>
+<p>Текущий харнес сохраняет свои разрешения и ограничения. Внутренний env-фильтр применяется к дополнительным вызовам Borshkit, а не изменяет окружение уже открытого Claude/Codex. Старые явные команды дополнительных работ сохраняют worktree и профиль адаптера для совместимости. Они не запускаются автоматически из обзора. Проверка доказательств и запрет автоматической приёмки по словам модели остаются обязательными.</p>
+<h2 id="следующие-этапы-ещё-не-реализованы">Следующие этапы, ещё не реализованы<a class="heading-anchor" href="read/discussions/host-first-architecture-2026-10-25.html#следующие-этапы-ещё-не-реализованы" aria-label="Ссылка на раздел">#</a></h2>
+<ol>
+<li>ОС-контейнер владения всем деревом: Windows Job Objects, проверка завершения потомков, восстановление после аварийного убийства родителя.</li>
+<li>Измерение всего дерева, пороги CPU/RAM и выбранная человеком политика реакции. Сейчас измеряется корневой зарегистрированный PID; повторное использование PID ОС может сделать снимок неоднозначным. Не использовать снимок для принудительного завершения.</li>
+<li>Контракт владения внешними MCP с Claude/Codex: переиспользование и закрытие только своих серверов, без опасной очистки процессов по имени.</li>
+<li>Нативные графические панели/события там, где у харнеса есть поддерживаемый API; текущая реализация — меню и инструкции.</li>
+<li>Живые пользовательские испытания на Windows с Claude/VS Code и Codex. Автоматический CI не доказывает отсутствие всех утечек в сторонних программах.</li>
+</ol>
+<h2 id="проверки">Проверки<a class="heading-anchor" href="read/discussions/host-first-architecture-2026-10-25.html#проверки" aria-label="Ссылка на раздел">#</a></h2>
+<p>Тесты покрывают окружение Windows и caller env, явное согласие/изменённый digest/повтор предложения, запрос остановки и освобождение слота, неизвестный счёт, ограниченные измерения ресурсов и снятие обработчиков сигналов. Терминальное меню проверено в реальном PTY: открытие → настройки → изменение числа вызовов → подтверждение → выход. Модель для этого не запускалась. Итог автоматической проверки смотри в CI соответствующего коммита; живые Claude/Codex и VS Code UI здесь не проверены.</p>
+<h2 id="связи">Связи<a class="heading-anchor" href="read/discussions/host-first-architecture-2026-10-25.html#связи" aria-label="Ссылка на раздел">#</a></h2>
+<ul>
+<li><a href="read/architecture.html">Архитектура</a></li>
+<li><a href="read/spec.html">Историческая спецификация</a></li>
+<li><a href="read/roadmap.html">Roadmap</a></li>
+<li><a href="read/guide/workspace.html">Как пользоваться</a></li>
+<li><a href="read/discussions/audit-2026-10-24.html">Предыдущий аудит</a></li>
+</ul>
+</article><nav class="page-neighbors" aria-label="Предыдущая и следующая статьи"><span></span><span></span></nav><footer class="article-footer"><p>Не хватает ответа? <a href="https://github.com/ParkPavel/borshkit/issues">Сообщи об этом</a>.</p><a href="index.html">К обзору продукта</a></footer></main><aside class="docs-toc" aria-label="В этой статье"><p>В этой статье</p><nav><a href="read/discussions/host-first-architecture-2026-10-25.html#запрос-и-основания" class="toc-level-2">Запрос и основания</a><a href="read/discussions/host-first-architecture-2026-10-25.html#мини-спринт-решений" class="toc-level-2">Мини-спринт решений</a><a href="read/discussions/host-first-architecture-2026-10-25.html#реализация-после-0131" class="toc-level-2">Реализация после 0.13.1</a><a href="read/discussions/host-first-architecture-2026-10-25.html#следующие-этапы-ещё-не-реализованы" class="toc-level-2">Следующие этапы, ещё не реализованы</a><a href="read/discussions/host-first-architecture-2026-10-25.html#проверки" class="toc-level-2">Проверки</a><a href="read/discussions/host-first-architecture-2026-10-25.html#связи" class="toc-level-2">Связи</a></nav></aside></div><p class="reader-status sr-only" id="reader-status" role="status"></p></body></html>

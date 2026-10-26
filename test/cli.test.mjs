@@ -35,3 +35,12 @@ test('the support command prints the donation link and never opens a browser wit
   assert.doesNotMatch(text, /Открываю/);
   assert.equal(JSON.parse((await cli(dir, 'support', '--json')).stdout).url, 'https://web.tribute.tg/d/Sh8');
 });
+
+test('workspace reports onboarding without spawning or creating a space', async t => {
+  const dir = await project(t);
+  const result = JSON.parse((await cli(dir, 'обзор', '--json')).stdout);
+  assert.equal(result.state, 'NOT_INITIALIZED'); assert.deepEqual(result.actions, ['init']);
+  await cli(dir, 'начать');
+  const ready = JSON.parse((await cli(dir, 'обзор', '--json')).stdout);
+  assert.equal(ready.mode, 'current-host'); assert.deepEqual(ready.jobs, []);
+});

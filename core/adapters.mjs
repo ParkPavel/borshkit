@@ -42,7 +42,7 @@ function codexArgs(e, schemaFile, writable) {
     '--json', '--output-schema', schemaFile, '-'];
 }
 
-async function startCli({ executor: e, prompt, schema, cwd, writable, onEvent, timeoutMs, scratch }) {
+async function startCli({ executor: e, prompt, schema, cwd, writable, onEvent, timeoutMs, scratch, env = process.env }) {
   let result = null, usage = null, error = null, toolRunning = false;
   let geminiText = '', geminiModelSeen = false;
   let args;
@@ -102,7 +102,7 @@ async function startCli({ executor: e, prompt, schema, cwd, writable, onEvent, t
     }
     onEvent({ kind: ev?.type ?? 'output', toolRunning });
   };
-  const run = await spawnLines({ command: e.command, args, cwd, env: childEnv(process.env, e.envAllow ?? []), input: prompt, onLine, onStart: () => onEvent({ kind: 'spawn', toolRunning: false }), timeoutMs });
+  const run = await spawnLines({ command: e.command, args, cwd, env: childEnv(env, e.envAllow ?? []), input: prompt, onLine, onStart: ({ pid }) => onEvent({ kind: 'spawn', pid, toolRunning: false }), timeoutMs });
   const done = run.done.then(({ code, stderr, stoppedBy, diagnostic }) => {
     if (stoppedBy) return { ok: false, failure: stoppedBy, error: `${stoppedBy === 'TIMEOUT' ? 'превышено время' : 'сбой запуска или остановка'}${diagnostic ? `: ${diagnostic}` : ''}`, usage };
     // A structured answer counts only from a process that also says it succeeded.

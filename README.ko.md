@@ -14,6 +14,8 @@
 
 [![시작하기](https://img.shields.io/badge/%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0-d6edaf?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/guide/quickstart.html) [![문서](https://img.shields.io/badge/%EB%AC%B8%EC%84%9C-aeb4bb?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/index.html) [![다운로드](https://img.shields.io/badge/%EB%8B%A4%EC%9A%B4%EB%A1%9C%EB%93%9C-aeb4bb?style=for-the-badge&labelColor=20252b)](https://github.com/ParkPavel/borshkit/releases/tag/0.13.1) [![후원](https://img.shields.io/badge/%ED%9B%84%EC%9B%90-d6edaf?style=for-the-badge&labelColor=20252b)](https://web.tribute.tg/d/Sh8)
 
+**0.13.1 이후 소스 코드:** 현재 Claude/Codex 세션에서 작업하고 `borshkit`으로 터미널 메뉴를 엽니다. [가이드 (러시아어)](docs/guide/workspace.md). 이 변경 사항은 0.13.1 릴리스 압축 파일에 포함되지 않습니다.
+
 ## 시작하기
 
 0.13.1 · Node.js 22+ · Git

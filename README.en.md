@@ -14,6 +14,8 @@ Describe the outcome. Let an agent work. Get evidence tied to the exact file sta
 
 [![Get started](https://img.shields.io/badge/Get%20started-d6edaf?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/guide/quickstart.html) [![Documentation](https://img.shields.io/badge/Documentation-aeb4bb?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/index.html) [![Download](https://img.shields.io/badge/Download-aeb4bb?style=for-the-badge&labelColor=20252b)](https://github.com/ParkPavel/borshkit/releases/tag/0.13.1) [![Support](https://img.shields.io/badge/Support-d6edaf?style=for-the-badge&labelColor=20252b)](https://web.tribute.tg/d/Sh8)
 
+**In source after 0.13.1:** work in the current Claude/Codex session; `borshkit` opens a terminal workspace. [Guide (Russian)](docs/guide/workspace.md). These changes are not in the 0.13.1 release archive.
+
 ## Get started
 
 0.13.1 · Node.js 22+ · Git

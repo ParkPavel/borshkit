@@ -63,6 +63,20 @@ export function checkFailureStatus(error) {
 }
 export class CommandError extends Error {}
 
+// One set of signal listeners per owner, independent of child count. Signals
+// stop owned commands and allow their normal promise/finally cleanup to finish.
+const owned = new Set();
+const interruptOwned = signal => { process.exitCode = signal === 'SIGINT' ? 130 : 143; for (const stop of [...owned]) stop('aborted'); };
+const onInterrupt = () => interruptOwned('SIGINT'), onTerminate = () => interruptOwned('SIGTERM');
+function ownProcess(stop) {
+  if (!owned.size) { process.on('SIGINT', onInterrupt); process.on('SIGTERM', onTerminate); process.on('SIGHUP', onTerminate); }
+  owned.add(stop);
+  return () => {
+    owned.delete(stop);
+    if (!owned.size) { process.off('SIGINT', onInterrupt); process.off('SIGTERM', onTerminate); process.off('SIGHUP', onTerminate); }
+  };
+}
+
 /** Bounded lifecycle shared by checks and streaming executors. No automatic retries. */
 export function startProcess(executable, args, { cwd, env, input, signal, timeout = 120000,
   maxBuffer = 16 * 1024 * 1024, onStdout, onStart = () => {}, spawnImpl = spawn, killImpl = killTree, reapMs = 1500 } = {}) {
@@ -70,11 +84,11 @@ export function startProcess(executable, args, { cwd, env, input, signal, timeou
   assert(Number.isFinite(maxBuffer) && maxBuffer > 0, 'Лимит вывода должен быть положительным');
   let child, timer, reapTimer, settled = false, stopped = null, size = 0, stdout = '', stderr = '';
   const decoder = new StringDecoder('utf8');
-  let finish;
+  let finish, releaseOwner = () => {};
   const done = new Promise((resolve, reject) => {
     finish = (code, killedBy, cause) => {
       if (settled) return;
-      settled = true; clearTimeout(timer); clearTimeout(reapTimer); signal?.removeEventListener('abort', abort);
+      settled = true; releaseOwner(); clearTimeout(timer); clearTimeout(reapTimer); signal?.removeEventListener('abort', abort);
       const tail = decoder.end();
       if (tail) { if (onStdout) onStdout(tail); else stdout += tail; }
       if (!stopped && !cause && code === 0 && !killedBy) return resolve({ stdout, stderr, code, signal: null });
@@ -91,7 +105,8 @@ export function startProcess(executable, args, { cwd, env, input, signal, timeou
       child = spawnImpl(executable, args, { cwd, env, windowsHide: true, shell: false, detached: process.platform !== 'win32',
         stdio: [input === undefined ? 'ignore' : 'pipe', 'pipe', 'pipe'] });
     } catch (e) { finish(null, null, e); return; }
-    child.once('spawn', onStart);
+    releaseOwner = ownProcess(stop);
+    child.once('spawn', () => onStart({ pid: child.pid }));
     child.on('error', e => finish(null, null, e));
     child.on('close', (code, sig) => finish(code, sig));
     child.stdout.on('data', chunk => {

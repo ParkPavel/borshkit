@@ -14,6 +14,8 @@ Beschreibe das Ergebnis. Lass einen Agenten arbeiten. Erhalte Nachweise zum gena
 
 [![Loslegen](https://img.shields.io/badge/Loslegen-d6edaf?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/guide/quickstart.html) [![Dokumentation](https://img.shields.io/badge/Dokumentation-aeb4bb?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/index.html) [![Download](https://img.shields.io/badge/Download-aeb4bb?style=for-the-badge&labelColor=20252b)](https://github.com/ParkPavel/borshkit/releases/tag/0.13.1) [![Unterstützen](https://img.shields.io/badge/Unterst%C3%BCtzen-d6edaf?style=for-the-badge&labelColor=20252b)](https://web.tribute.tg/d/Sh8)
 
+**Im Quellcode nach 0.13.1:** in der aktuellen Claude-/Codex-Sitzung arbeiten; `borshkit` öffnet das Terminalmenü. [Anleitung (Russisch)](docs/guide/workspace.md). Nicht im Release-Archiv 0.13.1 enthalten.
+
 ## Starten
 
 0.13.1 · Node.js 22+ · Git
