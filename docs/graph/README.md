@@ -6,7 +6,7 @@ related: ["../README.md", "../concepts/knowledge.md"]
 
 Эту страницу Borshkit написал сам: собрал свою базу знаний по этому репозиторию и выгрузил её. Команда — `node scripts/docs-graph.mjs`.
 
-Всего в графе: модулей 61, тестов 35, документов 115, связей 1872.
+Всего в графе: модулей 61, тестов 35, документов 116, связей 1891.
 
 - [`borshkit.sql`](borshkit.sql) — весь граф одним SQL-скриптом. Загрузить: `sqlite3 graph.db < borshkit.sql`, потом спрашивать, например, `SELECT * FROM undocumented_modules;`.
 - Ниже — карта документов: стрелка значит «ссылается на». GitHub рисует её сам (Mermaid).
@@ -39,7 +39,7 @@ flowchart LR
   n23["Передать работу другому харнесу"]
   n24["Copilot, Roo и Cline: нативный запуск"]
   n25["Быстрый старт: первая задача"]
-  n26["Мастер настройки команды"]
+  n26["Настройки и дополнительная команда"]
   n27["Работа команды, телефон и перенос"]
   n28["Сайт и документация как единый продукт"]
   n29["Руководство: от цели до результата"]
@@ -55,14 +55,15 @@ flowchart LR
   n39["詳細資料與限制 — 0.13"]
   n40["Команда, оценки ролей и ресурсы"]
   n41["Borshkit 0.13.1 — диагностика запуска и достоверная оценка"]
-  n42["Как выпускается Borshkit"]
-  n43["Статус пяти направлений — 0.13.1"]
-  n44["Проверка выпуска 0.13.0"]
-  n45["Проверка модернизации — 20 октября 2026"]
-  n46["Библиотека: навыки и проверенные ссылки"]
+  n42["Borshkit 0.14.0 — промежуточный выпуск"]
+  n43["Как выпускается Borshkit"]
+  n44["Статус продукта — 0.14.0 Pre-release"]
+  n45["Проверка выпуска 0.13.0"]
+  n46["Проверка модернизации — 20 октября 2026"]
+  n47["Библиотека: навыки и проверенные ссылки"]
   n0 --> n10
   n0 --> n31
-  n0 --> n46
+  n0 --> n47
   n1 --> n0
   n1 --> n2
   n1 --> n10
@@ -101,13 +102,14 @@ flowchart LR
   n4 --> n42
   n4 --> n43
   n4 --> n44
-  n4 --> n46
+  n4 --> n45
+  n4 --> n47
   n5 --> n18
   n5 --> n23
   n5 --> n24
   n5 --> n30
   n5 --> n32
-  n5 --> n43
+  n5 --> n44
   n6 --> n7
   n6 --> n12
   n6 --> n13
@@ -140,7 +142,7 @@ flowchart LR
   n13 --> n8
   n13 --> n11
   n13 --> n31
-  n13 --> n46
+  n13 --> n47
   n14 --> n8
   n14 --> n10
   n14 --> n11
@@ -167,7 +169,7 @@ flowchart LR
   n18 --> n5
   n18 --> n17
   n18 --> n30
-  n18 --> n43
+  n18 --> n44
   n19 --> n15
   n19 --> n16
   n19 --> n20
@@ -182,16 +184,16 @@ flowchart LR
   n21 --> n5
   n21 --> n24
   n21 --> n25
-  n21 --> n44
+  n21 --> n45
   n22 --> n14
   n23 --> n5
   n23 --> n29
   n23 --> n32
-  n23 --> n43
+  n23 --> n44
   n24 --> n5
   n24 --> n23
-  n24 --> n42
   n24 --> n43
+  n24 --> n44
   n25 --> n6
   n25 --> n8
   n25 --> n9
@@ -202,6 +204,7 @@ flowchart LR
   n26 --> n19
   n26 --> n25
   n26 --> n27
+  n26 --> n30
   n26 --> n32
   n26 --> n40
   n27 --> n15
@@ -213,22 +216,25 @@ flowchart LR
   n28 --> n4
   n28 --> n25
   n28 --> n31
-  n28 --> n42
-  n28 --> n46
+  n28 --> n43
+  n28 --> n47
   n29 --> n23
   n29 --> n25
   n29 --> n27
+  n29 --> n30
   n29 --> n32
   n30 --> n5
   n30 --> n18
   n30 --> n26
   n30 --> n32
-  n31 --> n46
+  n30 --> n42
+  n31 --> n47
   n32 --> n9
   n32 --> n24
   n32 --> n25
   n32 --> n26
   n32 --> n27
+  n32 --> n30
   n32 --> n33
   n32 --> n40
   n33 --> n6
@@ -250,8 +256,8 @@ flowchart LR
   n34 --> n31
   n34 --> n32
   n34 --> n40
-  n34 --> n43
-  n34 --> n46
+  n34 --> n44
+  n34 --> n47
   n35 --> n0
   n35 --> n1
   n35 --> n3
@@ -268,8 +274,8 @@ flowchart LR
   n35 --> n31
   n35 --> n32
   n35 --> n40
-  n35 --> n43
-  n35 --> n46
+  n35 --> n44
+  n35 --> n47
   n36 --> n0
   n36 --> n1
   n36 --> n3
@@ -286,8 +292,8 @@ flowchart LR
   n36 --> n31
   n36 --> n32
   n36 --> n40
-  n36 --> n43
-  n36 --> n46
+  n36 --> n44
+  n36 --> n47
   n37 --> n0
   n37 --> n1
   n37 --> n3
@@ -304,8 +310,8 @@ flowchart LR
   n37 --> n31
   n37 --> n32
   n37 --> n40
-  n37 --> n43
-  n37 --> n46
+  n37 --> n44
+  n37 --> n47
   n38 --> n0
   n38 --> n1
   n38 --> n3
@@ -322,8 +328,8 @@ flowchart LR
   n38 --> n31
   n38 --> n32
   n38 --> n40
-  n38 --> n43
-  n38 --> n46
+  n38 --> n44
+  n38 --> n47
   n39 --> n0
   n39 --> n1
   n39 --> n3
@@ -340,36 +346,43 @@ flowchart LR
   n39 --> n31
   n39 --> n32
   n39 --> n40
-  n39 --> n43
-  n39 --> n46
+  n39 --> n44
+  n39 --> n47
   n40 --> n15
   n40 --> n25
   n40 --> n27
   n40 --> n32
   n41 --> n8
   n41 --> n17
-  n41 --> n42
   n41 --> n43
+  n41 --> n44
   n42 --> n5
-  n42 --> n23
+  n42 --> n25
+  n42 --> n30
   n42 --> n41
   n42 --> n43
+  n42 --> n44
   n43 --> n5
-  n43 --> n18
   n43 --> n23
-  n43 --> n24
-  n43 --> n30
   n43 --> n41
   n43 --> n42
+  n43 --> n44
+  n44 --> n5
+  n44 --> n18
   n44 --> n23
   n44 --> n24
-  n44 --> n42
+  n44 --> n30
+  n44 --> n41
   n44 --> n43
-  n45 --> n5
-  n45 --> n25
+  n45 --> n23
+  n45 --> n24
   n45 --> n43
-  n46 --> n13
-  n46 --> n31
+  n45 --> n44
+  n46 --> n5
+  n46 --> n25
+  n46 --> n44
+  n47 --> n13
+  n47 --> n31
 ```
 
 ## Документы и код, который они описывают
@@ -402,7 +415,7 @@ flowchart LR
 | [Передать работу другому харнесу](../guide/handoff.md) | руководство | `core/integrations.mjs`, `core/kb.mjs`, `core/portable.mjs`, `core/questions.mjs` |
 | [Copilot, Roo и Cline: нативный запуск](../guide/native-integrations.md) | руководство | `core/native.mjs`, `integrations/vscode/extension.cjs`, `integrations/vscode/native.cjs` |
 | [Быстрый старт: первая задача](../guide/quickstart.md) | руководство | — |
-| [Мастер настройки команды](../guide/setup.md) | руководство | `bin/borshkit.mjs`, `core/setup.mjs` |
+| [Настройки и дополнительная команда](../guide/setup.md) | руководство | `bin/borshkit.mjs`, `core/setup.mjs` |
 | [Работа команды, телефон и перенос](../guide/team-operations.md) | руководство | `bin/monitor-worker.mjs`, `core/adapters.mjs`, `core/approval-server.mjs`, `core/approvals.mjs`, `core/assessments.mjs`, `core/integrations.mjs`, `core/monitor.mjs`, `core/operations.mjs`, `core/portable.mjs` |
 | [Сайт и документация как единый продукт](../guide/website.md) | руководство | `docs/reader.js`, `scripts/check-site.mjs`, `scripts/site.mjs` |
 | [Руководство: от цели до результата](../guide/workflow.md) | руководство | — |
@@ -418,8 +431,9 @@ flowchart LR
 | [詳細資料與限制 — 0.13](../reference/overview.zh-TW.md) | справка | — |
 | [Команда, оценки ролей и ресурсы](../reference/team-resources.md) | справка | `core/config.mjs`, `core/executors.mjs`, `core/resources.mjs`, `core/roles.mjs`, `core/team.mjs` |
 | [Borshkit 0.13.1 — диагностика запуска и достоверная оценка](../release-0.13.1.md) | руководство | `core/adapters.mjs`, `core/executors.mjs`, `core/privacy.mjs`, `core/process.mjs` |
+| [Borshkit 0.14.0 — промежуточный выпуск](../release-0.14.0.md) | руководство | — |
 | [Как выпускается Borshkit](../release.md) | руководство | `scripts/provenance.mjs`, `scripts/verify-release.mjs` |
-| [Статус пяти направлений — 0.13.1](../roadmap.md) | — | — |
+| [Статус продукта — 0.14.0 Pre-release](../roadmap.md) | — | — |
 | [Проверка выпуска 0.13.0](../verification-0.13.md) | справка | `scripts/live-check.mjs`, `scripts/verify-release.mjs` |
 | [Проверка модернизации — 20 октября 2026](../verification-2026-10-20.md) | справка | — |
 | [Библиотека: навыки и проверенные ссылки](../../library/README.md) | справка | — |

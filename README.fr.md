@@ -12,20 +12,20 @@ Décris le résultat. Confie le travail à un agent. Obtiens des preuves liées 
 
 [![Release](https://img.shields.io/github/v/release/ParkPavel/borshkit?style=flat-square&color=d6edaf)](https://github.com/ParkPavel/borshkit/releases) [![CI](https://img.shields.io/github/actions/workflow/status/ParkPavel/borshkit/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml) [![Apache-2.0](https://img.shields.io/github/license/ParkPavel/borshkit?style=flat-square&color=aeb4bb)](LICENSE)
 
-[![Commencer](https://img.shields.io/badge/Commencer-d6edaf?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/guide/quickstart.html) [![Documentation](https://img.shields.io/badge/Documentation-aeb4bb?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/index.html) [![Télécharger](https://img.shields.io/badge/T%C3%A9l%C3%A9charger-aeb4bb?style=for-the-badge&labelColor=20252b)](https://github.com/ParkPavel/borshkit/releases/tag/0.13.1) [![Soutenir](https://img.shields.io/badge/Soutenir-d6edaf?style=for-the-badge&labelColor=20252b)](https://web.tribute.tg/d/Sh8)
+[![Commencer](https://img.shields.io/badge/Commencer-d6edaf?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/guide/quickstart.html) [![Documentation](https://img.shields.io/badge/Documentation-aeb4bb?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/index.html) [![Télécharger](https://img.shields.io/badge/T%C3%A9l%C3%A9charger-aeb4bb?style=for-the-badge&labelColor=20252b)](https://github.com/ParkPavel/borshkit/releases/tag/0.14.0) [![Soutenir](https://img.shields.io/badge/Soutenir-d6edaf?style=for-the-badge&labelColor=20252b)](https://web.tribute.tg/d/Sh8)
 
-**Dans les sources après 0.13.1 :** travaillez dans la session Claude/Codex actuelle ; `borshkit` ouvre le menu du terminal. [Guide (russe)](docs/guide/workspace.md). Ces changements ne sont pas dans l’archive 0.13.1.
+**Version intermédiaire 0.14.0 (Pre-release) :** travaillez dans la session Claude/Codex actuelle ; `borshkit` ouvre les tâches et réglages. [Guide (russe)](docs/guide/workspace.md). Version stable : 0.13.1.
 
 ## Commencer
 
-0.13.1 · Node.js 22+ · Git
+0.14.0 Pre-release · Node.js 22+ · Git
 
 **Dans 0.13.1 :** diagnostic détaillé des processus, délais limités et états BLOCKED/UNKNOWN quand une vérification ne peut pas aboutir. [Changements et limites connues](https://parkpavel.github.io/borshkit/read/release-0.13.1.html) (russe).
 
 Installe l’archive vérifiée de GitHub Release. Le paquet n’est pas encore publié dans le registre npm. Pour modifier les sources : [git clone et npm link](https://parkpavel.github.io/borshkit/read/release.html).
 
 ```sh
-npm install -g https://github.com/ParkPavel/borshkit/releases/download/0.13.1/borshkit.tgz
+npm install -g https://github.com/ParkPavel/borshkit/releases/download/0.14.0/borshkit.tgz
 borshkit help
 ```
 

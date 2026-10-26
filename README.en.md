@@ -12,20 +12,20 @@ Describe the outcome. Let an agent work. Get evidence tied to the exact file sta
 
 [![Release](https://img.shields.io/github/v/release/ParkPavel/borshkit?style=flat-square&color=d6edaf)](https://github.com/ParkPavel/borshkit/releases) [![CI](https://img.shields.io/github/actions/workflow/status/ParkPavel/borshkit/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml) [![Apache-2.0](https://img.shields.io/github/license/ParkPavel/borshkit?style=flat-square&color=aeb4bb)](LICENSE)
 
-[![Get started](https://img.shields.io/badge/Get%20started-d6edaf?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/guide/quickstart.html) [![Documentation](https://img.shields.io/badge/Documentation-aeb4bb?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/index.html) [![Download](https://img.shields.io/badge/Download-aeb4bb?style=for-the-badge&labelColor=20252b)](https://github.com/ParkPavel/borshkit/releases/tag/0.13.1) [![Support](https://img.shields.io/badge/Support-d6edaf?style=for-the-badge&labelColor=20252b)](https://web.tribute.tg/d/Sh8)
+[![Get started](https://img.shields.io/badge/Get%20started-d6edaf?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/guide/quickstart.html) [![Documentation](https://img.shields.io/badge/Documentation-aeb4bb?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/index.html) [![Download](https://img.shields.io/badge/Download-aeb4bb?style=for-the-badge&labelColor=20252b)](https://github.com/ParkPavel/borshkit/releases/tag/0.14.0) [![Support](https://img.shields.io/badge/Support-d6edaf?style=for-the-badge&labelColor=20252b)](https://web.tribute.tg/d/Sh8)
 
-**In source after 0.13.1:** work in the current Claude/Codex session; `borshkit` opens a terminal workspace. [Guide (Russian)](docs/guide/workspace.md). These changes are not in the 0.13.1 release archive.
+**0.14.0 preview (Pre-release):** work in your current Claude/Codex session; `borshkit` opens tasks, stop controls and settings. [Guide (Russian)](docs/guide/workspace.md). Stable: 0.13.1.
 
 ## Get started
 
-0.13.1 · Node.js 22+ · Git
+0.14.0 Pre-release · Node.js 22+ · Git
 
 **In 0.13.1:** detailed process diagnostics, bounded timeouts, and explicit BLOCKED/UNKNOWN when a check cannot run. [Changes and known limitations](https://parkpavel.github.io/borshkit/read/release-0.13.1.html) (Russian).
 
 Install the verified GitHub Release archive. The package is not published to the npm registry. To edit the source, use [git clone and npm link](https://parkpavel.github.io/borshkit/read/release.html).
 
 ```sh
-npm install -g https://github.com/ParkPavel/borshkit/releases/download/0.13.1/borshkit.tgz
+npm install -g https://github.com/ParkPavel/borshkit/releases/download/0.14.0/borshkit.tgz
 borshkit help
 ```
 

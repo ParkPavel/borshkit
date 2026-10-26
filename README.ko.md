@@ -12,20 +12,20 @@
 
 [![Release](https://img.shields.io/github/v/release/ParkPavel/borshkit?style=flat-square&color=d6edaf)](https://github.com/ParkPavel/borshkit/releases) [![CI](https://img.shields.io/github/actions/workflow/status/ParkPavel/borshkit/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/ParkPavel/borshkit/actions/workflows/ci.yml) [![Apache-2.0](https://img.shields.io/github/license/ParkPavel/borshkit?style=flat-square&color=aeb4bb)](LICENSE)
 
-[![시작하기](https://img.shields.io/badge/%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0-d6edaf?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/guide/quickstart.html) [![문서](https://img.shields.io/badge/%EB%AC%B8%EC%84%9C-aeb4bb?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/index.html) [![다운로드](https://img.shields.io/badge/%EB%8B%A4%EC%9A%B4%EB%A1%9C%EB%93%9C-aeb4bb?style=for-the-badge&labelColor=20252b)](https://github.com/ParkPavel/borshkit/releases/tag/0.13.1) [![후원](https://img.shields.io/badge/%ED%9B%84%EC%9B%90-d6edaf?style=for-the-badge&labelColor=20252b)](https://web.tribute.tg/d/Sh8)
+[![시작하기](https://img.shields.io/badge/%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0-d6edaf?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/guide/quickstart.html) [![문서](https://img.shields.io/badge/%EB%AC%B8%EC%84%9C-aeb4bb?style=for-the-badge&labelColor=20252b)](https://parkpavel.github.io/borshkit/read/index.html) [![다운로드](https://img.shields.io/badge/%EB%8B%A4%EC%9A%B4%EB%A1%9C%EB%93%9C-aeb4bb?style=for-the-badge&labelColor=20252b)](https://github.com/ParkPavel/borshkit/releases/tag/0.14.0) [![후원](https://img.shields.io/badge/%ED%9B%84%EC%9B%90-d6edaf?style=for-the-badge&labelColor=20252b)](https://web.tribute.tg/d/Sh8)
 
-**0.13.1 이후 소스 코드:** 현재 Claude/Codex 세션에서 작업하고 `borshkit`으로 터미널 메뉴를 엽니다. [가이드 (러시아어)](docs/guide/workspace.md). 이 변경 사항은 0.13.1 릴리스 압축 파일에 포함되지 않습니다.
+**0.14.0 프리뷰 (Pre-release):** 현재 Claude/Codex 세션에서 작업하고 `borshkit`으로 작업과 설정 메뉴를 엽니다. [가이드 (러시아어)](docs/guide/workspace.md). 안정 버전: 0.13.1.
 
 ## 시작하기
 
-0.13.1 · Node.js 22+ · Git
+0.14.0 Pre-release · Node.js 22+ · Git
 
 **0.13.1:** 자세한 프로세스 진단, 제한된 대기 시간, 검사를 수행할 수 없을 때의 BLOCKED/UNKNOWN 상태. [변경 사항 및 알려진 제한](https://parkpavel.github.io/borshkit/read/release-0.13.1.html) (러시아어).
 
 검증된 GitHub Release 압축 파일을 설치하세요. npm 레지스트리에는 아직 게시되지 않았습니다. 소스를 수정하려면 [git clone 및 npm link](https://parkpavel.github.io/borshkit/read/release.html)를 사용하세요.
 
 ```sh
-npm install -g https://github.com/ParkPavel/borshkit/releases/download/0.13.1/borshkit.tgz
+npm install -g https://github.com/ParkPavel/borshkit/releases/download/0.14.0/borshkit.tgz
 borshkit help
 ```
 
